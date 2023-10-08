@@ -21,15 +21,6 @@ export default function RootLayout({ children }) {
 	      <script type="text/javascript" src="js/common.js"></script>
       </head>
       <body>
-        <h1><Link href="/"></Link></h1>
-        <ol>
-          <li><Link href="/read/1"></Link></li>
-          <li><Link href="/read/2"></Link></li>
-        </ol>
-        <ul>
-          <li><Link href="/create"></Link></li>
-          <li><Link href="/update/1"></Link></li>
-         </ul>
 
         <div className="wrap">
 

@@ -45,19 +45,17 @@ export default async function RootLayout({ children }) {
          <div className="login1">
 
             <h1>
-               <img src="images/logo.jpg" alt="milan information system"/>
+               <img src="images/logo.jpg" alt="logo"/>
             </h1>
             <div className="loginBox">
-               <input type="text" ref={usernameRef} placeholder="userid"/>
-               <input type="password" ref={passwordRef} placeholder="password"/>
+               <input type="text" ref={usernameRef} placeholder="아이디"/>
+               <input type="password" ref={passwordRef} placeholder="비밀번호"/>
                <div>
                   <input type="checkbox" className="save" name="key" /> 
                   <label for="saveId">아이디 저장</label> 
 
-                  <input type="checkbox" className="save" name="pass" />
-                  <label for="savePw">비밀번호 저장</label>
                </div>
-               <a href="">회원가입</a>
+               <Link href="/signin">회원가입</Link>
                <Link href="/"><button type="submit" className="btnLogin">로그인</button></Link>
             </div>
          </div>
