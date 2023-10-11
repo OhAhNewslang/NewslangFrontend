@@ -38,15 +38,15 @@ export default function RootLayout({ children }) {
 					</h1>
 					<div className="loginBox">
 						<input name="loginID" placeholder="아이디" />
-						<input name="password" placeholder="비밀번호" />
+						<input type="password" name="password" placeholder="비밀번호" />
 						<div>
 							<input type="checkbox" className="save" name="key" />
 							<label for="saveId">아이디 저장</label>
 							<input type="checkbox" className="save" name="pass" />
 							<label for="savePw">비밀번호 저장</label>
 						</div>
-						<a href="">회원가입</a>
-						<button type="submit">버튼</button>
+						<a href="/signin">회원가입</a>
+						<button type="submit" className="btnLogin">버튼</button>
 					</div>
 				</div>
 			</div>
