@@ -1,5 +1,4 @@
 'use client'
-import Link from 'next/link';
 import React from 'react';
 import { useRouter } from "next/navigation";
 
@@ -14,6 +13,8 @@ export default function RootLayout({ children }) {
             const email = e.target.email.value;
             const password = e.target.password.value;
             const passwordcheck = e.target.passwordcheck.value;
+
+            console.log(name);
             //fetch로 보낼 옵션들
             const options = {
                 method: 'POST',
@@ -22,23 +23,22 @@ export default function RootLayout({ children }) {
                     'Content-Type': 'application/json'
                 },
                 //전송할 데이터 json으로 변환해서 body에 넣어줌
-                body: JSON.stringify({ name, loginID, email, password,passwordcheck })
+                body: JSON.stringify({name,loginID,email,password})
             }
             fetch('api/member/new', options) //경로 및 옵션들
-                .then(res => res.json()) //res를 json으로 전송
-                .then(result => {
-                    console.log("응답옴")
-                    console.log(result);
-                    //로그인성공하면 메인으로(임시)
-                    router.push('/')
-                })
+            .then(function (res){
+                // 요청에 대한 응답을 JSON형태로 파싱
+                return res.json();
+            })
+            .then(function(json){
+                alert(json.resultMessage)
+            })
         }}>
 
             <div className="wrap wid560">
                 <div className="contentTitleBox">
                     <h4>회원가입</h4>
                 </div>
-
                 <table className="tableTypeSort">
                     <colgroup>
                         <col style={{ width: '20%' }} />
@@ -49,20 +49,20 @@ export default function RootLayout({ children }) {
                     <tbody>
                         <tr>
                             <th>이름</th>
-                            <td colspan="3">
+                            <td colSpan="3">
                                 <input type="text" className="wid200" id="name" name="name" />
                             </td>
                         </tr>
                         <tr>
                             <th>아이디</th>
-                            <td colspan="3">
+                            <td colSpan="3">
                                 <input type="text" className="wid200" id="loginId" name="loginID" />
                                 <p className="mt3">* 5자리 이상의 영문 및 숫자, 영문숫자 혼용만 가능합니다.</p>
                             </td>
                         </tr>
                         <tr>
                             <th>비밀번호</th>
-                            <td colspan="3">
+                            <td colSpan="3">
                                 <input type="password" className="wid200" id="password" name="password" />
                                 <p className="mt3">
                                     * 비밀번호는 암호화되어 빈 란으로 보입니다.
@@ -72,7 +72,7 @@ export default function RootLayout({ children }) {
                         </tr>
                         <tr>
                             <th>비밀번호 확인</th>
-                            <td colspan="3">
+                            <td colSpan="3">
                                 <input type="password" className="wid200" id="passwordcheck" name="passwordcheck" />
                                 <p>
                                     * 확인을 위해 위에 입력하신 비밀번호를 한번 더 입력해 주세요.
@@ -81,7 +81,7 @@ export default function RootLayout({ children }) {
                         </tr>
                         <tr>
                             <th>이메일</th>
-                            <td colspan="3">
+                            <td colSpan="3">
                                 <input type="text" className="wid200" id="email" name="email" />
                                 <p>
                                     * 아이디/비밀번호 찾기 시 사용될 정보입니다. 정확하게 입력해 주세요.
@@ -92,7 +92,7 @@ export default function RootLayout({ children }) {
                     </tbody>
                 </table>
                 <div className="centerBox mt20">
-                    <button type="button" className="btnBlue wid90">확인</button>
+                    <button type="submit" className="btnBlue wid90">확인</button>
                 </div>
             </div>
         </form>

@@ -2,10 +2,9 @@
 import { useRouter } from "next/navigation";
 import { headers } from "../../../next.config";
 
-//폼 버튼 레이아웃 수정필요!!
 
 export default function RootLayout({ children }) {
-	const router = useRouter(); 
+	const router = useRouter();
 	return (
 		<form onSubmit={(e) => {
 			e.preventDefault();
@@ -20,16 +19,38 @@ export default function RootLayout({ children }) {
 					'Content-Type': 'application/json'
 				},
 				//전송할 데이터 json으로 변환해서 body에 넣어줌
-				body: JSON.stringify({ loginID, password })
+				body: JSON.stringify({ loginID, password }),
+				//ssr 옵션 추가
+				cache: 'no-store'
 			}
-			fetch('api/login/in', options) //경로 및 옵션들
-				.then(res => res.json()) //res를 json으로 전송
-				.then(result => {
-					console.log("응답옴")
-					console.log(result);
-					//로그인성공하면 메인으로(임시)
-					router.push('/')
+			fetch('api/login/in', options) //경로 및 옵션들 보냄
+				.then(function (res) {
+					// 요청에 대한 응답을 JSON형태로 파싱
+					return res.json();
 				})
+				.then(function (json){
+					const loginresult = json.body;
+					const code = loginresult.resultCode;
+					const loginmsg = loginresult.resultMessage;
+					switch (code) {
+						case '200'://로그인성공
+							alert(loginmsg);
+							//토큰 localStorage에 저장
+							localStorage.setItem('token', res);
+							router.push("/");
+							//화면 새로고침
+							router.refresh();
+						case '202'://비밀번호틀림
+							alert(loginmsg);
+							router.refresh();
+						default://로그인정보없음
+							alert(loginmsg);
+							router.refresh();
+					}
+				})
+
+
+
 		}}>
 			<div className="wrap">
 				<div className="login1">
