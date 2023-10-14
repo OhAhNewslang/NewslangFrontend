@@ -1,6 +1,54 @@
-export async function POST(request) {}
+'use client'
+import React, { useState, useEffect } from 'react';
+
+const ScrollComponent = () => {
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchMoreData = () => {
+    // API를 호출하여 데이터를 가져오는 로직 구현 , subnews 데이터 무한스크롤 부분
+    const newItem = `Item ${items.length + 1}`;
+
+    setTimeout(() => {
+      setItems([...items, newItem]);
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  const handleScroll = () => {
+    // 스크롤이 페이지 하단에 도달하면 추가 데이터를 가져옴
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      setIsLoading(true);
+      fetchMoreData();
+    }
+  };
+
+  useEffect(() => {
+    fetchMoreData();
+  }, []); // 페이지가 로드될 때 초기 데이터를 가져옴
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [items]);
+
+  return (
+    <div>
+      {items.map((item, index) => (
+        <div key={index}>{item}</div>
+      ))}
+      {isLoading && <h4>Loading...</h4>}
+    </div>
+  );
+};
 
 export default function Home() {
+
+  let newsimage = "images/userImg.jpg"
+  let newsname = ["테스트1", "테스트2","테스트3","테스트4","테스트5","테스트1", "테스트2","테스트3","테스트1"]
+  let newscom = ["한국경제","동아일보","중앙일보","중앙일보","언론사"]
   return (
     <div className="wrapex">
 
@@ -24,82 +72,32 @@ export default function Home() {
                 <th>언론사</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
-                <td className="tl"><a href="view">[SC현장] "강동원이라는 피사체"…'천박사' 강동원표 판타지, 장르가 되다(종합)</a></td>
-                <td>스포츠조선</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">공무원 못뽑아...'2000만원 보너스 준다'는 이나라</a></td>
-                <td>한국경제</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">추석선물 온 줄 알고 클릭했다가 통장 '텅'.. 명절 스미싱 피하는 법 </a></td>
-                <td>동아일보</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">[영상] “염전노예 구출” 신안 가서 촬영한 男유튜버, 유 …</a></td>
-                <td>헤럴드경제</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">간편식 곰탕에 세균 득실…'이 제품' 절대 드시지 마세요</a></td>
-                <td>뉴시드</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">"같은 공기 마시는 것도 기분 나빠"…한복 차림 비꼬며 망 …</a></td>
-                <td>아시아경제</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="read/page.js">젤렌스키, 캐나다 방문해 우크라이나 지원 호소 예정</a></td>
-                <td>동아일보</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">두산로보틱스 IPO '흥행'…청약증거금 33조 몰렸다</a></td>
-                <td>국민일보</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">추석선물 온 줄 알고 클릭했다가 통장 '텅'.. 명절 스미싱 피하는 법 </a></td>
-                <td>한겨레</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">조국·조민 책, 나란히 베스트셀러 올라</a></td>
-                <td>국민일보</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">"소총 준비할 것"…체포동의 비명 14명 실명 제대로 깠다</a></td>
-                <td>한겨레</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">"제니! 어디가"…블랙핑크 재계약 불발설에 개미들 '눈물'</a></td>
-                <td>연합뉴스</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="read/page.js">백종원 “꼴보기 싫어 죽겠네”…예산시장 보고 분노한 이유</a></td>
-                <td>이데일리</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">美 핵 전문가 "러, 北에 플루토늄 제공 우려…북 핵무기 기하급수적</a></td>
-                <td>조세일보</td>
-              </tr>
+            
+            {
+              newsname.map( (a,i) => {
+                return(
+                <tbody>  
+                <tr>
+                  <td><img src={newsimage} alt="사용자 기본 이미지" /></td>
+                  <td className="tl">
+                      <a href="view">{newsname[i]}</a>
+                  </td>
+                  <td>{newscom[i]}</td>
+                </tr>
+                
+                </tbody>
+                )
+              }) 
               
-            </tbody>
+            }
+           
+        
           </table>
         </div>
+
+        <ScrollComponent />
      </div>
+     
 
      <div className="wrap2">
         <div className="contentTitleBox">
@@ -167,52 +165,17 @@ export default function Home() {
                 <td className="tl"><a href="">사라진 조민 유튜브 영상…"정부 법적 신고로 금지"</a></td>
                 <td>노컷뉴스</td>
               </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">"소총 준비할 것"…체포동의 비명 14명 실명 제대로 깠다</a></td>
-                <td>디지털타임즈</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">"제발 그만 두시라" 동료들의 호소…美 96세 판사 1년간 …</a></td>
-                <td>YTN</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">이재명 "검사 독재정권 폭주·퇴행 막고 민생·민주주의 지켜야"</a></td>
-                <td>연합뉴스</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">기은세, 결혼 11년 만에 이혼…"서로 앞으로의 길 응원"</a></td>
-                <td>송고시간</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">美, 반도체법 가드레일 확정…보조금 기업에 中 증설 5%로 제한(종합)</a></td>
-                <td>중앙일보</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">간편식 곰탕에 세균 득실…'이 제품' 절대 드시지 마세요</a></td>
-                <td>뉴시드</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="">"같은 공기 마시는 것도 기분 나빠"…한복 차림 비꼬며 망 …</a></td>
-                <td>아시아경제</td>
-              </tr>
-              <tr>
-                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                <td className="tl"><a href="read/page.js">젤렌스키, 캐나다 방문해 우크라이나 지원 호소 예정</a></td>
-                <td>동아일보</td>
-              </tr>
+              
               
             </tbody>
+
+            
           </table>
         </div>
      </div>
-
+  
     </div> //wrap
+
+
   )
 }
