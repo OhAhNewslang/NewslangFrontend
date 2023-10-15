@@ -6,7 +6,7 @@ const ScrollComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchMoreData = () => {
-    // API를 호출하여 데이터를 가져오는 로직 구현 , subnews 데이터 무한스크롤 부분
+    // API를 호출하여 데이터를 가져오는 로직 구현 , subnews 데이터 
     const newItem = `Item ${items.length + 1}`;
 
     setTimeout(() => {

@@ -15,8 +15,7 @@ export default async function RootLayout({ children }) {
             <div className="fr">
                 <Link href="/resign"><button type="button" className="btnLight mr5">내프로필</button></Link>
                 <Link href="/myinfo"><button type="button" className="btnLight mr5">구독관리</button></Link>
-                <button type="button" className="btnLight mr5">찜한기사</button>
-                <button type="button" className="btnLight">의견관리</button>
+                <Link href="/like"><button type="button" className="btnLight mr5">찜한기사</button></Link>
             </div>
             </div>
                 

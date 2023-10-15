@@ -28,6 +28,7 @@ export default function RootLayout({ children }) {
             <a href=""><img src="images/logo.jpg" alt="logo"/></a>
             <div className="floatBox mb15">
             <div className="fr">
+              <Link href="/"><button type="button" className="btnBlue mr5">Home</button></Link>
               <Link href="/myinfo"><button type="button" className="btnBlue mr5">My Page</button></Link>
               <Link href="/login"><button type="button" className="btnGray">Logout</button></Link>
             </div>
