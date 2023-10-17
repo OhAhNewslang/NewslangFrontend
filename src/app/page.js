@@ -1,9 +1,49 @@
+'use client'
+import { useEffect, useState } from "react";
+
+
 export default function Home() {
-    const subres = fetch('/api/news/subscribe');
-    const subnews = subres.json();
-    const liveres = fetch('/api/news/live?page=~');
-    const livenews = liveres.json();
-  
+  let [subnews, setsubData] = useState([])
+  let [livenews, setliveData] = useState([])
+
+  useEffect(() => {
+    //로컬스토리지에 저장되어 있는 토큰 받아오기
+    if (typeof window !== "undefined") {
+      var token = JSON.parse(window.localStorage.getItem('token'));
+    }
+    //구독뉴스 api호출
+    fetch('/api/news/subscribe', {
+      method: 'GET',
+      headers: {
+        Authorization: token
+      }
+    })
+      .then(function (res) {
+        // 요청에 대한 응답을 JSON형태로 파싱
+        return res.json();
+      })
+      .then(function (json) {
+        const subnews = json.body.json();
+        setsubData(subnews)
+      });
+
+    //최신뉴스 api호출
+    fetch('/api/news/live?page=~', {
+      method: 'GET',
+      headers: {
+        Authorization: token
+      }
+    })
+      .then(function (res) {
+        // 요청에 대한 응답을 JSON형태로 파싱
+        return res.json();
+      })
+      .then(function (json) {
+        const livenews = json.body.json();
+        setliveData(livenews)
+      });
+  }, [])
+
   return (
     <div className="wrapex">
       <div className="wrap2">
@@ -27,19 +67,27 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
+
               <tr>
-                {
-                  subnews.map((news) => {
-                    return (
-                      <div>
+                <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
+                <td className="tl"><a href="view">[SC현장] "강동원이라는 피사체"…'천박사' 강동원표 판타지, 장르가 되다(종합)</a></td>
+                <td>스포츠조선</td>
+              </tr>
+
+              {
+                subnews.map((news) => {
+                  return (
+                    <div>
+                      <tr>
                         <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
                         <td className="tl"><a href={news.url}>{news.title}</a></td>
                         <td>{news.media}</td>
-                      </div>
-                    )
-                  })
-                }
-              </tr>
+                      </tr>
+                    </div>
+                  )
+                })
+              }
+
             </tbody>
           </table>
         </div>
@@ -65,19 +113,21 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              <tr>
+
               {
-                  livenews.map((news) => {
-                    return (
-                      <div>
+                livenews.map((news) => {
+                  return (
+                    <div>
+                      <tr>
                         <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
                         <td className="tl"><a href={news.url}>{news.title}</a></td>
                         <td>{news.media}</td>
-                      </div>
-                    )
-                  })
-                }
-              </tr>
+                      </tr>
+                    </div>
+                  )
+                })
+              }
+
             </tbody>
           </table>
         </div>

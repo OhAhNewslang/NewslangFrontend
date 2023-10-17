@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
 					// 요청에 대한 응답을 JSON형태로 파싱
 					return res.json();
 				})
-				.then(function (json){
+				.then(function (json) {
 					const loginresult = json.body;
 					const code = loginresult.resultCode;
 					const loginmsg = loginresult.resultMessage;
@@ -36,7 +36,7 @@ export default function RootLayout({ children }) {
 						case '200'://로그인성공
 							alert(loginmsg);
 							//토큰 localStorage에 저장
-							localStorage.setItem('token', res);
+							localStorage.setItem('token', json.stringify(res.token));
 							router.push("/");
 							//화면 새로고침
 							router.refresh();
