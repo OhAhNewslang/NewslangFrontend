@@ -1,4 +1,6 @@
 'use client'
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 
@@ -9,40 +11,33 @@ export default function Home() {
   useEffect(() => {
     //로컬스토리지에 저장되어 있는 토큰 받아오기
     if (typeof window !== "undefined") {
-      var token = JSON.parse(window.localStorage.getItem('token'));
+      var token = window.localStorage.getItem('token');
     }
     //구독뉴스 api호출
     fetch('/api/news/subscribe', {
       method: 'GET',
       headers: {
-        Authorization: token
+        'X-AUTH-TOKEN': token,
+        page: 1,
+        limit: 10
       }
     })
-      .then(function (res) {
-        // 요청에 대한 응답을 JSON형태로 파싱
-        return res.json();
-      })
-      .then(function (json) {
-        const subnews = json.body.json();
-        setsubData(subnews)
+      .then(res => res.json())
+      .then(data => {
+        setsubData(data)
       });
 
     //최신뉴스 api호출
     fetch('/api/news/live?page=~', {
-      method: 'GET',
-      headers: {
-        Authorization: token
-      }
+      method: 'GET'
+      //url :
     })
-      .then(function (res) {
-        // 요청에 대한 응답을 JSON형태로 파싱
-        return res.json();
-      })
-      .then(function (json) {
-        const livenews = json.body.json();
-        setliveData(livenews)
+      .then(res => res.json())
+      .then(data => {
+        setliveData(data)
       });
   }, [])
+
 
   return (
     <div className="wrapex">
@@ -80,7 +75,16 @@ export default function Home() {
                     <div>
                       <tr>
                         <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
-                        <td className="tl"><a href={news.url}>{news.title}</a></td>
+                        <td className="tl">
+                          <Link>
+                            href={{
+                              pathname: '/view/${news.url}',
+                              query: {
+                                newsUrl: '{news.url}'
+                              },
+                            }}
+                          </Link>
+                        </td>
                         <td>{news.media}</td>
                       </tr>
                     </div>

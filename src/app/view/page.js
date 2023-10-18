@@ -1,30 +1,35 @@
 'use client'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 
 export default function Login() {
+    //url 받아오기
+    const router = useRouter();
+    console.log(router.newsUrl);
+
     let [newscontents, setNewsData] = useState([])
     useEffect(() => {
         //로컬스토리지에 저장되어 있는 토큰 받아오기
         if (typeof window !== "undefined") {
-            var token = JSON.parse(window.localStorage.getItem('token'));
+            var token = window.localStorage.getItem('token');
         }
         //구독뉴스 api호출
         fetch('/api/news/detail?url=~', {
             method: 'GET',
             headers: {
-                Authorization: token
+                'X-AUTH-TOKEN': token,
+                newsUrl : router.newsUrl
             }
         })
-            .then(function (res) {
-                // 요청에 대한 응답을 JSON형태로 파싱
-                return res.json();
-            })
-            .then(function (json) {
-                const newscontents = json.body.json();
-                setNewsData(newscontents)
+            .then(res => res.json())
+            .then(data => {
+                setNewsData(data)
             });
     }, [])
+
+  
+
     return (
         <div class="wrap">
             {/* <div class="contentTitleBox">
@@ -57,7 +62,7 @@ export default function Login() {
                         </tr>
                         <tr>
                             <td colspan="6" class="viewBox">
-                            {newscontents.contents}
+                                {newscontents.contents}
 
                                 {/* <img src="images/view.jpg" alt="기본 이미지" /><br /><br />
 

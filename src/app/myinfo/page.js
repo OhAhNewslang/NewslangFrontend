@@ -10,53 +10,42 @@ export default async function RootLayout({ children }) {
   useEffect(() => {
     //로컬스토리지에 저장되어 있는 토큰 받아오기
     if (typeof window !== "undefined") {
-      var token = JSON.parse(window.localStorage.getItem('token'));
+      var token = window.localStorage.getItem('token');
     }
     //구독언론사 api호출
     fetch('/api/media/{id}', {
       method: 'GET',
       headers: {
-        Authorization: token
+        'X-AUTH-TOKEN': token
       }
     })
-      .then(function (res) {
-        // 요청에 대한 응답을 JSON형태로 파싱
-        return res.json();
-      })
-      .then(function (json) {
-        const submedia = json.body.json();
-        setmediaData(submedia)
+      .then(res => res.json())
+      .then(data => {
+        setmediaData(data)
       });
-      //구독카테고리 api호출
+
+    //구독카테고리 api호출
+    fetch('/api/category/{id}', {
+      method: 'GET',
+      headers: {
+        'X-AUTH-TOKEN': token
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      setcategoryData(data)
+    });
+    //구독주제 api호출
     fetch('/api/category/{id}', {
       method: 'GET',
       headers: {
         Authorization: token
       }
     })
-      .then(function (res) {
-        // 요청에 대한 응답을 JSON형태로 파싱
-        return res.json();
-      })
-      .then(function (json) {
-        const subcategory = json.body.json();
-        setcategoryData(subcategory)
-      });
-      //구독주제 api호출
-    fetch('/api/category/{id}', {
-      method: 'GET',
-      headers: {
-        Authorization: token
-      }
-    })
-      .then(function (res) {
-        // 요청에 대한 응답을 JSON형태로 파싱
-        return res.json();
-      })
-      .then(function (json) {
-        const subkeyword = json.body.json();
-        setkeywordData(subkeyword)
-      });
+    .then(res => res.json())
+    .then(data => {
+      setkeywordData(data)
+    });
   }, [])
 
   return (
@@ -92,10 +81,10 @@ export default async function RootLayout({ children }) {
           </thead>
           <tbody>
             <tr>
-                    <td><img src="images/userImg.jpg" alt="사용자 기본 이미지"/></td>
-                    <td>중앙일보</td>
-                    <td> <button type="button" className="btnRed">삭제</button></td>
-                </tr>
+              <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
+              <td>중앙일보</td>
+              <td> <button type="button" className="btnRed">삭제</button></td>
+            </tr>
             {submedia.map((news) => {
               return (
                 <div>

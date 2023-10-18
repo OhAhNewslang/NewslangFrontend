@@ -26,13 +26,10 @@ export default function RootLayout({ children }) {
                 body: JSON.stringify({ name, loginID, email, password })
             }
             fetch('api/member/new', options) //경로 및 옵션들
-                .then(function (res) {
-                    // 요청에 대한 응답을 JSON형태로 파싱
-                    return res.json();
-                })
-                .then(function (json) {
-                    alert(json.resultMessage)
-                })
+			.then(res => res.json())
+            .then(data => {
+				//회원가입완료 결과코드 수정 예정
+            });
         }}>
 
             <div className="wrap wid560">
