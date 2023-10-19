@@ -28,7 +28,9 @@ export default function RootLayout({ children }) {
             fetch('api/member/new', options) //경로 및 옵션들
 			.then(res => res.json())
             .then(data => {
-				//회원가입완료 결과코드 수정 예정
+                //회원가입 실패 수정 예정
+                alert("회원가입 성공!");
+				router.push("/login");
             });
         }}>
 
