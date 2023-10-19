@@ -18,8 +18,8 @@ export default function Home() {
       method: 'GET',
       headers: {
         'X-AUTH-TOKEN': token,
-        page: 1,
-        limit: 10
+        'page': 1,
+        'limit': 10
       }
     })
       .then(res => res.json())
@@ -29,8 +29,12 @@ export default function Home() {
 
     //최신뉴스 api호출
     fetch('/api/news/live?page=~', {
-      method: 'GET'
-      //url :
+      method: 'GET',
+      headers: {
+        'X-AUTH-TOKEN': token,
+        'page': 1,
+        'limit': 10
+      }
     })
       .then(res => res.json())
       .then(data => {
@@ -76,15 +80,9 @@ export default function Home() {
                       <tr>
                         <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
                         <td className="tl">
-                          <Link>
-                            href={{
-                              pathname: '/view/${news.url}',
-                              query: {
-                                newsUrl: '{news.url}'
-                              },
-                            }}
-                          </Link>
-                        </td>
+                          {/* localStorage에 저장,, */}
+                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{pathname:JSON.stringify(news.url)}}
+                          {news.title}</Link></td>
                         <td>{news.media}</td>
                       </tr>
                     </div>

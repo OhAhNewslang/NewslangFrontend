@@ -4,22 +4,20 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 
 export default function Login() {
-    //url 받아오기
-    const router = useRouter();
-    console.log(router.newsUrl);
 
     let [newscontents, setNewsData] = useState([])
     useEffect(() => {
-        //로컬스토리지에 저장되어 있는 토큰 받아오기
+        //로컬스토리지에 저장되어 있는 토큰 및 Url 받아오기
         if (typeof window !== "undefined") {
             var token = window.localStorage.getItem('token');
+            var newsUrl = JSON.parse(window.localStorage.getItem('newUrl'));
         }
-        //구독뉴스 api호출
+        //api호출
         fetch('/api/news/detail?url=~', {
             method: 'GET',
             headers: {
                 'X-AUTH-TOKEN': token,
-                newsUrl : router.newsUrl
+                'newsUrl' : newsUrl
             }
         })
             .then(res => res.json())
@@ -63,7 +61,7 @@ export default function Login() {
                         <tr>
                             <td colspan="6" class="viewBox">
                                 {newscontents.contents}
-
+                                {/* type이 bool이던데 이렇게 넣으면 되나..? */}
                                 {/* <img src="images/view.jpg" alt="기본 이미지" /><br /><br />
 
                                 [스포츠조선 조지영 기자] 어느덧 장르가 된 강동원표 오컬트가 추석 극장 큰 판을 벌였다.<br /><br />
