@@ -1,11 +1,14 @@
 'use client'
 import { useRouter } from "next/navigation";
 import { headers } from "../../../next.config";
+import { useEffect, useState } from "react";
 
 
 export default function RootLayout({ children }) {
 	const router = useRouter();
+	let [loginmsg, setLoginmsgData] = useState([])
 	return (
+
 		<form onSubmit={(e) => {
 			e.preventDefault();
 			//폼 name값 변수저장
@@ -24,30 +27,28 @@ export default function RootLayout({ children }) {
 				cache: 'no-store'
 			}
 			fetch('api/member/in', options) //경로 및 옵션들 보냄
-			.then(res => res.json())
-            .then(data => {
-				const code = data.result.resultCode;
-				const loginmsg = data.result.resultMessage;
-				switch (code) {
-					case '200'://로그인성공
-						alert(loginmsg);
-						//토큰 localStorage에 저장
-						localStorage.setItem('token',data.token);
-						router.push("/");
-						//화면 새로고침
-						router.refresh();
-						break;
-					case '202'://비밀번호틀림
-						alert(loginmsg);
-						router.refresh();
-						break;
-					default://로그인정보없음
-						alert(loginmsg);
-						router.refresh();
-						break;
-				}
-            });
-
+				.then(res => res.json())
+				.then(data => {
+					const code = data.result.resultCode;
+					var loginmsg = data.result.resultMessage;
+					switch (code) {
+						case '200'://로그인성공
+							//토큰 localStorage에 저장
+							localStorage.setItem('token', data.token);
+							router.push("/");
+							//화면 새로고침
+							router.refresh();
+							break;
+						case '202'://비밀번호틀림
+							setLoginmsgData(loginmsg);
+							router.refresh();
+							break;
+						default://로그인정보없음
+							setLoginmsgData(loginmsg);
+							router.refresh();
+							break;
+					}
+				});
 		}}>
 			<div className="wrap">
 				<div className="login1">
@@ -64,6 +65,7 @@ export default function RootLayout({ children }) {
 							<label>비밀번호 저장</label>
 						</div>
 						<a href="/signin">회원가입</a>
+						<p class = "loginresult">{loginmsg}</p>
 						<button type="submit" className="btnLogin">버튼</button>
 					</div>
 				</div>
