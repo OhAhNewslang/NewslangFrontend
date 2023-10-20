@@ -50,7 +50,7 @@ export default function Login() {
                         </tr>
                         <tr>
                             <th>작성자</th>
-                            <td>조지영 기자</td>
+                            <td>{newscontents.reporter}</td>
                             <th>언론사</th>
                             <td>{newscontents.media}</td>
                         </tr>
