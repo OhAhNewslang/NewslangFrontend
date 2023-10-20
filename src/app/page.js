@@ -78,12 +78,12 @@ export default function Home() {
                   return (
                     <div>
                       <tr>
-                        <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
+                        <td><img src={news.thumbnailNewsList.imagePath} alt="사용자 기본 이미지" /></td>
                         <td className="tl">
                           {/* localStorage에 저장,, */}
-                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{pathname:JSON.stringify(news.url)}}
-                          {news.title}</Link></td>
-                        <td>{news.media}</td>
+                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.thumbnailNewsList.url))}> href={{pathname:JSON.stringify(news.thumbnailNewsList.url)}}
+                          {news.thumbnailNewsList.title}</Link></td>
+                        <td>{news.thumbnailNewsList.media}</td>
                       </tr>
                     </div>
                   )
@@ -120,11 +120,16 @@ export default function Home() {
                 livenews.map((news) => {
                   return (
                     <div>
+                      <div>
                       <tr>
-                        <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
-                        <td className="tl"><a href={news.url}>{news.title}</a></td>
-                        <td>{news.media}</td>
+                        <td><img src={news.thumbnailNewsList.imagePath} alt="사용자 기본 이미지" /></td>
+                        <td className="tl">
+                          {/* localStorage에 저장,, */}
+                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.thumbnailNewsList.url))}> href={{pathname:JSON.stringify(news.thumbnailNewsList.url)}}
+                          {news.thumbnailNewsList.title}</Link></td>
+                        <td>{news.thumbnailNewsList.media}</td>
                       </tr>
+                    </div>
                     </div>
                   )
                 })
