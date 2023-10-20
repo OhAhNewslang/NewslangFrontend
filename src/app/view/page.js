@@ -13,7 +13,7 @@ export default function Login() {
             var newsUrl = JSON.parse(window.localStorage.getItem('newUrl'));
         }
         //api호출
-        fetch('/api/news/detail?url=~', {
+        fetch('/api/news/detail?url', {
             method: 'GET',
             headers: {
                 'X-AUTH-TOKEN': token,
@@ -61,7 +61,6 @@ export default function Login() {
                         <tr>
                             <td colspan="6" class="viewBox">
                                 {newscontents.contents}
-                                {/* type이 bool이던데 이렇게 넣으면 되나..? */}
                                 {/* <img src="images/view.jpg" alt="기본 이미지" /><br /><br />
 
                                 [스포츠조선 조지영 기자] 어느덧 장르가 된 강동원표 오컬트가 추석 극장 큰 판을 벌였다.<br /><br />
