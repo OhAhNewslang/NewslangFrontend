@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 
 
 export default function Home() {
-  let [subnews, setsubData] = useState([])
-  let [livenews, setliveData] = useState([])
+  let [subThumbnailNewsList, setSubThumbnailNews] = useState([])
+  let [liveThumbnailNewsList, setLiveThumbnailNews] = useState([])
 
   useEffect(() => {
     //로컬스토리지에 저장되어 있는 토큰 받아오기
@@ -24,7 +24,9 @@ export default function Home() {
     })
       .then(res => res.json())
       .then(data => {
-        setsubData(data)
+        setSubThumbnailNews(data.thumbnailNewsList);
+        // setPageSource(data.pageSource);
+        // setResult(data.result);
       });
 
     //최신뉴스 api호출
@@ -38,7 +40,9 @@ export default function Home() {
     })
       .then(res => res.json())
       .then(data => {
-        setliveData(data)
+        setLiveThumbnailNews(data.thumbnailNewsList);
+        // setPageSource(data.pageSource);
+        // setResult(data.result);
       });
   }, [])
 
@@ -74,15 +78,15 @@ export default function Home() {
               </tr>
 
               {
-                subnews.map((news) => {
+                subThumbnailNewsList.map((news) => {
                   return (
                     <div>
                       <tr>
                         <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
                         <td className="tl">
                           {/* localStorage에 저장,, */}
-                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{pathname:JSON.stringify(news.url)}}
-                          {news.title}</Link></td>
+                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }}
+                            {news.title}</Link></td>
                         <td>{news.media}</td>
                       </tr>
                     </div>
@@ -115,14 +119,16 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-
               {
-                livenews.map((news) => {
+                liveThumbnailNewsList.map((news) => {
                   return (
                     <div>
                       <tr>
                         <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
-                        <td className="tl"><a href={news.url}>{news.title}</a></td>
+                        <td className="tl">
+                          {/* localStorage에 저장,, */}
+                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }}
+                            {news.title}</Link></td>
                         <td>{news.media}</td>
                       </tr>
                     </div>

@@ -4,16 +4,14 @@ import { useEffect, useState } from "react";
 
 export default async function RootLayout({ children }) {
 
-  let [submedia, setmediaData] = useState([])
-  let [subcategory, setcategoryData] = useState([])
-  let [subkeyword, setkeywordData] = useState([])
+  let [subMedia, setmediaData] = useState([])
   useEffect(() => {
     //로컬스토리지에 저장되어 있는 토큰 받아오기
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem('token');
     }
     //구독언론사 api호출
-    fetch('/api/media/{id}', {
+    fetch('/api/member/subscribe', {
       method: 'GET',
       headers: {
         'X-AUTH-TOKEN': token
@@ -23,29 +21,6 @@ export default async function RootLayout({ children }) {
       .then(data => {
         setmediaData(data)
       });
-
-    //구독카테고리 api호출
-    fetch('/api/category/{id}', {
-      method: 'GET',
-      headers: {
-        'X-AUTH-TOKEN': token
-      }
-    })
-    .then(res => res.json())
-    .then(data => {
-      setcategoryData(data)
-    });
-    //구독주제 api호출
-    fetch('/api/category/{id}', {
-      method: 'GET',
-      headers: {
-        Authorization: token
-      }
-    })
-    .then(res => res.json())
-    .then(data => {
-      setkeywordData(data)
-    });
   }, [])
 
   return (
@@ -85,12 +60,12 @@ export default async function RootLayout({ children }) {
               <td>중앙일보</td>
               <td> <button type="button" className="btnRed">삭제</button></td>
             </tr>
-            {submedia.map((news) => {
+            {subMedia.map((news) => {
               return (
                 <div>
                   <tr>
                     <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
-                    <td>{news.subscribe_list}</td>
+                    <td>{news.medialist}</td>
                     <td> <input type='checkbox'></input></td>
                   </tr>
                 </div>
@@ -129,11 +104,11 @@ export default async function RootLayout({ children }) {
               <td>정치</td>
               <td> <input type='checkbox'></input></td>
             </tr>
-            {subcategory.map((category) => {
+            {subMedia.map((category) => {
               return (
                 <div>
                   <tr>
-                    <td>{category.subscribe_list}</td>
+                    <td>{category.categoryList}</td>
                     <td> <input type='checkbox'></input></td>
                   </tr>
                 </div>
@@ -171,11 +146,11 @@ export default async function RootLayout({ children }) {
               <td>날씨</td>
               <td> <input type='checkbox'></input></td>
             </tr>
-            {subkeyword.map((keyword) => {
+            {subMedia.map((keyword) => {
               return (
                 <div>
                   <tr>
-                    <td>{keyword.subscribe_list}</td>
+                    <td>{keyword.keywordList}</td>
                     <td> <input type='checkbox'></input></td>
                   </tr>
                 </div>
