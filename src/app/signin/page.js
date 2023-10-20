@@ -9,7 +9,7 @@ export default function RootLayout({ children }) {
             e.preventDefault();
             //폼 name값 변수저장
             const name = e.target.name.value;
-            const loginID = e.target.loginID.value;
+            const loginId = e.target.loginId.value;
             const email = e.target.email.value;
             const password = e.target.password.value;
             const passwordcheck = e.target.passwordcheck.value;
@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
                     'Content-Type': 'application/json'
                 },
                 //전송할 데이터 json으로 변환해서 body에 넣어줌
-                body: JSON.stringify({ name, loginID, email, password })
+                body: JSON.stringify({ name, loginId, email, password })
             }
             fetch('api/member/new', options) //경로 및 옵션들
 			.then(res => res.json())
