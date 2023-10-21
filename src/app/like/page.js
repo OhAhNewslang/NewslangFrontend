@@ -11,7 +11,12 @@ export default async function RootLayout({ children }) {
             <Link href="/resign"><button type="button" className="btnLight mr5">내프로필</button></Link>
             <Link href="/myinfo"><button type="button" className="btnLight mr5">구독관리</button></Link>
             <Link href="/like"><button type="button" className="btnLight mr5">찜한기사</button></Link>
+			<Link href="/comment"><button type="button" className="btnLight mr5">댓글관리</button></Link>
           </div>
+        </div>
+
+		<div className="contentTitleBox">
+            <h4>찜한기사</h4>
         </div>
 
 		<div className="tableWrap4">
@@ -62,7 +67,7 @@ export default async function RootLayout({ children }) {
 				</tbody>
 			</table>
 
-			<div className="floatBox mt10 center">				
+			<div className="floatBox mt20 center">				
 					<button type="button" className="btnBlue wid90">수정</button>
 			</div>
 		</div>

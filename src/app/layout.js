@@ -28,9 +28,14 @@ export default function RootLayout({ children }) {
             <a href=""><img src="images/logo.jpg" alt="logo"/></a>
             <div className="floatBox mb15">
             <div className="fr">
+              {/* 로그인시 */}
               <Link href="/"><button type="button" className="btnBlue mr5">Home</button></Link>
               <Link href="/myinfo"><button type="button" className="btnBlue mr5">My Page</button></Link>
               <Link href="/login"><button type="button" className="btnGray">Logout</button></Link>
+
+              {/* 로그인X */}
+              {/* <Link href="/"><button type="button" className="btnBlue mr5">Home</button></Link>
+              <Link href="/login"><button type="button" className="btnGray">Login</button></Link> */}
             </div>
           </div>
           </div>
