@@ -34,7 +34,8 @@ export default function Home() {
     //최신뉴스 api호출
   const page = 1;
   const limit = 10;
-    fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {method: 'GET'})
+  // fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {method: 'GET'})
+  fetch('/api/news/live', {method: 'GET'})
       .then(res => res.json())
       .then(data => {
         setLiveThumbnailNews(data.thumbnailNewsList);
