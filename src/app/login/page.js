@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
 				//ssr 옵션 추가
 				cache: 'no-store'
 			}
-			fetch('api/member/in', options) //경로 및 옵션들 보냄
+			fetch('api/members/in', options) //경로 및 옵션들 보냄
 				.then(res => res.json())
 				.then(data => {
 					const code = data.result.resultCode;

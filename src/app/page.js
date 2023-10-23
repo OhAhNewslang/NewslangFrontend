@@ -1,6 +1,7 @@
 'use client'
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { headers } from "../../next.config";
 import { useEffect, useState } from "react";
 
 
@@ -13,31 +14,27 @@ export default function Home() {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem('token');
     }
-    //구독뉴스 api호출
-    fetch('/api/news/subscribe', {
-      method: 'GET',
-      headers: {
-        'X-AUTH-TOKEN': token,
-        'page': 1,
-        'limit': 10
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        setSubThumbnailNews(data.thumbnailNewsList);
-        // setPageSource(data.pageSource);
-        // setResult(data.result);
-      });
+
+    // //구독뉴스 api호출
+    // fetch('/api/news/subscribe', {
+    //   method: 'GET',
+    //   headers: {
+    //     'X-AUTH-TOKEN': token,
+    //     'page': 1,
+    //     'limit': 10
+    //   }
+    // })
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     setSubThumbnailNews(data.thumbnailNewsList);
+    //     // setPageSource(data.pageSource);
+    //     // setResult(data.result);
+    //   });
 
     //최신뉴스 api호출
-    fetch('/api/news/live?page=~', {
-      method: 'GET',
-      headers: {
-        'X-AUTH-TOKEN': token,
-        'page': 1,
-        'limit': 10
-      }
-    })
+  const page = 1;
+  const limit = 10;
+    fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {method: 'GET'})
       .then(res => res.json())
       .then(data => {
         setLiveThumbnailNews(data.thumbnailNewsList);
@@ -120,19 +117,14 @@ export default function Home() {
             </thead>
             <tbody>
               {
-                liveThumbnailNewsList.map((news) => {
+                liveThumbnailNewsList.map((news, index) => {
                   return (
-                    <div>
                       <tr>
                         <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
-                        <td className="tl">
-                          {/* localStorage에 저장,, */}
-                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }}
-                            {news.title}</Link></td>
+                        <td className="tl">{news.title}</td>
                         <td>{news.media}</td>
                       </tr>
-                    </div>
-                  )
+                  );
                 })
               }
 
