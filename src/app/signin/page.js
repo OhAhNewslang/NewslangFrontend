@@ -1,9 +1,27 @@
 'use client'
 import React from 'react';
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function RootLayout({ children }) {
     const router = useRouter();
+
+    //비밀번호 일치 
+    let [pwdcheckmsg, setpwdmsgData] = useState([])
+    const [buttonshow, setShow] = useState(false);
+    function pwdcheck() {
+        const pwd = document.getElementById("password").value
+        const pwdcheck = document.getElementById("passwordcheck").value
+
+        if (pwd == pwdcheck) {
+            setpwdmsgData("* 비밀번호가 일치합니다.");
+            setShow(true);
+        } else {
+            setpwdmsgData("! 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+            setShow(false);
+        }
+    }
+
     return (
         <form onSubmit={(e) => {
             e.preventDefault();
@@ -12,9 +30,7 @@ export default function RootLayout({ children }) {
             const loginId = e.target.loginId.value;
             const email = e.target.email.value;
             const password = e.target.password.value;
-            const passwordcheck = e.target.passwordcheck.value;
 
-            console.log(name);
             //fetch로 보낼 옵션들
             const options = {
                 method: 'POST',
@@ -26,12 +42,21 @@ export default function RootLayout({ children }) {
                 body: JSON.stringify({ name, loginId, email, password })
             }
             fetch('api/member/new', options) //경로 및 옵션들
-			.then(res => res.json())
-            .then(data => {
-                //회원가입 실패 수정 예정
-                alert("회원가입 성공!");
-				router.push("/login");
-            });
+                .then(res => res.json())
+                .then(data => {
+                    const code = data.result.resultCode;
+                    const loginmsg = data.result.resultMessage;
+                    switch (code) {
+                        case '201'://회원가입 성공
+                            router.push("/login");
+                            //결과메시지 모달창 수정예정
+                            break;
+                        case '202'://중복가입
+                            router.refresh();
+                            break;
+                    }
+                });
+
         }}>
 
             <div className="wrap wid560">
@@ -55,7 +80,7 @@ export default function RootLayout({ children }) {
                         <tr>
                             <th>아이디</th>
                             <td colSpan="3">
-                                <input type="text" className="wid200" id="loginId" name="loginID" />
+                                <input type="text" className="wid200" id="loginId" name="loginId" />
                                 <p className="mt3">* 5자리 이상의 영문 및 숫자, 영문숫자 혼용만 가능합니다.</p>
                             </td>
                         </tr>
@@ -72,9 +97,12 @@ export default function RootLayout({ children }) {
                         <tr>
                             <th>비밀번호 확인</th>
                             <td colSpan="3">
-                                <input type="password" className="wid200" id="passwordcheck" name="passwordcheck" />
+                                <input type="password" className="wid200" id="passwordcheck" name="passwordcheck" onChange={pwdcheck} />
                                 <p>
                                     * 확인을 위해 위에 입력하신 비밀번호를 한번 더 입력해 주세요.
+                                </p>
+                                <p>
+                                    {pwdcheckmsg}
                                 </p>
                             </td>
                         </tr>
@@ -91,7 +119,7 @@ export default function RootLayout({ children }) {
                     </tbody>
                 </table>
                 <div className="centerBox mt20">
-                    <button type="submit" className="btnBlue wid90">확인</button>
+                    { buttonshow &&<button type="submit" className="btnBlue wid90">회원가입</button>}
                 </div>
             </div>
         </form>
