@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from "next/navigation";
 import { headers } from "../../../next.config";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 
 export default function RootLayout({ children }) {
@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
 				.then(res => res.json())
 				.then(data => {
 					const code = data.result.resultCode;
-					var loginmsg = data.result.resultMessage;
+					const loginmsg = data.result.resultMessage;
 					switch (code) {
 						case '200'://로그인성공
 							//토큰 localStorage에 저장

@@ -1,4 +1,6 @@
+'use client'
 import Link from 'next/link';
+import { useEffect, useState } from "react";
 
 export default async function RootLayout({ children }) {
 
@@ -8,7 +10,7 @@ export default async function RootLayout({ children }) {
 		if (typeof window !== "undefined") {
 			var token = window.localStorage.getItem('token');
 		}
-		//구독언론사 api호출
+		//찜한기사 api호출
 		fetch('/api/news/scrap', {
 			method: 'GET',
 			headers: {
@@ -29,6 +31,7 @@ export default async function RootLayout({ children }) {
 					<Link href="/resign"><button type="button" className="btnLight mr5">내프로필</button></Link>
 					<Link href="/myinfo"><button type="button" className="btnLight mr5">구독관리</button></Link>
 					<Link href="/like"><button type="button" className="btnLight mr5">찜한기사</button></Link>
+					<Link href="/comment"><button type="button" className="btnLight mr5">댓글관리</button></Link>
 				</div>
 			</div>
 
@@ -61,21 +64,20 @@ export default async function RootLayout({ children }) {
 							<td>2023-10-15</td>
 							<td><input type='checkbox'></input></td>
 						</tr>
-						{likemedia.map((news,index) => {
+						{likemedia.map((news, index) => {
 							return (
 								<tr>
 									<td>{index}+1</td>
-									<td className="tl"><a href={likemedia.newsUrl}>{likemedia.title}</a></td>
-									<td>{likemedia.mediaName}</td>
-									<td>조지영 기자</td>
-									<td>{likemedia.postDateTime}</td>
+									<td className="tl"><a href={news.newsUrl}>{news.title}</a></td>
+									<td>{news.mediaName}</td>
+									<td>{news.reporter}</td>
+									<td>{news.postDateTime}</td>
 									<td><input type='checkbox'></input></td>
 								</tr>
 							)
 						})}
 					</tbody>
 				</table>
-
 				<div className="floatBox mt10 center">
 					<button type="button" className="btnBlue wid90">수정</button>
 				</div>
