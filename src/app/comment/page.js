@@ -1,11 +1,60 @@
+'use client'
 import Link from 'next/link';
+import { useEffect, useState } from "react";
 
-export default async function RootLayout({ children }) {
+export default function RootLayout({ children }) {
+
+    //최신순 공감순 거르기
+    let [Opinion, setOpinionData] = useState([])
+    let [fetchurl, seturl] = useState(["recent"])
+
+    function onClickLike() {
+        seturl("like");
+    }
+    function onClickLive() {
+        seturl("recent");
+    }
+    
+    getData(1,10);
+    //댓글가져오기
+    async function getData(page,limit) {
+        
+        if (typeof window !== "undefined") {
+            var token = window.localStorage.getItem('token');
+        }
+        fetch(`/api/opinions/news/${fetchurl}/pageNumber=${page}&pageSize=${limit}`, {
+            method: "GET",
+            headers: {
+                'X-AUTH-TOKEN': token
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setOpinionData(data.content);
+            });
+    }
+    // useEffect(() => {
+    //     //로컬스토리지에 저장되어 있는 토큰 받아오기
+    //     if (typeof window !== "undefined") {
+    //         var token = window.localStorage.getItem('token');
+    //     }
+    //     //댓글 좋아요 순 조회 api호출
+    //     fetch(`/api/opinions/news/like${fetchurl}`, {
+    //         method: 'GET',
+    //         headers: {
+    //             'X-AUTH-TOKEN': token
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             setOpinionData(data.content);
+    //         });
+    // }, [])
+
 
     return (
 
         <div className="wrap">
-
             <div className="floatBox mb50">
                 <div className="fr">
                     <Link href="/resign"><button type="button" className="btnLight mr5">내프로필</button></Link>
@@ -22,8 +71,8 @@ export default async function RootLayout({ children }) {
             <div className="tableWrap4">
                 <div className="floatBox mt10 mb10">
                     <div className="left">
-                        <button type="button" className="btnLight mr5">공감순</button>
-                        <button type="button" className="btnLight">최신순</button>
+                        <button type="button" className="btnLight mr5" onClick={onClickLike}>공감순</button>
+                        <button type="button" className="btnLight" onClick={onClickLive}>최신순</button>
                     </div>
                 </div>
 
@@ -56,6 +105,19 @@ export default async function RootLayout({ children }) {
                             <td>2023-10-15</td>
                             <td><input type='checkbox'></input></td>
                         </tr>
+                        {
+                            Opinion.map((opinion, index) => {
+                                return (
+                                    <tr>
+                                        <td>{index + 1}</td>
+                                        <td className="tl">{opinion.opinionContent}</td>
+                                        <td>{opinion.likeCount}</td>
+                                        <td>{opinion.opinionCreateDate}</td>
+                                        <td><input type='checkbox'></input></td>
+                                    </tr>
+                                )
+                            })
+                        }
                     </tbody>
                 </table>
 

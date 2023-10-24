@@ -12,12 +12,22 @@ export default function Login() {
             var token = window.localStorage.getItem('token');
             var newsUrl = JSON.parse(window.localStorage.getItem('newUrl'));
         }
-        //api호출
-        fetch('/api/news/detail?url', {
+        // 뉴스 상세 api호출
+        fetch(`/api/news/detail${newsUrl}`, {
+            method: "GET",
+            headers: {
+                'X-AUTH-TOKEN': token,
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setNewsData(data)
+            });
+        // 댓글 api호출
+        fetch(`/api/news/detail${newsUrl}`, {
             method: 'GET',
             headers: {
                 'X-AUTH-TOKEN': token,
-                'newsUrl': newsUrl
             }
         })
             .then(res => res.json())
