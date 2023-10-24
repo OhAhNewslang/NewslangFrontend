@@ -14,8 +14,8 @@ export default function Home() {
       var token = window.localStorage.getItem('token');
     }
     //구독뉴스 api호출
-    fetch('/api/news/subscribe', {
-      method: 'GET',
+    fetch("/api/news/subscribe", {
+      method: "GET",
       headers: {
         'X-AUTH-TOKEN': token,
         'page': 1,
@@ -30,12 +30,12 @@ export default function Home() {
       });
 
     //최신뉴스 api호출
-    fetch('/api/news/live?page=~', {
-      method: 'GET',
+    fetch('/api/news/live?page=10&limit=10', {
+      method: "GET",
       headers: {
         'X-AUTH-TOKEN': token,
-        'page': 1,
-        'limit': 10
+        // 'page': 1,
+        // 'limit': 10
       }
     })
       .then(res => res.json())

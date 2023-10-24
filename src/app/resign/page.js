@@ -4,6 +4,7 @@ import React from 'react';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Modal from "./Modal";
+import { CLIENT_STATIC_FILES_RUNTIME_POLYFILLS_SYMBOL } from 'next/dist/shared/lib/constants';
 
 export default function RootLayout({ children }) {
 
@@ -14,14 +15,15 @@ export default function RootLayout({ children }) {
         if (typeof window !== "undefined") {
             var token = window.localStorage.getItem('token');
         }
-        fetch('/api/member', {
-            method: 'PATCH',
+        fetch("/api/members", {
+            method: "GET",
             headers: {
                 'X-AUTH-TOKEN': token,
             }
         })
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 setMemberData(data)
             });
     }, [])
@@ -30,8 +32,8 @@ export default function RootLayout({ children }) {
     let [pwdcheckmsg, setpwdmsgData] = useState([])
     const [buttonshow, setShow] = useState(false);
     function pwdcheck() {
-        const pwd = document.getElementById("password").value
-        const pwdcheck = document.getElementById("passwordcheck").value
+        const pwd = document.getElementById("pwd").value
+        const pwdcheck = document.getElementById("pwdcheck").value
 
         if (pwd == pwdcheck) {
             setpwdmsgData("* 비밀번호가 일치합니다.");
@@ -53,29 +55,43 @@ export default function RootLayout({ children }) {
         }
     }, [isShowing]);
     //회원탈퇴 api호출
-    function deletemember() {
-        const password = document.getElementById("password").value
-        fetch('/api/member?{password}', {
-            method: 'DELETE',
-            headers: {
-                'X-AUTH-TOKEN': token,
-            }
-        })
-            .then(res => res.json())
+    // function deletemember(password) {
+    //     if (typeof window !== "undefined") {
+    //         var token = window.localStorage.getItem('token');
+    //     }
+    //     fetch('/api/members/${password}', {
+    //         method: "DELETE",
+    //         headers: {
+    //             'X-AUTH-TOKEN': token,
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             if(data.resultcode='200'){
+    //                 setIsShowing(true);
+    //                 { isShowing && <Modal message={data.reslutMessage} /> }
+    //                 router.push("/");
+    //                 localStorage.setItem('token', '');
+    //             }else{
+    //                 { isShowing && <Modal message={data.reslutMessage} /> }
+    //             }
+    //             }
+    //         );
+    // }
+    const deletemember= async (password)=> {
+        const response = await fetch(`/api/members/${password}`,{
+            method:"DELETE",
+            headers:{
+                'X-AUTH-TOKEN':token,
+            }}).then(res => res.json())
             .then(data => {
-                if (data.resultCode = '200') {
-                    setIsShowing(true);
-                    { isShowing && <Modal message={data.reslutMessage} /> }
-                    router.push("/");
-                    localStorage.setItem('token', '');
-                }
+                alert(data.resultCode);
             });
-    }
+        }
+    
 
     return (
-
         <div className="wrap wid560">
-
             <div className="floatBox mt10">
                 <div className="fr">
                     <Link href="/resign"><button type="button" className="btnLight mr5">내프로필</button></Link>
@@ -89,6 +105,7 @@ export default function RootLayout({ children }) {
                 <h4>내프로필</h4>
             </div>
 
+            <form>
             <table className="tableTypeSort">
                 <colgroup>
                     <col style={{ width: '20%' }} />
@@ -99,20 +116,20 @@ export default function RootLayout({ children }) {
                 <tbody>
                     <tr>
                         <th>이름</th>
-                        <td colspan="3">
-                            <input type="text" className="wid200" id="name" value={memberinfo.name} />
+                        <td colSpan="3">
+                            <input type="text" className="wid200" id="name" defaultValue={memberinfo.name}/>
                         </td>
                     </tr>
                     <tr>
                         <th>아이디</th>
-                        <td colspan="3">
-                            {memberinfo.email}
+                        <td colSpan="3">
+                            {memberinfo.loginId}
                         </td>
                     </tr>
                     <tr>
                         <th>비밀번호</th>
-                        <td colspan="3">
-                            <input type="password" className="wid200" id="password" name="password" />
+                        <td colSpan="3">
+                            <input type="password" className="wid200" id="pwd" name="pwd" />
                             <p className="mt3">
                                 * 비밀번호는 암호화되어 빈 란으로 보입니다.
                             </p>
@@ -121,8 +138,8 @@ export default function RootLayout({ children }) {
                     </tr>
                     <tr>
                         <th>비밀번호 확인</th>
-                        <td colspan="3">
-                            <input type="password" className="wid200" id="passwordcheck" name="passwordcheck" onChange={pwdcheck} />
+                        <td colSpan="3">
+                            <input type="password" className="wid200" id="pwdcheck" name="pwdcheck" onChange={pwdcheck} />
                             <p>
                                 * 확인을 위해 위에 입력하신 비밀번호를 한번 더 입력해 주세요.
                             </p>
@@ -133,8 +150,8 @@ export default function RootLayout({ children }) {
                     </tr>
                     <tr>
                         <th>이메일</th>
-                        <td colspan="3">
-                            <input type="text" className="wid200" id="email" name="" />
+                        <td colSpan="3">
+                            <input type="text" className="wid200" id="email" name="email" defaultValue={memberinfo.email} />
                             <p>
                                 * 아이디/비밀번호 찾기 시 사용될 정보입니다. 정확하게 입력해 주세요.
                             </p>
@@ -143,13 +160,12 @@ export default function RootLayout({ children }) {
 
                 </tbody>
             </table>
-            <div className="tr mt15"><Link href="/" onClick={deletemember}>회원탈퇴</Link></div>
+            <div className="tr mt15"><button type="submit" onClick={()=>deletemember(memberinfo.pwd)}>회원탈퇴</button></div>
             <div className="centerBox mt20">
                 {buttonshow && <Link href="/"><button type="button" className="btnBlue wid90">수정</button></Link>}
             </div>
-
-
+            </form>
         </div>
-
+        
     )
 }
