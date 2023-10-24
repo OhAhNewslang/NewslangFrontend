@@ -6,12 +6,14 @@ export default function RootLayout({ children }) {
 
 	let [likemedia, setlikeData] = useState([])
 
+	//의견 목록가져오기
 	getData(1,10);
 	async function getData(page,limit) {
+		
 		if (typeof window !== "undefined") {
 			var token = window.localStorage.getItem('token');
 		}
-		fetch(`/api/scrap/news/${page}&${limit}`,{
+		fetch(`/api/scrap/news/${page}/${limit}`,{
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
@@ -22,9 +24,10 @@ export default function RootLayout({ children }) {
 		.then(data => {
 			setlikeData(data);
 			}
-		)
+		);
 	}
 	
+	//댓글 삭제
 	function deleteHandler(newsUrl) {
 		useEffect(() => {
 			//로컬스토리지에 저장되어 있는 토큰 받아오기
@@ -32,15 +35,16 @@ export default function RootLayout({ children }) {
 				var token = window.localStorage.getItem('token');
 			}
 			//찜한기사 api호출
-			fetch('/api/scrap/news', {
-				method: 'DELETE',
+			fetch(`/api/scrap/news/${newsUrl}`, {
+				method: "DELETE",
 				headers: {
 					'X-AUTH-TOKEN': token,
 				}
 			})
 				.then(res => res.json())
 				.then(data => {
-					//삭제완료 모달창
+					//삭제완료 모달창 수정예정
+					alert(data);
 				});
 		}, [])
 	}

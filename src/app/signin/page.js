@@ -44,8 +44,8 @@ export default function RootLayout({ children }) {
             fetch('api/members/new', options) //경로 및 옵션들
                 .then(res => res.json())
                 .then(data => {
-                    const code = data.result.resultCode;
-                    const loginmsg = data.result.resultMessage;
+                    const code = data.resultCode;
+                    const loginmsg = data.resultMessage;
                     switch (code) {
                         case '201'://회원가입 성공
                             router.push("/login");

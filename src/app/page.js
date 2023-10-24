@@ -8,43 +8,43 @@ export default function Home() {
   let [subThumbnailNewsList, setSubThumbnailNews] = useState([])
   let [liveThumbnailNewsList, setLiveThumbnailNews] = useState([])
 
-  useEffect(() => {
-    //로컬스토리지에 저장되어 있는 토큰 받아오기
+  // //구독뉴스가져오기
+  // getliveData(1, 10);
+  // async function getliveData(page, limit) {
+  //   if (typeof window !== "undefined") {
+  //     var token = window.localStorage.getItem('token');
+  //   }
+  //   fetch(`/api/news/subscribe/live/${page}/${limit}`, {
+  //     method: "GET",
+  //     headers: {
+  //       'X-AUTH-TOKEN': token
+  //     }
+  //   })
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       setSubThumbnailNews(data.thumbnailNewsList);
+  //     });
+  // }
+
+
+  //최신뉴스가져오기
+  getliveData(1, 10);
+  async function getliveData(page, limit) {
+
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem('token');
     }
-    //구독뉴스 api호출
-    fetch("/api/news/subscribe", {
+    fetch(`/api/news/guest/live/${page}/${limit}`, {
       method: "GET",
       headers: {
-        'X-AUTH-TOKEN': token,
-        'page': 1,
-        'limit': 10
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        setSubThumbnailNews(data.thumbnailNewsList);
-        // setPageSource(data.pageSource);
-        // setResult(data.result);
-      });
-
-    //최신뉴스 api호출
-    fetch('/api/news/live?page=10&limit=10', {
-      method: "GET",
-      headers: {
-        'X-AUTH-TOKEN': token,
-        // 'page': 1,
-        // 'limit': 10
+        'X-AUTH-TOKEN': token
       }
     })
       .then(res => res.json())
       .then(data => {
         setLiveThumbnailNews(data.thumbnailNewsList);
-        // setPageSource(data.pageSource);
-        // setResult(data.result);
       });
-  }, [])
+  }
 
 
   return (
@@ -80,16 +80,16 @@ export default function Home() {
               {
                 subThumbnailNewsList.map((news) => {
                   return (
-                    <div>
                       <tr>
                         <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
                         <td className="tl">
+                          <button href={"/view"} onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}>{news.title}</button>
+                          {/* <a href={`/view?newUrl=${news.url}`}>{news.title}</a> */}
                           {/* localStorage에 저장,, */}
-                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }}
-                            {news.title}</Link></td>
+                          {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
+                        </td>
                         <td>{news.media}</td>
                       </tr>
-                    </div>
                   )
                 })
               }
@@ -122,16 +122,15 @@ export default function Home() {
               {
                 liveThumbnailNewsList.map((news) => {
                   return (
-                    <div>
-                      <tr>
-                        <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
-                        <td className="tl">
-                          {/* localStorage에 저장,, */}
-                          <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }}
-                            {news.title}</Link></td>
-                        <td>{news.media}</td>
-                      </tr>
-                    </div>
+                    <tr>
+                      <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
+                      <td className="tl">
+                        <a href={`/view?newsUrl=${news.url}`}>{news.title}</a>
+                        {/* localStorage에 저장,, */}
+                        {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
+                      </td>
+                      <td>{news.media}</td>
+                    </tr>
                   )
                 })
               }
