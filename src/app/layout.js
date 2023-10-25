@@ -6,8 +6,8 @@ import './globals.css'
 
 export default function RootLayout({ children }) {
   const router = useRouter();
-  let [loginbtnText, setLoginBtnText] = useState(["LogIn"])
-  let [MyPageText, setMyPageBtnText] = useState(["SignIn"])
+  let [loginbtnText, setLoginBtnText] = useState(["Login"])
+  let [MyPageText, setMyPageBtnText] = useState(["Signin"])
 
   //로그인 유무 확인을 위한 토큰 가져오기
   if (typeof window !== "undefined") {
@@ -17,12 +17,12 @@ export default function RootLayout({ children }) {
   //로그인되어있으면 버튼Logout으로 변경
   useEffect(() => {
     if (token) {
-      setLoginBtnText("LogOut");
+      setLoginBtnText("Logout");
       setMyPageBtnText("MyPage");
 
     }else{
-      setLoginBtnText("LogIn");
-      setMyPageBtnText("SignIn");
+      setLoginBtnText("Login");
+      setMyPageBtnText("Signin");
     }
   });
 
@@ -44,7 +44,7 @@ export default function RootLayout({ children }) {
   function MypagehandleClick() {
     if (!token) { //로그인이 안되어있으면
       //로그인 페이지로 라우팅
-      alert("로그인해주세요.");
+      router.push("/signin")
     } else { //로그인이 안되어 있으면
       router.push("/myinfo");
     }
