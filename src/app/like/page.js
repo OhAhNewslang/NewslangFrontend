@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
 		if (typeof window !== "undefined") {
 			var token = window.localStorage.getItem('token');
 		}
-		fetch(`/api/scrap/news/${page}/${limit}`,{
+		fetch(`/api/scrap/news?page=${page}&limit=${limit}`,{
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
@@ -29,7 +29,6 @@ export default function RootLayout({ children }) {
 	
 	//댓글 삭제
 	function deleteHandler(newsUrl) {
-		useEffect(() => {
 			//로컬스토리지에 저장되어 있는 토큰 받아오기
 			if (typeof window !== "undefined") {
 				var token = window.localStorage.getItem('token');
@@ -46,7 +45,6 @@ export default function RootLayout({ children }) {
 					//삭제완료 모달창 수정예정
 					alert(data);
 				});
-		}, [])
 	}
 
 	return (
@@ -91,6 +89,7 @@ export default function RootLayout({ children }) {
 						</tr> */}
 						{likemedia.map((news, index) => {
 							return (
+								<div key={news.url}>
 								<tr>
 									<td>{index}+1</td>
 									<td className="tl"><a href={news.newsUrl}>{news.title}</a></td>
@@ -99,6 +98,7 @@ export default function RootLayout({ children }) {
 									<td>{news.postDateTime}</td>
 									<td><button type="button" onClick={deleteHandler(news.newsUrl)}>삭제</button></td>
 								</tr>
+								</div>
 							)
 						})}
 					</tbody>

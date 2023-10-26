@@ -27,24 +27,46 @@ export default function Home() {
   // }
 
 
-  //최신뉴스가져오기
-  getliveData(1, 10);
-  async function getliveData(page, limit) {
+  //   //최신뉴스가져오기
+  //   useEffect(() => {
+  //   getliveData(1,10);
+  // }, [])
+  //   async function getliveData(page, limit) {
+  //     if (typeof window !== "undefined") {
+  //       var token = window.localStorage.getItem('token');
+  //     }
+  //     fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {
+  //       method: "GET",
+  //       headers: {
+  //         'X-AUTH-TOKEN': token,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     })
+  //       .then(res => res.json())
+  //       .then(data => {
+  //         setLiveThumbnailNews(data.thumbnailNewsList);
+  //       });
+  //   }
 
+  const page = 1;
+  const limit = 10;
+  useEffect(() => {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem('token');
     }
     fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {
       method: "GET",
       headers: {
-        'X-AUTH-TOKEN': token
+        'X-AUTH-TOKEN': token,
+        'Content-Type': 'application/json'
       }
     })
       .then(res => res.json())
       .then(data => {
         setLiveThumbnailNews(data.thumbnailNewsList);
       });
-  }
+  }, [])
+
 
 
   return (
@@ -80,16 +102,18 @@ export default function Home() {
               {
                 subThumbnailNewsList.map((news) => {
                   return (
-                      <tr>
-                        <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
-                        <td className="tl">
-                          <button href={"/view"} onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}>{news.title}</button>
-                          {/* <a href={`/view?newUrl=${news.url}`}>{news.title}</a> */}
-                          {/* localStorage에 저장,, */}
-                          {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
-                        </td>
-                        <td>{news.media}</td>
-                      </tr>
+                    // <div key={news.title}>
+                    <tr>
+                      <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
+                      <td className="tl">
+                        <button href={"/view"} onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}>{news.title}</button>
+                        {/* <a href={`/view?newUrl=${news.url}`}>{news.title}</a> */}
+                        {/* localStorage에 저장,, */}
+                        {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
+                      </td>
+                      <td>{news.media}</td>
+                    </tr>
+                    // </div>
                   )
                 })
               }
@@ -123,7 +147,7 @@ export default function Home() {
                 liveThumbnailNewsList.map((news) => {
                   return (
                     <tr>
-                      <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
+                      <td><img src={news.imagePath} /></td>
                       <td className="tl">
                         <a href={`/view?newsUrl=${news.url}`}>{news.title}</a>
                         {/* localStorage에 저장,, */}

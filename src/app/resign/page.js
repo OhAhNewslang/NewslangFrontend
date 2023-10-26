@@ -24,11 +24,13 @@ export default function RootLayout({ children }) {
         })
             .then(res => res.json())
             .then(data => {
-                setMemberData(data)
+                setMemberData(data);
+                setEmail(data.email);
+                setName(data.name);
             });
     }, [])
 
-    //비밀번호 일치 
+    //비밀번호 일치하면 수정가능
     let [pwdcheckmsg, setpwdmsgData] = useState([])
     const [buttonshow, setShow] = useState(false);
     function pwdcheck() {
@@ -44,13 +46,42 @@ export default function RootLayout({ children }) {
         }
     }
 
-    //탈퇴
+    //값 수정
     const [fetchpwd, setPwd] = useState("");
-    const onChange = (e) => {
+    const [fetchName, setName] = useState("");
+    const [fetchEmail, setEmail] = useState("");
+    const onPwdChange = (e) => {
         setPwd(e.target.value);
     };
+    const onNameChange = (e) => {
+        setName(e.target.value);
+    };
+    const onEmailChange = (e) => {
+        setEmail(e.target.value);
+    };
+
     const router = useRouter();
-    function handleClick(password) {
+    //수정api
+    function handleUpdateClick(name, email) {
+        if (typeof window !== "undefined") {
+            var token = window.localStorage.getItem('token');
+        }
+        fetch(`/api/members`, {
+            method: "PUT",
+            headers: {
+                'X-AUTH-TOKEN': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email }),
+        }).then(res => res.json())
+            .then(data => {
+                const code = data.resultCode;
+                const resultmsg = data.resultMessage;
+                setMemberData(data);
+            });
+    }
+    //탈퇴api
+    function handleDeleteClick(password) {
         if (typeof window !== "undefined") {
             var token = window.localStorage.getItem('token');
         }
@@ -107,7 +138,7 @@ export default function RootLayout({ children }) {
                         <tr>
                             <th>이름</th>
                             <td colSpan="3">
-                                <input type="text" className="wid200" id="name" defaultValue={memberinfo.name} />
+                                <input type="text" className="wid200" id="name" defaultValue={memberinfo.name} value={fetchName} onChange={onNameChange} />
                             </td>
                         </tr>
                         <tr>
@@ -119,7 +150,7 @@ export default function RootLayout({ children }) {
                         <tr>
                             <th>비밀번호</th>
                             <td colSpan="3">
-                                <input type="password" className="wid200" name="pwd" value={fetchpwd} onChange={onChange} />
+                                <input type="password" className="wid200" id="pwd" name="pwd" value={fetchpwd} onChange={onPwdChange} />
                                 <p className="mt3">
                                     * 비밀번호는 암호화되어 빈 란으로 보입니다.
                                 </p>
@@ -141,7 +172,7 @@ export default function RootLayout({ children }) {
                         <tr>
                             <th>이메일</th>
                             <td colSpan="3">
-                                <input type="text" className="wid200" id="email" name="email" defaultValue={memberinfo.email} />
+                                <input type="text" className="wid200" name="email" defaultValue={memberinfo.email} value={fetchEmail} onChange={onEmailChange} />
                                 <p>
                                     * 아이디/비밀번호 찾기 시 사용될 정보입니다. 정확하게 입력해 주세요.
                                 </p>
@@ -151,12 +182,11 @@ export default function RootLayout({ children }) {
                     </tbody>
                 </table>
                 <div className="tr mt15">
-                    <button type="button" className="btnRed mr5" onClick={() => handleClick(fetchpwd)}>회원탈퇴</button></div>
+                    <button type="button" className="btnRed mr5" onClick={() => handleDeleteClick(fetchpwd)}>회원탈퇴</button></div>
                 <div className="centerBox mt20">
-                    {buttonshow && <Link href="/"><button type="button" className="btnBlue wid90">수정</button></Link>}
+                    {buttonshow && <button type="button" className="btnBlue wid90" onClick={() => handleUpdateClick(fetchName,fetchEmail)}>수정</button>}
                 </div>
             </form>
         </div>
-
     )
 }
