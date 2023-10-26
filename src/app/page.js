@@ -34,7 +34,7 @@ export default function Home() {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem('token');
     }
-    fetch(`/api/news/guest/live/${page}/${limit}`, {
+    fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {
       method: "GET",
       headers: {
         'X-AUTH-TOKEN': token

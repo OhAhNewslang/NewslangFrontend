@@ -19,7 +19,6 @@ export default function RootLayout({ children }) {
     if (token) {
       setLoginBtnText("Logout");
       setMyPageBtnText("MyPage");
-
     }else{
       setLoginBtnText("Login");
       setMyPageBtnText("Signin");
