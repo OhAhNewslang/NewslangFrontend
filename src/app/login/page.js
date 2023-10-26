@@ -32,13 +32,11 @@ export default function RootLayout({ children }) {
 					const code = data.result.resultCode;
 					const loginmsg = data.result.resultMessage;
 					switch (code) {
-						case '200'://로그인성공
-							//토큰 localStorage에 저장
+						case '200':
 							localStorage.setItem('token', data.token);
 							router.push("/");
 							//화면 새로고침
 							router.refresh();
-							break;
 						case '202'://비밀번호틀림
 							setLoginmsgData(loginmsg);
 							router.refresh();
@@ -50,26 +48,26 @@ export default function RootLayout({ children }) {
 					}
 				});
 		}}>
-			<div className="wrap">
-				<div className="login1">
-					<h1>
-						<img src="images/logo.jpg" alt="milan information system" />
-					</h1>
-					<div className="loginBox">
-						<input name="loginId" placeholder="아이디" />
-						<input type="password" name="password" placeholder="비밀번호" />
-						<div>
-							<input type="checkbox" className="save" name="key" />
-							<label>아이디 저장</label>
-							<input type="checkbox" className="save" name="pass" />
-							<label>비밀번호 저장</label>
-						</div>
-						<a href="/signin">회원가입</a>
-						<p class = "loginresult">{loginmsg}</p>
-						<button type="submit" className="btnLogin">버튼</button>
-					</div>
+	<div className="wrap">
+		<div className="login1">
+			<h1>
+				<img src="images/logo.jpg" alt="milan information system" />
+			</h1>
+			<div className="loginBox">
+				<input name="loginId" placeholder="아이디" />
+				<input type="password" name="password" placeholder="비밀번호" />
+				<div>
+					<input type="checkbox" className="save" name="key" />
+					<label>아이디 저장</label>
+					<input type="checkbox" className="save" name="pass" />
+					<label>비밀번호 저장</label>
 				</div>
+				<a href="/signin">회원가입</a>
+				<p class="loginresult">{loginmsg}</p>
+				<button type="submit" className="btnLogin">버튼</button>
 			</div>
-		</form>
+		</div>
+	</div>
+		</form >
 	)
 }

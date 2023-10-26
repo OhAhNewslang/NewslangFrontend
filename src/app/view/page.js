@@ -1,30 +1,85 @@
 'use client'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 
-export default function Login() {
+export default function Login(request) {
 
+
+
+    // let [newscontents, setNewsData] = useState([])
+    // useEffect(() => {
+    //     //로컬스토리지에 저장되어 있는 토큰 및 Url 받아오기
+    //     if (typeof window !== "undefined") {
+    //         var token = window.localStorage.getItem('token');
+    //         var newsUrl = JSON.parse(window.localStorage.getItem('newUrl'));
+    //     }
+    //     // 뉴스 상세 api호출
+    //     fetch(`/api/news/detail${newsUrl}`, {
+    //         method: "GET",
+    //         headers: {
+    //             'X-AUTH-TOKEN': token,
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             setNewsData(data)
+    //         });
+    //     // 댓글 api호출
+    //     fetch(`/api/news/detail${newsUrl}`, {
+    //         method: 'GET',
+    //         headers: {
+    //             'X-AUTH-TOKEN': token,
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             setNewsData(data)
+    //         });
+    // }, [])
+
+
+    // const searchParams = useSearchParams();
+    // const newsUrl = searchParams.get('newsUrl')
     let [newscontents, setNewsData] = useState([])
-    useEffect(() => {
-        //로컬스토리지에 저장되어 있는 토큰 및 Url 받아오기
+    //뉴스상세가져오기
+    getViewData();
+    async function getViewData() {
         if (typeof window !== "undefined") {
             var token = window.localStorage.getItem('token');
-            var newsUrl = JSON.parse(window.localStorage.getItem('newUrl'));
+            var newsUrl = JSON.parse(window.localStorage.getItem('newsUrl'));
         }
-        //api호출
-        fetch('/api/news/detail?url', {
-            method: 'GET',
+        fetch(`/api/news/detail/${newsUrl}`, {
+            method: "GET",
             headers: {
-                'X-AUTH-TOKEN': token,
-                'newsUrl': newsUrl
+                'X-AUTH-TOKEN': token
             }
         })
             .then(res => res.json())
             .then(data => {
-                setNewsData(data)
+                setNewsData(data);
             });
-    }, [])
+    }
+
+    
+    // let [commentscontents, setCommentsData] = useState([])
+    // //댓글가져오기
+    // getViewData(newsUrl);
+    // async function getViewData() {
+    //     if (typeof window !== "undefined") {
+    //         var token = window.localStorage.getItem('token');
+    //     }
+    //     fetch(`/api/opinions/news/like`, {
+    //         method: "GET",
+    //         headers: {
+    //             'X-AUTH-TOKEN': token
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             setCommentsData(data);
+    //         });
+    // }
 
 
 

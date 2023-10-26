@@ -41,18 +41,20 @@ export default function RootLayout({ children }) {
                 //전송할 데이터 json으로 변환해서 body에 넣어줌
                 body: JSON.stringify({ name, loginId, email, password })
             }
-            fetch('api/member/new', options) //경로 및 옵션들
+            fetch('api/members/new', options) //경로 및 옵션들
                 .then(res => res.json())
                 .then(data => {
-                    const code = data.result.resultCode;
-                    const loginmsg = data.result.resultMessage;
+                    const code = data.resultCode;
+                    const loginmsg = data.resultMessage;
                     switch (code) {
                         case '201'://회원가입 성공
                             router.push("/login");
                             //결과메시지 모달창 수정예정
+                            alert(loginmsg);
                             break;
                         case '202'://중복가입
                             router.refresh();
+                            alert(loginmsg);
                             break;
                     }
                 });

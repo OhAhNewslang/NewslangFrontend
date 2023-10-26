@@ -2,30 +2,55 @@
 import Link from 'next/link';
 import { useEffect, useState } from "react";
 
-export default async function RootLayout({ children }) {
+export default function RootLayout({ children }) {
 
 	let [likemedia, setlikeData] = useState([])
-	useEffect(() => {
-		//로컬스토리지에 저장되어 있는 토큰 받아오기
+
+	//의견 목록가져오기
+	getData(1,10);
+	async function getData(page,limit) {
+		
 		if (typeof window !== "undefined") {
 			var token = window.localStorage.getItem('token');
 		}
-		//찜한기사 api호출
-		fetch('/api/news/scrap', {
-			method: 'GET',
+		fetch(`/api/scrap/news/${page}/${limit}`,{
+			method: "GET",
 			headers: {
-				'X-AUTH-TOKEN': token
+				"Content-Type": "application/json",
+				"token": token,
 			}
 		})
-			.then(res => res.json())
-			.then(data => {
-				setlikeData(data)
-			});
-	}, [])
+		.then(res => res.json())
+		.then(data => {
+			setlikeData(data);
+			}
+		);
+	}
+	
+	//댓글 삭제
+	function deleteHandler(newsUrl) {
+		useEffect(() => {
+			//로컬스토리지에 저장되어 있는 토큰 받아오기
+			if (typeof window !== "undefined") {
+				var token = window.localStorage.getItem('token');
+			}
+			//찜한기사 api호출
+			fetch(`/api/scrap/news/${newsUrl}`, {
+				method: "DELETE",
+				headers: {
+					'X-AUTH-TOKEN': token,
+				}
+			})
+				.then(res => res.json())
+				.then(data => {
+					//삭제완료 모달창 수정예정
+					alert(data);
+				});
+		}, [])
+	}
+
 	return (
-
 		<div className="wrap">
-
 			<div className="floatBox mb50">
 				<div className="fr">
 					<Link href="/resign"><button type="button" className="btnLight mr5">내프로필</button></Link>
@@ -56,14 +81,14 @@ export default async function RootLayout({ children }) {
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
+						{/* <tr>
 							<td>1</td>
 							<td className="tl"><a href="">[SC현장] "강동원이라는 피사체"…'천박사' 강동원표 판타지, 장르가 되다(종합)</a></td>
 							<td>한국일보</td>
 							<td>조지영 기자</td>
 							<td>2023-10-15</td>
-							<td><input type='checkbox'></input></td>
-						</tr>
+							<td><button type="button">삭제</button></td>
+						</tr> */}
 						{likemedia.map((news, index) => {
 							return (
 								<tr>
@@ -72,7 +97,7 @@ export default async function RootLayout({ children }) {
 									<td>{news.mediaName}</td>
 									<td>{news.reporter}</td>
 									<td>{news.postDateTime}</td>
-									<td><input type='checkbox'></input></td>
+									<td><button type="button" onClick={deleteHandler(news.newsUrl)}>삭제</button></td>
 								</tr>
 							)
 						})}
