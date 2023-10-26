@@ -1,6 +1,7 @@
 'use client'
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { headers } from "../../next.config";
 import { useEffect, useState } from "react";
 
 
@@ -26,31 +27,11 @@ export default function Home() {
   //     });
   // }
 
-
-  //   //최신뉴스가져오기
-  //   useEffect(() => {
-  //   getliveData(1,10);
-  // }, [])
-  //   async function getliveData(page, limit) {
-  //     if (typeof window !== "undefined") {
-  //       var token = window.localStorage.getItem('token');
-  //     }
-  //     fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {
-  //       method: "GET",
-  //       headers: {
-  //         'X-AUTH-TOKEN': token,
-  //         'Content-Type': 'application/json'
-  //       }
-  //     })
-  //       .then(res => res.json())
-  //       .then(data => {
-  //         setLiveThumbnailNews(data.thumbnailNewsList);
-  //       });
-  //   }
-
-  const page = 1;
-  const limit = 10;
   useEffect(() => {
+    getLiveData(1, 10);
+  }, []);
+
+  const getLiveData = async (page, limit) => {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem('token');
     }
@@ -65,8 +46,7 @@ export default function Home() {
       .then(data => {
         setLiveThumbnailNews(data.thumbnailNewsList);
       });
-  }, [])
-
+  };
 
 
   return (
@@ -102,18 +82,16 @@ export default function Home() {
               {
                 subThumbnailNewsList.map((news) => {
                   return (
-                    // <div key={news.title}>
-                    <tr>
-                      <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
-                      <td className="tl">
-                        <button href={"/view"} onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}>{news.title}</button>
-                        {/* <a href={`/view?newUrl=${news.url}`}>{news.title}</a> */}
-                        {/* localStorage에 저장,, */}
-                        {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
-                      </td>
-                      <td>{news.media}</td>
-                    </tr>
-                    // </div>
+                      <tr>
+                        <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
+                        <td className="tl">
+                          <button href={"/view"} onClick={() => {localStorage.setItem("newsUrl", JSON.stringify(news.url))}}>{news.title}</button>
+                          {/* <a href={`/view?newUrl=${news.url}`}>{news.title}</a> */}
+                          {/* localStorage에 저장,, */}
+                          {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
+                        </td>
+                        <td>{news.media}</td>
+                      </tr>
                   )
                 })
               }
@@ -144,11 +122,17 @@ export default function Home() {
             </thead>
             <tbody>
               {
-                liveThumbnailNewsList.map((news) => {
+                liveThumbnailNewsList.map((news, index) => {
                   return (
-                    <tr>
-                      <td><img src={news.imagePath} /></td>
+                    <tr key={index}>
+                      <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
                       <td className="tl">
+                      {/* <Link href={`/view?newsUrl=${news.url}`}>
+                        <a onClick={() => { localStorage.setItem("newsUrl", JSON.stringify(news.url)) }}>
+                          {news.title}
+                        </a>
+                      </Link> */}
+
                         <a href={`/view?newsUrl=${news.url}`}>{news.title}</a>
                         {/* localStorage에 저장,, */}
                         {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
