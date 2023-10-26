@@ -27,11 +27,11 @@ export default function Home() {
   //     });
   // }
 
+  useEffect(() => {
+    getLiveData(1, 10);
+  }, []);
 
-  //최신뉴스가져오기
-  getliveData(1, 10);
-  async function getliveData(page, limit) {
-
+  const getLiveData = async (page, limit) => {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem('token');
     }
@@ -45,7 +45,7 @@ export default function Home() {
       .then(data => {
         setLiveThumbnailNews(data.thumbnailNewsList);
       });
-  }
+  };
 
 
   return (
@@ -84,7 +84,7 @@ export default function Home() {
                       <tr>
                         <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
                         <td className="tl">
-                          <button href={"/view"} onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}>{news.title}</button>
+                          <button href={"/view"} onClick={() => {localStorage.setItem("newsUrl", JSON.stringify(news.url))}}>{news.title}</button>
                           {/* <a href={`/view?newUrl=${news.url}`}>{news.title}</a> */}
                           {/* localStorage에 저장,, */}
                           {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
@@ -123,9 +123,15 @@ export default function Home() {
               {
                 liveThumbnailNewsList.map((news, index) => {
                   return (
-                    <tr>
+                    <tr key={index}>
                       <td><img src={news.imagePath} alt="사용자 기본 이미지" /></td>
                       <td className="tl">
+                      {/* <Link href={`/view?newsUrl=${news.url}`}>
+                        <a onClick={() => { localStorage.setItem("newsUrl", JSON.stringify(news.url)) }}>
+                          {news.title}
+                        </a>
+                      </Link> */}
+
                         <a href={`/view?newsUrl=${news.url}`}>{news.title}</a>
                         {/* localStorage에 저장,, */}
                         {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}

@@ -43,13 +43,16 @@ export default function Login(request) {
     // const newsUrl = searchParams.get('newsUrl')
     let [newscontents, setNewsData] = useState([])
     //뉴스상세가져오기
-    getViewData();
-    async function getViewData() {
+    useEffect(() => {
+        getViewData();
+      }, []);
+      
+    const getViewData = async () => {
         if (typeof window !== "undefined") {
             var token = window.localStorage.getItem('token');
-            var newsUrl = JSON.parse(window.localStorage.getItem('newsUrl'));
+            var newsUrl = window.localStorage.getItem('newsUrl');
         }
-        fetch(`/api/news/detail/${newsUrl}`, {
+        fetch(`/api/news/detail?newsUrl=${newsUrl}`, {
             method: "GET",
             headers: {
                 'X-AUTH-TOKEN': token
@@ -59,7 +62,7 @@ export default function Login(request) {
             .then(data => {
                 setNewsData(data);
             });
-    }
+    };
 
     
     // let [commentscontents, setCommentsData] = useState([])
@@ -116,7 +119,7 @@ export default function Login(request) {
                             <td><button type="button" className="btnRed">추천</button></td>
                         </tr>
                         <tr>
-                            <td colspan="6" class="viewBox">
+                            <td colSpan="6" class="viewBox">
                                 {newscontents.contents}
                                 {/* <img src="images/view.jpg" alt="기본 이미지" /><br /><br />
 
@@ -183,7 +186,7 @@ export default function Login(request) {
                     <button type="button" className="btnBlue wid90 mr10">추천</button>
                     <button type="button" className="btnRed wid90">반대</button>
                     <div className="fr">
-                        <Link href="/"><button type="button" className="btnLight wid90" onclick="back()">목록</button></Link>
+                        <Link href="/"><button type="button" className="btnLight wid90" >목록</button></Link>
                     </div>
                 </div>
             </div>

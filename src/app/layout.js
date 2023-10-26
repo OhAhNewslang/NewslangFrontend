@@ -64,8 +64,8 @@ export default function RootLayout({ children }) {
             <div className="floatBox mb15">
               <div className="fr">
                 <Link href="/"><button type="button" className="btnBlue mr5">Home</button></Link>
-                <button type="button" className="btnBlue mr5" onClick={MypagehandleClick}>{MyPageText}</button>
-                <button type="button" className="btnGray" onClick={LoginhandleClick}>{loginbtnText}</button>
+                <button type="button" className="btnBlue mr5" onClick={() => MypagehandleClick()}>{MyPageText}</button>
+                <button type="button" className="btnGray" onClick={() => LoginhandleClick()}>{loginbtnText}</button>
 
               </div>
             </div>
