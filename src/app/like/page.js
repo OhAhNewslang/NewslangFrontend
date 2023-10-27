@@ -4,47 +4,49 @@ import { useEffect, useState } from "react";
 
 export default function RootLayout({ children }) {
 
-	let [likemedia, setlikeData] = useState([])
+	let [Scrapmedia, setScrapData] = useState([])
 
-	//의견 목록가져오기
-	getData(1,10);
-	async function getData(page,limit) {
-		
+	//스크랩 목록가져오기
+	const page = 1,limit = 10;
+	useEffect(() => {
+		getScrapData(page, limit);
+	}, []);
+	function getScrapData(page, limit) {
 		if (typeof window !== "undefined") {
-			var token = window.localStorage.getItem('token');
-		}
-		fetch(`/api/scrap/news?page=${page}&limit=${limit}`,{
+            var token = window.localStorage.getItem('token');
+        }
+		fetch(`/api/scrap/news?page=${page}&limit=${limit}`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
-				"token": token,
+				'X-AUTH-TOKEN': token,
 			}
 		})
-		.then(res => res.json())
-		.then(data => {
-			setlikeData(data);
+			.then(res => res.json())
+			.then(data => {
+				console.log(data.scrapNewsList);
+				setScrapData(data.scrapNewsList);
 			}
-		);
+			);
 	}
-	
+
 	//댓글 삭제
 	function deleteHandler(newsUrl) {
-			//로컬스토리지에 저장되어 있는 토큰 받아오기
-			if (typeof window !== "undefined") {
-				var token = window.localStorage.getItem('token');
+		//로컬스토리지에 저장되어 있는 토큰 받아오기
+		if (typeof window !== "undefined") {
+			var token = window.localStorage.getItem('token');
+		}
+		fetch(`/api/scrap/news/${newsUrl}`, {
+			method: "DELETE",
+			headers: {
+				'X-AUTH-TOKEN': token,
 			}
-			//찜한기사 api호출
-			fetch(`/api/scrap/news/${newsUrl}`, {
-				method: "DELETE",
-				headers: {
-					'X-AUTH-TOKEN': token,
-				}
-			})
-				.then(res => res.json())
-				.then(data => {
-					//삭제완료 모달창 수정예정
-					alert(data);
-				});
+		})
+			.then(res => res.json())
+			.then(data => {
+				//삭제완료 모달창 수정예정
+				alert(data);
+			});
 	}
 
 	return (
@@ -79,25 +81,17 @@ export default function RootLayout({ children }) {
 						</tr>
 					</thead>
 					<tbody>
-						{/* <tr>
-							<td>1</td>
-							<td className="tl"><a href="">[SC현장] "강동원이라는 피사체"…'천박사' 강동원표 판타지, 장르가 되다(종합)</a></td>
-							<td>한국일보</td>
-							<td>조지영 기자</td>
-							<td>2023-10-15</td>
-							<td><button type="button">삭제</button></td>
-						</tr> */}
-						{likemedia.map((news, index) => {
+						{Scrapmedia.map((news,index) => {
 							return (
 								<div key={news.url}>
-								<tr>
-									<td>{index}+1</td>
-									<td className="tl"><a href={news.newsUrl}>{news.title}</a></td>
-									<td>{news.mediaName}</td>
-									<td>{news.reporter}</td>
-									<td>{news.postDateTime}</td>
-									<td><button type="button" onClick={deleteHandler(news.newsUrl)}>삭제</button></td>
-								</tr>
+									<tr>
+										<td>{index}+1</td>
+										<td className="tl"><a href={news.newsUrl}>{news.title}</a></td>
+										<td>{news.mediaName}</td>
+										<td>{news.reporter}</td>
+										<td>{news.postDateTime}</td>
+										<td><button type="button" onClick={deleteHandler(news.newsUrl)}>삭제</button></td>
+									</tr>
 								</div>
 							)
 						})}

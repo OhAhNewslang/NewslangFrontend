@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function RootLayout({ children }) {
 
     //최신순 공감순 거르기
-    let [Opinion, setOpinionData] = useState([])
+    let [Comments, setCommentsData] = useState([])
     let [fetchurl, seturl] = useState(["recent"])
 
     function onClickLike() {
@@ -15,14 +15,17 @@ export default function RootLayout({ children }) {
         seturl("recent");
     }
     
-    getData(1,10);
     //댓글가져오기
-    async function getData(page,limit) {
-        
+	const page = 1,limit = 10;
+	useEffect(() => {
+		getCommentsData(page, limit);
+	}, []);
+    
+    async function getCommentsData(page,limit) {
         if (typeof window !== "undefined") {
             var token = window.localStorage.getItem('token');
         }
-        fetch(`/api/opinions/news/${fetchurl}/pageNumber=${page}&pageSize=${limit}`, {
+        fetch(`/api/opinions/news/${fetchurl}/page=${page}&limit=${limit}`, {
             method: "GET",
             headers: {
                 'X-AUTH-TOKEN': token
@@ -30,7 +33,7 @@ export default function RootLayout({ children }) {
         })
             .then(res => res.json())
             .then(data => {
-                setOpinionData(data.content);
+                setCommentsData(data.content);
             });
     }
     // useEffect(() => {
@@ -106,13 +109,13 @@ export default function RootLayout({ children }) {
                             <td><input type='checkbox'></input></td>
                         </tr>
                         {
-                            Opinion.map((opinion, index) => {
+                            Comments.map((comments, index) => {
                                 return (
                                     <tr>
                                         <td>{index + 1}</td>
-                                        <td className="tl">{opinion.opinionContent}</td>
-                                        <td>{opinion.likeCount}</td>
-                                        <td>{opinion.opinionCreateDate}</td>
+                                        <td className="tl">{comments.opinionContent}</td>
+                                        <td>{comments.likeCount}</td>
+                                        <td>{comments.opinionCreateDate}</td>
                                         <td><input type='checkbox'></input></td>
                                     </tr>
                                 )

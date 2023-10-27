@@ -11,7 +11,6 @@ import { CLIENT_STATIC_FILES_RUNTIME_POLYFILLS_SYMBOL } from 'next/dist/shared/l
 export default function RootLayout({ children }) {
 
     //회원정보 확인 api호출
-    let [memberinfo, setMemberData] = useState([])
     useEffect(() => {
         if (typeof window !== "undefined") {
             var token = window.localStorage.getItem('token');
@@ -24,7 +23,7 @@ export default function RootLayout({ children }) {
         })
             .then(res => res.json())
             .then(data => {
-                setMemberData(data);
+                setId(data.loginId);
                 setEmail(data.email);
                 setName(data.name);
             });
@@ -50,6 +49,7 @@ export default function RootLayout({ children }) {
     const [fetchpwd, setPwd] = useState("");
     const [fetchName, setName] = useState("");
     const [fetchEmail, setEmail] = useState("");
+    const [fetchId, setId] = useState("");
     const onPwdChange = (e) => {
         setPwd(e.target.value);
     };
@@ -59,6 +59,10 @@ export default function RootLayout({ children }) {
     const onEmailChange = (e) => {
         setEmail(e.target.value);
     };
+    const onIdChange = (e) => {
+        setId(e.target.value);
+    };
+
 
     const router = useRouter();
     //수정api
@@ -77,7 +81,10 @@ export default function RootLayout({ children }) {
             .then(data => {
                 const code = data.resultCode;
                 const resultmsg = data.resultMessage;
-                setMemberData(data);
+                setId(data.loginId);
+                setEmail(data.email);
+                setName(data.name);
+
             });
     }
     //탈퇴api
@@ -138,13 +145,13 @@ export default function RootLayout({ children }) {
                         <tr>
                             <th>이름</th>
                             <td colSpan="3">
-                                <input type="text" className="wid200" id="name" defaultValue={memberinfo.name} value={fetchName} onChange={onNameChange} />
+                                <input type="text" className="wid200" id="name" value={fetchName} onChange={onNameChange} />
                             </td>
                         </tr>
                         <tr>
                             <th>아이디</th>
                             <td colSpan="3">
-                                {memberinfo.loginId}
+                            <input type="text" className="wid200" id="id" value={fetchId} onChange={onIdChange} />
                             </td>
                         </tr>
                         <tr>
@@ -172,7 +179,7 @@ export default function RootLayout({ children }) {
                         <tr>
                             <th>이메일</th>
                             <td colSpan="3">
-                                <input type="text" className="wid200" name="email" defaultValue={memberinfo.email} value={fetchEmail} onChange={onEmailChange} />
+                                <input type="text" className="wid200" name="email" value={fetchEmail} onChange={onEmailChange} />
                                 <p>
                                     * 아이디/비밀번호 찾기 시 사용될 정보입니다. 정확하게 입력해 주세요.
                                 </p>

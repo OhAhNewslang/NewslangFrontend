@@ -26,8 +26,9 @@ export default function Home() {
   //     });
   // }
 
+  const page=1,limit=10;
   useEffect(() => {
-    getLiveData(1, 10);
+    getLiveData(page,limit);
   }, []);
 
   const getLiveData = async (page, limit) => {
