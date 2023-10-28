@@ -2,6 +2,7 @@
 import React from 'react';
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import swal from 'sweetalert';
 
 export default function RootLayout({ children }) {
     const router = useRouter();
@@ -49,12 +50,21 @@ export default function RootLayout({ children }) {
                     switch (code) {
                         case '201'://회원가입 성공
                             router.push("/login");
-                            //결과메시지 모달창 수정예정
-                            alert(loginmsg);
+                            swal({
+                                title: loginmsg,
+                                text: "로그인해주세요",
+                                icon: "success",
+                                button: "확인",
+                              });
                             break;
                         case '202'://중복가입
                             router.refresh();
-                            alert(loginmsg);
+                            swal({
+                                title: loginmsg,
+                                text: "로그인해주세요",
+                                icon: "info",
+                                button: "확인",
+                              });
                             break;
                     }
                 });

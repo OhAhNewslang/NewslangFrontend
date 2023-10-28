@@ -38,16 +38,21 @@ export default function RootLayout({ children }) {
 						router.refresh();
 					case '404'://스크랩 뉴스없음
 						swal({
-							title: "",
 							text: msg,
 							icon: "info",
-							button: "확인",
+							timer:3000,
+							button:false,
 						  });
 						router.refresh();
 						break;
 					default://로그인정보없음
 						router.refresh();
-						router.refresh();
+						swal({
+							text: msg,
+							icon: "warning",
+							timer:3000,
+							button:false,
+						  });
 						break;
 				}
 			}

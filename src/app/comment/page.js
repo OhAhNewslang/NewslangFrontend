@@ -33,6 +33,7 @@ export default function RootLayout({ children }) {
         })
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 setCommentsData(data.opinions);
             });
     }
@@ -80,17 +81,6 @@ export default function RootLayout({ children }) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td className="tl">이날 시사회에는 귀신을 믿지 않는
-                                가짜 퇴마사 천박사 역의 강동원, 영력을 사냥하는 악귀 범천 역의 허준호,
-                                귀신을 보는 의뢰인 유경 역의 이솜, 천박사의 파트너로 퇴마 기술 파트를 담당한 인배 역의 이동휘,
-                                천박사와 오랜 인연을 가진 골동품점 CEO 황사장 역의 김종수, 유경의 단 하나뿐인 가족이자 동생 유민 역의 박소이,
-                                그리고 김성식 감독이 참석했다.</td>
-                            <td>10개</td>
-                            <td>2023-10-15</td>
-                            <td><input type='checkbox'></input></td>
-                        </tr>
                         {
                             Comments.map((comments, index) => {
                                 return (

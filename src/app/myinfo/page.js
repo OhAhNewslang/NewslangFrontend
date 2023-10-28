@@ -72,15 +72,15 @@ export default function RootLayout({ children }) {
                   <tr>
                     <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
                     <td>{news}</td>
-                    <td> <input type='checkbox'></input></td>
+                    <td><button type="button" className="btnRed">삭제</button></td>
                   </tr>
               )
             })}
           </tbody>
         </table>
-        <div className="centerBox mt20">
+        {/* <div className="centerBox mt20">
           <button type="button" className="btnGray">수정</button>
-        </div>
+        </div> */}
       </div>
 
 
@@ -101,29 +101,25 @@ export default function RootLayout({ children }) {
             </tr>
           </thead>
           <tbody>
-            {/* <tr>
-                    <td>정치</td>
-                    <td> <button type="button" className="btnRed">삭제</button></td>
-                </tr> */}
             <tr>
               <td>정치</td>
-              <td> <input type='checkbox'></input></td>
+              <td> <button type="button" className="btnRed">삭제</button></td>
             </tr>
             {subCategory.map((category) => {
               return (
                 <div>
                   <tr>
                     <td>{category}</td>
-                    <td> <input type='checkbox'></input></td>
+                    <td> <button type="button" className="btnRed">삭제</button></td>
                   </tr>
                 </div>
               )
             })}
           </tbody>
         </table>
-        <div className="centerBox mt20">
+        {/* <div className="centerBox mt20">
           <button type="button" className="btnGray">수정</button>
-        </div>
+        </div> */}
       </div>
 
       <div className="wrap3">
@@ -143,20 +139,16 @@ export default function RootLayout({ children }) {
             </tr>
           </thead>
           <tbody>
-            {/* <tr>
-                    <td>날씨</td>
-                    <td> <button type="button" className="btnRed">삭제</button></td>
-                </tr> */}
             <tr>
               <td>날씨</td>
-              <td> <input type='checkbox'></input></td>
+              <td><button type="button" className="btnRed">삭제</button></td>
             </tr>
             {subKeword.map((keyword) => {
               return (
                 <div>
                   <tr>
                     <td>{keyword}</td>
-                    <td> <input type='checkbox'></input></td>
+                    <td><button type="button" className="btnRed">삭제</button></td>
                   </tr>
                 </div>
               )
@@ -164,9 +156,9 @@ export default function RootLayout({ children }) {
           </tbody>
         </table>
 
-        <div className="centerBox mt20">
+        {/* <div className="centerBox mt20">
           <button type="button" className="btnGray">수정</button>
-        </div>
+        </div> */}
       </div>
 
 

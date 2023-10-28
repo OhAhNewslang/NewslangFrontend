@@ -10,7 +10,7 @@ import swal from 'sweetalert';
 export default function RootLayout({ children }) {
 
     const router = useRouter();
-    
+
     //회원정보 확인 api호출
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -48,6 +48,7 @@ export default function RootLayout({ children }) {
 
     //값 수정
     const [fetchpwd, setPwd] = useState("");
+    const [fetchpwdc, setPwdC] = useState("");
     const [fetchName, setName] = useState("");
     const [fetchEmail, setEmail] = useState("");
     const [fetchId, setId] = useState("");
@@ -63,6 +64,7 @@ export default function RootLayout({ children }) {
     const onIdChange = (e) => {
         setId(e.target.value);
     };
+    
 
     //수정api
     function handleUpdateClick(name, email) {
@@ -85,11 +87,14 @@ export default function RootLayout({ children }) {
                     text: resultmsg,
                     icon: "success",
                     button: "확인",
-                  });
+                    closeOnClickOutside : false
+                }).then(()=>{
+                    // 새로고침
+                    window.location.reload();
+                });
                 setId(data.loginId);
                 setEmail(data.email);
                 setName(data.name);
-
             });
     }
     //탈퇴api
@@ -110,23 +115,23 @@ export default function RootLayout({ children }) {
                 const resultmsg = data.resultMessage;
                 switch (code) {
                     case '200'://탈퇴성공
-                    swal({
-                        title: "탈퇴 성공",
-                        text: resultmsg,
-                        icon: "success",
-                        button: "확인",
-                      });
+                        swal({
+                            title: "탈퇴 성공",
+                            text: resultmsg,
+                            icon: "success",
+                            button: "확인",
+                        });
                         localStorage.setItem('token', '');
                         router.push("/");
                         router.refresh();
                         break;
                     case '202'://비밀번호불일치로 탈퇴실패
-                    swal({
-                        title: "탈퇴 실패",
-                        text: resultmsg,
-                        icon: "warning",
-                        button: "확인",
-                      });
+                        swal({
+                            title: "탈퇴 실패",
+                            text: resultmsg,
+                            icon: "warning",
+                            button: "확인",
+                        });
                         router.refresh();
                         break;
                 }
@@ -168,7 +173,7 @@ export default function RootLayout({ children }) {
                         <tr>
                             <th>아이디</th>
                             <td colSpan="3">
-                            <input type="text" className="wid200" id="id" value={fetchId} onChange={onIdChange} />
+                                <input type="text" className="wid200" id="id" value={fetchId} onChange={onIdChange} />
                             </td>
                         </tr>
                         <tr>
@@ -188,7 +193,7 @@ export default function RootLayout({ children }) {
                                 <p>
                                     * 확인을 위해 위에 입력하신 비밀번호를 한번 더 입력해 주세요.
                                 </p>
-                                <p>
+                                <p className='textBlue'>
                                     {pwdcheckmsg}
                                 </p>
                             </td>
@@ -203,12 +208,23 @@ export default function RootLayout({ children }) {
                             </td>
                         </tr>
 
+
+
+
                     </tbody>
                 </table>
+                <div>
+                    <br/>
+                    <p className='textBlue'>
+                    * 회원정보 수정 및 탈퇴를 원하시면 위의 정보들을 정확하게 입력해 주세요.
+                    </p>
+                </div>
+
                 <div className="tr mt15">
-                    <button type="button" className="btnRed mr5" onClick={() => handleDeleteClick(fetchpwd)}>회원탈퇴</button></div>
+                    {buttonshow && <button type="button" className="btnRed mr5" onClick={() => handleDeleteClick(fetchpwd)}>회원탈퇴</button>}
+                </div>
                 <div className="centerBox mt20">
-                    {buttonshow && <button type="button" className="btnBlue wid90" onClick={() => handleUpdateClick(fetchName,fetchEmail)}>수정</button>}
+                    {buttonshow && <button type="button" className="btnBlue wid90" onClick={() => handleUpdateClick(fetchName, fetchEmail)}>수정</button>}
                 </div>
             </form>
         </div>

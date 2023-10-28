@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function Login(request) {
   let [newscontents, setNewsData] = useState([]);
-  let [opinions, setOpinionData] = useState([]);
+  let [Opinions, setOpinionData] = useState([]);
 
   useEffect(() => {
     getViewData();
@@ -35,7 +35,9 @@ export default function Login(request) {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
     }
-    fetch(`/api/opinions/news/like?newsUrl=${newsUrl}&page=${1}&limit=${10}`, {
+    //더미데이터로 조회확인
+    fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=http://dummyUrl2:8080`, {
+    // fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=${newsUrl}`, {
       method: "GET",
       headers: {
         "X-AUTH-TOKEN": token,
@@ -168,7 +170,7 @@ export default function Login(request) {
             <col style={{ width: "7%" }} />
           </colgroup>
           <tbody>
-            {opinions.map((opinion, index) => {
+            {Opinions.map((opinion, index) => {
               return (
                 <tr key={index}>
                   <th>{opinion.memberName}</th>
