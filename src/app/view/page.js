@@ -121,7 +121,7 @@ export default function Login(request) {
               <th>관심</th>
               <td>
                 <button type="button" className="btnRed">
-                  추천
+                  찜하기
                 </button>
               </td>
             </tr>
@@ -162,42 +162,35 @@ export default function Login(request) {
             </button>
           </div>
         </div>
-        <table className="tableTypeBoard2">
+        <table className="tableTypeBoard">
           <colgroup>
-            <col style={{ width: "13%" }} />
-            <col style={{ width: "60%" }} />
-            <col style={{ width: "20%" }} />
             <col style={{ width: "7%" }} />
+            <col style={{ width: "10%" }} />
+            <col style={{ width: "50%" }} />
+            <col style={{ width: "20%" }} />
+            <col style={{ width: "15%" }} />
           </colgroup>
+          <thead>
+						<tr>
+							<th>No.</th>
+              <th>작성자</th>
+							<th>댓글</th>
+							<th>작성일</th>
+							<th>추천수</th>
+						</tr>
+					</thead>
           <tbody>
             {Opinions.map((opinion, index) => {
               return (
-                <tr key={index}>
-                  <th>{opinion.memberName}</th>
+                <tr key={opinion.opinionId}>
+                  <td>{index+1}</td>
+                  <td>{opinion.memberName}</td>
                   <td>{opinion.opinionContent}</td>
-                  <th>{opinion.opinionCreateDate}</th>
+                  <td>{opinion.opinionCreateDate}</td>
                   <td>{opinion.likeCount}</td>
                 </tr>
-              );
+              )
             })}
-            {/* <tr> */}
-            {/* <th>강명진</th> */}
-            {/* <td>
-                이날 시사회에는 귀신을 믿지 않는 가짜 퇴마사 천박사 역의 강동원,
-                영력을 사냥하는 악귀 범천 역의 허준호, 귀신을 보는 의뢰인 유경
-                역의 이솜, 천박사의 파트너로 퇴마 기술 파트를 담당한 인배 역의
-                이동휘, 천박사와 오랜 인연을 가진 골동품점 CEO 황사장 역의
-                김종수, 유경의 단 하나뿐인 가족이자 동생 유민 역의 박소이,
-                그리고 김성식 감독이 참석했다.
-              </td> */}
-            {/* <th>2023-10-21</th> */}
-            {/* <td> */}
-            {/* <button type="button" className="btnLight">
-                  추천 수{" "}
-                </button> */}
-            {/* </td> */}
-            {/* <td><button type="button" className="btnLight" onClick={handleLike}>{likes}</button> </td> */}
-            {/* </tr> */}
           </tbody>
         </table>
 
