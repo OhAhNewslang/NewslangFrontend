@@ -3,13 +3,14 @@ import Link from 'next/link';
 import React from 'react';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Modal from "./Modal";
-import { CLIENT_STATIC_FILES_RUNTIME_POLYFILLS_SYMBOL } from 'next/dist/shared/lib/constants';
+import swal from 'sweetalert';
 
 
 
 export default function RootLayout({ children }) {
 
+    const router = useRouter();
+    
     //회원정보 확인 api호출
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -63,8 +64,6 @@ export default function RootLayout({ children }) {
         setId(e.target.value);
     };
 
-
-    const router = useRouter();
     //수정api
     function handleUpdateClick(name, email) {
         if (typeof window !== "undefined") {
@@ -81,6 +80,12 @@ export default function RootLayout({ children }) {
             .then(data => {
                 const code = data.resultCode;
                 const resultmsg = data.resultMessage;
+                swal({
+                    title: "회원정보 수정 성공",
+                    text: resultmsg,
+                    icon: "success",
+                    button: "확인",
+                  });
                 setId(data.loginId);
                 setEmail(data.email);
                 setName(data.name);
@@ -105,11 +110,23 @@ export default function RootLayout({ children }) {
                 const resultmsg = data.resultMessage;
                 switch (code) {
                     case '200'://탈퇴성공
-                        alert(resultmsg);
+                    swal({
+                        title: "탈퇴 성공",
+                        text: resultmsg,
+                        icon: "success",
+                        button: "확인",
+                      });
                         localStorage.setItem('token', '');
                         router.push("/");
+                        router.refresh();
+                        break;
                     case '202'://비밀번호불일치로 탈퇴실패
-                        alert(resultmsg);
+                    swal({
+                        title: "탈퇴 실패",
+                        text: resultmsg,
+                        icon: "warning",
+                        button: "확인",
+                      });
                         router.refresh();
                         break;
                 }

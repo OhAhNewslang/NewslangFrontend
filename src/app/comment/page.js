@@ -18,14 +18,14 @@ export default function RootLayout({ children }) {
     //댓글가져오기
 	const page = 1,limit = 10;
 	useEffect(() => {
-		getCommentsData(page, limit);
+		getCommentsData(page,limit);
 	}, []);
     
     async function getCommentsData(page,limit) {
         if (typeof window !== "undefined") {
             var token = window.localStorage.getItem('token');
         }
-        fetch(`/api/opinions/news/${fetchurl}/page=${page}&limit=${limit}`, {
+        fetch(`/api/opinions/members/${fetchurl}?page=${page}&limit=${limit}`, {
             method: "GET",
             headers: {
                 'X-AUTH-TOKEN': token
@@ -33,30 +33,13 @@ export default function RootLayout({ children }) {
         })
             .then(res => res.json())
             .then(data => {
-                setCommentsData(data.content);
+                setCommentsData(data.opinions);
             });
     }
-    // useEffect(() => {
-    //     //로컬스토리지에 저장되어 있는 토큰 받아오기
-    //     if (typeof window !== "undefined") {
-    //         var token = window.localStorage.getItem('token');
-    //     }
-    //     //댓글 좋아요 순 조회 api호출
-    //     fetch(`/api/opinions/news/like${fetchurl}`, {
-    //         method: 'GET',
-    //         headers: {
-    //             'X-AUTH-TOKEN': token
-    //         }
-    //     })
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             setOpinionData(data.content);
-    //         });
-    // }, [])
+
 
 
     return (
-
         <div className="wrap">
             <div className="floatBox mb50">
                 <div className="fr">

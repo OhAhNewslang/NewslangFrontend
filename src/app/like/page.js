@@ -1,20 +1,24 @@
 'use client'
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import swal from 'sweetalert';
+
+
 
 export default function RootLayout({ children }) {
-
+	const router = useRouter();
 	let [Scrapmedia, setScrapData] = useState([])
 
 	//스크랩 목록가져오기
-	const page = 1,limit = 10;
+	const page = 1, limit = 10;
 	useEffect(() => {
 		getScrapData(page, limit);
 	}, []);
 	function getScrapData(page, limit) {
 		if (typeof window !== "undefined") {
-            var token = window.localStorage.getItem('token');
-        }
+			var token = window.localStorage.getItem('token');
+		}
 		fetch(`/api/scrap/news?page=${page}&limit=${limit}`, {
 			method: "GET",
 			headers: {
@@ -24,8 +28,28 @@ export default function RootLayout({ children }) {
 		})
 			.then(res => res.json())
 			.then(data => {
-				console.log(data.scrapNewsList);
-				setScrapData(data.scrapNewsList);
+				const code = data.result.resultCode;
+				const msg = data.result.resultMessage;
+				switch (code) {
+					case '200':
+						console.log(data.scrapNewsList);
+						setScrapData(data.scrapNewsList);
+						//화면 새로고침
+						router.refresh();
+					case '404'://스크랩 뉴스없음
+						swal({
+							title: "",
+							text: msg,
+							icon: "info",
+							button: "확인",
+						  });
+						router.refresh();
+						break;
+					default://로그인정보없음
+						router.refresh();
+						router.refresh();
+						break;
+				}
 			}
 			);
 	}
@@ -50,6 +74,7 @@ export default function RootLayout({ children }) {
 	}
 
 	return (
+
 		<div className="wrap">
 			<div className="floatBox mb50">
 				<div className="fr">
@@ -81,7 +106,7 @@ export default function RootLayout({ children }) {
 						</tr>
 					</thead>
 					<tbody>
-						{Scrapmedia.map((news,index) => {
+						{Scrapmedia.map((news, index) => {
 							return (
 								<div key={news.url}>
 									<tr>
@@ -103,6 +128,5 @@ export default function RootLayout({ children }) {
 			</div>
 
 		</div>
-
 	)
 }
