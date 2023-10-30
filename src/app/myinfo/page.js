@@ -8,12 +8,12 @@ export default function RootLayout({ children }) {
     var token = window.localStorage.getItem('token');
   }
 
-  let [Media, setMediaList] = useState([])
+  var [Media,setMediaList] = useState([])
   let [subMedia, setSubMediaList] = useState([])
   let [Category, setCategoryList] = useState([])
   let [subCategory, setSubCategoryList] = useState([])
   let [subKeword, setSubKeywordList] = useState([])
-  let [checked,setcheck] = useState() 
+  
   useEffect(() => {
     //로컬스토리지에 저장되어 있는 토큰 받아오기
     if (typeof window !== "undefined") {
@@ -31,6 +31,7 @@ export default function RootLayout({ children }) {
     })
       .then(res => res.json())
       .then(data => {
+        console.log(data);
         setMediaList(data.mediaList);
       });
     //전체 카테고리 출력
@@ -47,11 +48,13 @@ export default function RootLayout({ children }) {
     fetch("/api/subscribe/all", {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         'X-AUTH-TOKEN': token,
       }
     })
       .then(res => res.json())
       .then(data => {
+        console.log(data.mediaList);
         setSubMediaList(data.mediaList);
         setSubCategoryList(data.categoryList);
         setSubKeywordList(data.keywordList);
@@ -60,11 +63,13 @@ export default function RootLayout({ children }) {
 
   //언론사 및 카테고리 구독여부 체크
   function mediaSubCheck() {
-    for (i in subMedia)
-      if (Media.contains(i))
+    console.log(Media);
+    for (i in Media){
+       if (subMedia.contains(i))
         document.getElementById(i).checked = true;
       else
         document.getElementById(i).checked = false;
+    }
 
     for (i in subCategory)
       if (Media.contains(i))
@@ -75,39 +80,29 @@ export default function RootLayout({ children }) {
   
   //언론사 및 카테고리 구독하기
   function Subscribe(e) {
-    // console.log(e.checked);
-    var nameList = [];
-    subMedia.map((i)=>{nameList.push(i)});
-    // console.log(nameList);
-    if (e.checked) {
-      nameList.push(e.value);
-      // var jsnameList = JSON.stringify(nameList);
-      console.log(nameList);
-      fetch('/api/subscribe/media', {
-        method: "POST",
-        headers: {
-          'X-AUTH-TOKEN': token,
-          "Content-Type": "application/json"
-        },
-        body: {
-          'nameList': nameList
-        }
+    // const nameList = [];
+    if(e.checked==false){
+      subMedia.push(e.value); 
+    }
+    else{
+      subMedia.filter((value)=>{value!==e.value});
+    }
+    console.log(subMedia);
+    fetch('/api/subscribe/media',
+    {
+      method:"POST",
+      headers:{
+        'X-AUTH-TOKEN': token,
+        "Content-Type": "application/json",
+      },
+      body:JSON.stringify({
+        'nameList':subMedia
       })
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-      });
-    }
-  }
-  
-  function is_checked(){
-    const checkbox = document.getElementById('my_checkbox');
-	  // 2. checked 속성을 체크합니다.
-	  const is_checked = checkbox.checked;
-    if(is_checked){
-      nameList.push()
-    }
-
+    })
+    .then(res => res.json())
+		.then(data => {
+      console.log(data);
+    });
   }
 
 
@@ -148,7 +143,7 @@ export default function RootLayout({ children }) {
                   <tr key={media.mediaName}>
                     <td><img src={media.imagePath} /></td>
                     <td>{media.mediaName}</td>
-                    <td><input type="checkbox" value={media.mediaName} id={media.mediaName} checked={checked} onClick={(e)=>Subscribe(e.target)}></input></td>
+                    <td><input type="checkbox" value={media.mediaName} id={media.mediaName} onClick={(e)=>Subscribe(e.target)} ></input></td>
                   </tr>
                 )
               })}
