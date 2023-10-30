@@ -1,30 +1,39 @@
 'use client'
 import Link from 'next/link';
+// import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+// import { headers } from '../../../next.config';
+// import { data } from 'autoprefixer';
+import swal from 'sweetalert';
 
 export default function RootLayout({ children }) {
 
+    if (typeof window !== "undefined") {
+        var token = window.localStorage.getItem('token');
+    }
     //최신순 공감순 거르기
     let [Comments, setCommentsData] = useState([])
     let [fetchurl, seturl] = useState(["recent"])
-
+    
+    
     function onClickLike() {
         seturl("like");
+        const page = 1, limit = 10;
+        getCommentsData(page, limit);
     }
     function onClickLive() {
         seturl("recent");
+        const page = 1, limit = 10;
+        getCommentsData(page, limit);
     }
-    
+
     //댓글가져오기
-	const page = 1,limit = 10;
-	useEffect(() => {
-		getCommentsData(page,limit);
-	}, []);
-    
-    async function getCommentsData(page,limit) {
-        if (typeof window !== "undefined") {
-            var token = window.localStorage.getItem('token');
-        }
+    const page = 1, limit = 10;
+    useEffect(() => {
+        getCommentsData(page, limit);
+    }, []);
+
+    function getCommentsData(page, limit) {
         fetch(`/api/opinions/members/${fetchurl}?page=${page}&limit=${limit}`, {
             method: "GET",
             headers: {
@@ -36,6 +45,24 @@ export default function RootLayout({ children }) {
                 console.log(data);
                 setCommentsData(data.opinions);
             });
+    }
+
+    //의견삭제
+    function deleteOpinion(opinionId){
+        fetch('',{
+            method:'DELETE',
+            headers:{'X-AUTH-TOKEN': token},
+            body:{'opinionId':opinionId}}
+            .then(res=>res.json())
+            .then(data=>{
+                swal(
+                    {
+                        text:"",
+                        icon:"check",
+                        timer:3000
+                    }
+                )
+            }))
     }
 
 
@@ -84,7 +111,7 @@ export default function RootLayout({ children }) {
                         {
                             Comments.map((comments, index) => {
                                 return (
-                                    <tr>
+                                    <tr key={comments.opinionId}>
                                         <td>{index + 1}</td>
                                         <td className="tl">{comments.opinionContent}</td>
                                         <td>{comments.likeCount}</td>
