@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function Login(request) {
   let [newscontents, setNewsData] = useState([]);
-  let [Opinions, setOpinionData] = useState([]);
+  let [opinions, setOpinionData] = useState([]);
 
   useEffect(() => {
     getViewData();
@@ -36,13 +36,16 @@ export default function Login(request) {
       var newsUrl = window.localStorage.getItem("newsUrl");
     }
     //더미데이터로 조회확인
-    fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=http://dummyUrl2:8080`, {
-    // fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=${newsUrl}`, {
-      method: "GET",
-      headers: {
-        "X-AUTH-TOKEN": token,
-      },
-    })
+    fetch(
+      `/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=http://dummyUrl2:8080`,
+      {
+        // fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=${newsUrl}`, {
+        method: "GET",
+        headers: {
+          "X-AUTH-TOKEN": token,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -59,6 +62,7 @@ export default function Login(request) {
     console.log(ctrl);
     const opinionContent = document.getElementById("opinion_contents").value;
     console.log(opinionContent);
+
     fetch(`/api/opinions`, {
       method: "POST",
       headers: {
@@ -70,7 +74,9 @@ export default function Login(request) {
     })
       .then((res) => res.json())
       .then((data) => {
-        setOpinionData(data);
+        console.log(opinions);
+        setOpinionData(opinions.push(data.opinion));
+        console.log(opinions);
       });
   }
 
@@ -171,25 +177,26 @@ export default function Login(request) {
             <col style={{ width: "15%" }} />
           </colgroup>
           <thead>
-						<tr>
-							<th>No.</th>
+            <tr>
+              <th>No.</th>
               <th>작성자</th>
-							<th>댓글</th>
-							<th>작성일</th>
-							<th>추천수</th>
-						</tr>
-					</thead>
+              <th>댓글</th>
+              <th>작성일</th>
+              <th>추천수</th>
+            </tr>
+          </thead>
           <tbody>
-            {Opinions.map((opinion, index) => {
+            {opinions.map((opinion, index) => {
+              console.log(opinion);
               return (
                 <tr key={opinion.opinionId}>
-                  <td>{index+1}</td>
+                  <td>{index + 1}</td>
                   <td>{opinion.memberName}</td>
                   <td>{opinion.opinionContent}</td>
                   <td>{opinion.opinionCreateDate}</td>
                   <td>{opinion.likeCount}</td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>
