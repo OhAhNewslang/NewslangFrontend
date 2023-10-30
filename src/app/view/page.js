@@ -7,6 +7,7 @@ export default function RootLayout(request) {
   let [news, setDetailNews] = useState([]);
   let [opinions, setOpinionData] = useState([]);
   let [newComment, setNewComment] = useState('');
+  let [scrapStatus, setScrapStatus] = useState(Boolean);
 
   useEffect(() => {
     getDetailNews();
@@ -25,7 +26,8 @@ export default function RootLayout(request) {
       },
     }).then((res) => res.json())
       .then((data) => {
-        setDetailNews(data);
+        setDetailNews(data.detailNews);
+        setScrapStatus(data.detailNews.scrap);
       });
   };
 
@@ -77,6 +79,26 @@ export default function RootLayout(request) {
       });
     });
   };
+  
+  const scrapClick = (scrap) => {
+    if (typeof window !== "undefined") {
+        var token = window.localStorage.getItem("token");
+        var newsUrl = window.localStorage.getItem("newsUrl");
+    }
+
+    fetch('/api/scrap/news', {
+    method: scrap? "POST" : "DELETE",
+    headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+    },
+    //전송할 데이터 json으로 변환해서 body에 넣어줌
+    body: JSON.stringify({ newsUrl }),
+    }).then((res) => res.json())
+      .then((data) => {
+        setScrapStatus(scrap);
+    });
+  };
 
   const likeOpinionClick = (buttonIndex) => {
     // Define a function to handle button clicks
@@ -94,7 +116,7 @@ export default function RootLayout(request) {
   };
 
   const opinionButton = (opinion) => {
-    if (opinion.modifiable == true){
+    if (opinion.modifiable){
         // 로그인한 회원이 작성한 의견
         return ( 
             <table className="tableTypeBtn">
@@ -139,8 +161,20 @@ export default function RootLayout(request) {
     }
   };
 
-  const scrapButton = () => {
-
+  const scrapButton = (scrap) => {
+    if (scrap){
+      return (
+        <button className="btnRed wid90" onClick={() => scrapClick(false)}>
+          찜 취소하기
+        </button>
+      )
+    }else{
+      return (
+        <button className="btnBlue wid90 mr10" onClick={() => scrapClick(true)}>
+          찜하기
+        </button>
+      )
+    }
   };
 
   return (
@@ -173,9 +207,7 @@ export default function RootLayout(request) {
               </td>
               <th>관심</th>
               <td>
-                <button type="button" className="btnRed">
-                  찜하기
-                </button>
+                {scrapButton(scrapStatus)}
               </td>
             </tr>
             <tr>
