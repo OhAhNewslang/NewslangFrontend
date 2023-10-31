@@ -224,8 +224,10 @@ button.btnLight {  padding:0 10px;border:1px solid #36638D; background:#fff; col
 button.btnLightGray {  padding:0 10px;border:1px solid #c1c1c1; background:#fff; color:#828282; }
 button.btnLink {border:none; background:#fff; color:#0000EE; }
 button.btnLinkGray {border:none; background:#fff; color:#000;  }
-button.btnRed { padding:0 10px;border:1px solid #ecd9e0; background:#ecd9e0; color:#282828; }
+button.btnRed { padding:0 10px;border:1px solid #ff2e2e1a; background:#ff2e2e4b; color:#282828; }
 button.btnOrange { padding:0 10px;border:1px solid #faf0b5; background:#faf0b5; color:#333; }
+button.btnUnselBlue { padding:0 10px; border:1px solid #c3c6c9; background:#fff; color:#36638D; }
+button.btnUnselRed { padding:0 10px;border:1px solid #c3c6c9; background:#fff; color:#282828; }
 
 /* text color */
 .textRed { color:#e10000 !important; }
