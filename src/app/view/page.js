@@ -1,19 +1,25 @@
 "use client";
-"use strict";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function Login(request) {
-  let [newscontents, setNewsData] = useState([]);
-  let [Opinions, setOpinionData] = useState([]);
+export default function RootLayout(request) {
+  let [news, setDetailNews] = useState([]);
+  let [opinions, setOpinionData] = useState([]);
+  let [newComment, setNewComment] = useState("");
+  let [scrapStatus, setScrapStatus] = useState(Boolean);
+
+  let [opinionState, setOpinionState] = useState({
+    opinionId: "",
+    recommend: "",
+  });
 
   useEffect(() => {
-    getViewData();
-    getOpinion();
+    RequestDetailNews();
+    RequestOpinions();
   }, []);
 
-  const getViewData = async () => {
+  const RequestDetailNews = () => {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
@@ -26,18 +32,17 @@ export default function Login(request) {
     })
       .then((res) => res.json())
       .then((data) => {
-        setNewsData(data);
+        setDetailNews(data.detailNews);
+        setScrapStatus(data.detailNews.scrap);
       });
   };
 
-  const getOpinion = async () => {
+  const RequestOpinions = () => {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
     }
-    //더미데이터로 조회확인
-    fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=http://dummyUrl2:8080`, {
-    // fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=${newsUrl}`, {
+    fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=${newsUrl}`, {
       method: "GET",
       headers: {
         "X-AUTH-TOKEN": token,
@@ -45,20 +50,36 @@ export default function Login(request) {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setOpinionData(data.opinions);
+        data.opinions.map((opinion) => {
+          console.log(opinion);
+
+          setOpinionState((prevState) => {
+            return {
+              ...prevState,
+              opinionId: opinion.opinionId,
+              recommend: opinion.recommend,
+            };
+          });
+
+          //   setOpinionState({
+          //     ...opinionState,
+          //     opinionId: opinion.opinionId,
+          //     recommend: opinion.recommend,
+          //   });
+        });
+
+        console.log(opinionState);
       });
   };
 
-  function AddComment() {
+  const AddComment = () => {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
     }
-    const ctrl = document.getElementById("opinion_contents");
-    console.log(ctrl);
     const opinionContent = document.getElementById("opinion_contents").value;
-    console.log(opinionContent);
+
     fetch(`/api/opinions`, {
       method: "POST",
       headers: {
@@ -70,28 +91,151 @@ export default function Login(request) {
     })
       .then((res) => res.json())
       .then((data) => {
-        setOpinionData(data);
+        setOpinionData([...opinions, data.opinion]);
+        setNewComment("");
       });
-  }
+  };
 
-  function ImageLazyLoading() {
-    // Similar to componentDidMount and componentDidUpdate:
+  const ImageLazyLoading = () => {
     useEffect(() => {
       const imgs = document.querySelectorAll("img");
-      //   console.log(imgs);
       imgs.forEach((img) => {
         if (img.className == "_LAZY_LOADING") {
           img.src = img.dataset.src;
         }
       });
     });
-  }
+  };
+
+  const ScrapClick = (scrap) => {
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem("token");
+      var newsUrl = window.localStorage.getItem("newsUrl");
+    }
+
+    fetch("/api/scrap/news", {
+      method: scrap ? "POST" : "DELETE",
+      headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+      },
+      //전송할 데이터 json으로 변환해서 body에 넣어줌
+      body: JSON.stringify({ newsUrl }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setScrapStatus(scrap);
+      });
+  };
+
+  const LikeOpinionClick = (opinionId) => {
+    console.log(opinionState[opinionId][recommend]);
+    // Define a function to handle button clicks
+    alert(`Button ${opinionState.opinionId[opinionId]} likeOpinionClick!`);
+  };
+
+  const DislikeOpinionClick = (opinionId) => {
+    // Define a function to handle button clicks
+    alert(`Button ${opinionId} dislikeOpinionClick!`);
+  };
+
+  const RemoveOpinionClick = (opinionId) => {
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem("token");
+      var newsUrl = window.localStorage.getItem("newsUrl");
+    }
+
+    fetch(`/api/opinions`, {
+      method: "DELETE",
+      headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+      },
+      //전송할 데이터 json으로 변환해서 body에 넣어줌
+      body: JSON.stringify({ opinionId }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setOpinionData(opinions.filter((item) => item.opinionId !== opinionId));
+      });
+  };
+
+  const MakeOpinionButton = (opinion) => {
+    if (opinion.modifiable) {
+      // 로그인한 회원이 작성한 의견
+      return (
+        <table className="tableTypeBtn">
+          <colgroup>
+            <col style={{ width: "50%" }} />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td>
+                <button
+                  className="btnRed wid90"
+                  key={opinion.opinionId}
+                  onClick={() => RemoveOpinionClick(opinion.opinionId)}
+                >
+                  삭제
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      );
+    } else {
+      // 다른 회원의 의견
+      return (
+        <table className="tableTypeBtn">
+          <colgroup>
+            <col style={{ width: "50%" }} />
+            <col style={{ width: "50%" }} />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td>
+                <button
+                  className="btnBlue wid90 mr10"
+                  key={opinion.opinionId}
+                  onClick={() => LikeOpinionClick(opinion.opinionId)}
+                >
+                  좋아요
+                </button>
+              </td>
+              <td>
+                <button
+                  className="btnRed wid90"
+                  key={opinion.opinionId}
+                  onClick={() => DislikeOpinionClick(opinion.opinionId)}
+                >
+                  싫어요
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      );
+    }
+  };
+
+  const ScrapButton = (scrap) => {
+    if (scrap) {
+      return (
+        <button className="btnRed wid90" onClick={() => ScrapClick(false)}>
+          찜 취소하기
+        </button>
+      );
+    } else {
+      return (
+        <button className="btnBlue wid90 mr10" onClick={() => ScrapClick(true)}>
+          찜하기
+        </button>
+      );
+    }
+  };
 
   return (
     <div className="wrap">
-      {/* <div class="contentTitleBox">
-                    <h3>최신</h3>
-                </div> */}
       <div className="tableWrap3">
         <table className="tableTypeBoard2">
           <colgroup>
@@ -103,34 +247,30 @@ export default function Login(request) {
           <tbody>
             <tr>
               <th>제목</th>
-              <td className="bold">{newscontents.title}</td>
+              <td className="bold">{news.title}</td>
               <th>작성일</th>
-              <td>{newscontents.postDateTime}</td>
+              <td>{news.postDateTime}</td>
             </tr>
             <tr>
               <th>작성자</th>
-              <td>{newscontents.reporter}</td>
+              <td>{news.reporter}</td>
               <th>언론사</th>
-              <td>{newscontents.media}</td>
+              <td>{news.media}</td>
             </tr>
             <tr>
               <th>기사링크</th>
               <td>
-                <a href={newscontents.url}>{newscontents.url}</a>
+                <a href={news.url}>{news.url}</a>
               </td>
               <th>관심</th>
-              <td>
-                <button type="button" className="btnRed">
-                  찜하기
-                </button>
-              </td>
+              <td>{ScrapButton(scrapStatus)}</td>
             </tr>
             <tr>
               <td colSpan="6" className="viewBox">
                 <div
                   onLoad={ImageLazyLoading()}
                   dangerouslySetInnerHTML={{
-                    __html: `${newscontents.contents}`,
+                    __html: `${news.contents}`,
                   }}
                 ></div>
                 {/* {newscontents.contents} */}
@@ -140,15 +280,20 @@ export default function Login(request) {
         </table>
 
         <div className="floatBox mt10 mb10">
-          <textarea className="h100" id="opinion_contents" name=""></textarea>
-
+          <textarea
+            className="h100"
+            id="opinion_contents"
+            name=""
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          ></textarea>
           <div className="fr">
             <button
               type="button"
               className="btnGray wid90"
               onClick={() => AddComment()}
             >
-              등록
+              의견 등록
             </button>
           </div>
         </div>
@@ -171,29 +316,28 @@ export default function Login(request) {
             <col style={{ width: "15%" }} />
           </colgroup>
           <thead>
-						<tr>
-							<th>No.</th>
+            <tr>
+              <th>No.</th>
               <th>작성자</th>
-							<th>댓글</th>
-							<th>작성일</th>
-							<th>추천수</th>
-						</tr>
-					</thead>
+              <th>의견 내용</th>
+              <th>작성일</th>
+              <th>공감</th>
+            </tr>
+          </thead>
           <tbody>
-            {Opinions.map((opinion, index) => {
+            {opinions.map((opinion, index) => {
               return (
                 <tr key={opinion.opinionId}>
-                  <td>{index+1}</td>
+                  <td>{index + 1}</td>
                   <td>{opinion.memberName}</td>
                   <td>{opinion.opinionContent}</td>
                   <td>{opinion.opinionCreateDate}</td>
-                  <td>{opinion.likeCount}</td>
+                  <td>{MakeOpinionButton(opinion)}</td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>
-
         <div className="floatBox mt10">
           <button type="button" className="btnBlue wid90 mr10">
             추천

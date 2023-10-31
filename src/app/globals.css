@@ -500,6 +500,8 @@ table tr.subSum2 td:nth-child(3) { font-weight:600; text-align:center; }
 .tableTypeBoard2 td a { color:#333; text-decoration:underline; }
 .tableTypeBoard2 td a:hover { text-decoration:underline; }
 .tableTypeBoard2 td.viewBox { height:500px; padding:20px 50px; overflow-y:auto; line-height:1.5; vertical-align:top;}
+.tableTypeBtn { border:none; border-bottom: none;}
+.tableTypeBtn td { border:none;}
 .email tr { height:50px; }
 .email tr td { line-height:1.5; }
 .email tr td a { text-decoration:underline; color:#136abd; }
