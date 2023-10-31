@@ -9,10 +9,7 @@ export default function RootLayout(request) {
   let [newComment, setNewComment] = useState("");
   let [scrapStatus, setScrapStatus] = useState(Boolean);
 
-  let [opinionState, setOpinionState] = useState({
-    opinionId: "",
-    recommend: "",
-  });
+  let [opinionState, setOpinionState] = useState({});
 
   useEffect(() => {
     RequestDetailNews();
@@ -57,16 +54,9 @@ export default function RootLayout(request) {
           setOpinionState((prevState) => {
             return {
               ...prevState,
-              opinionId: opinion.opinionId,
-              recommend: opinion.recommend,
+              [opinion.opinionId] : opinion.recommend
             };
           });
-
-          //   setOpinionState({
-          //     ...opinionState,
-          //     opinionId: opinion.opinionId,
-          //     recommend: opinion.recommend,
-          //   });
         });
 
         console.log(opinionState);
@@ -92,6 +82,14 @@ export default function RootLayout(request) {
       .then((res) => res.json())
       .then((data) => {
         setOpinionData([...opinions, data.opinion]);
+        console.log(data.opinion)
+        setOpinionState((prevState) => {
+          return {
+            ...prevState,
+            [data.opinion.opinionId] : data.opinion.recommend
+          };
+        });
+        console.log(opinionState)
         setNewComment("");
       });
   };
@@ -128,18 +126,90 @@ export default function RootLayout(request) {
       });
   };
 
+  const updateOpinion = (opinionId, newRecommend) => {
+    // Use the map function to create a new array with the updated opinion
+    const updatedOpinions = opinions.map(opinion => {
+      if (opinion.opinionId === opinionId) {
+
+        var addCnt = 0;
+        if (opinion.recommend !== 'NONE' && newRecommend === 'DISLIKE'){
+          addCnt = -1;
+        }else if (newRecommend === 'LIKE'){
+          addCnt = 1;
+        }
+
+        var updatedOpinion = opinion;
+        updatedOpinion.recommend = newRecommend;
+        updatedOpinion.likeCount = updatedOpinion.likeCount + addCnt;
+
+        return { ...opinion, ...updatedOpinion };
+      }
+      return opinion;
+    });
+
+    // Update the state with the new array
+    setOpinionData(updatedOpinions);
+    
+    setOpinionState((prevState) => {
+      return {
+        ...prevState,
+        [opinionId] : newRecommend
+      };
+    });
+  };
+
   const LikeOpinionClick = (opinionId) => {
-    console.log(opinionState[opinionId][recommend]);
-    // Define a function to handle button clicks
-    alert(`Button ${opinionState.opinionId[opinionId]} likeOpinionClick!`);
+    if (opinionState[opinionId] == 'LIKE') return;
+    console.log('LIKE');
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem("token");
+    }
+
+    var status = 'LIKE';
+
+    fetch("/api/recommends/opinions", {
+      method: "POST",
+      headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ opinionId, status }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+
+        updateOpinion(opinionId, status);
+
+      });
   };
 
   const DislikeOpinionClick = (opinionId) => {
-    // Define a function to handle button clicks
-    alert(`Button ${opinionId} dislikeOpinionClick!`);
+    if (opinionState[opinionId] == 'DISLIKE') return;
+    console.log('DISLIKE');
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem("token");
+    }
+    
+    var status = 'DISLIKE';
+
+    fetch("/api/recommends/opinions", {
+      method: "POST",
+      headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ opinionId, status }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        
+        updateOpinion(opinionId, status);
+
+      });
   };
 
   const RemoveOpinionClick = (opinionId) => {
+    // console.log(opinionState);
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
@@ -184,6 +254,15 @@ export default function RootLayout(request) {
         </table>
       );
     } else {
+      var likeBtnClassName = "btnBlue wid90";
+      var disLikeBtnClassName = "btnRed wid90";
+
+      if (opinion.recommend == 'LIKE'){
+        disLikeBtnClassName = "btnUnselRed wid90";
+      } else if (opinion.recommend == 'DISLIKE'){
+        likeBtnClassName = "btnUnselBlue wid90";
+      }
+
       // 다른 회원의 의견
       return (
         <table className="tableTypeBtn">
@@ -195,16 +274,17 @@ export default function RootLayout(request) {
             <tr>
               <td>
                 <button
-                  className="btnBlue wid90 mr10"
+                  className={likeBtnClassName}
                   key={opinion.opinionId}
                   onClick={() => LikeOpinionClick(opinion.opinionId)}
                 >
-                  좋아요
+                  좋아요 {opinion.likeCount}
                 </button>
+
               </td>
               <td>
                 <button
-                  className="btnRed wid90"
+                  className={disLikeBtnClassName}
                   key={opinion.opinionId}
                   onClick={() => DislikeOpinionClick(opinion.opinionId)}
                 >
