@@ -6,15 +6,20 @@ import { useEffect, useState } from "react";
 export default function RootLayout(request) {
   let [news, setDetailNews] = useState([]);
   let [opinions, setOpinionData] = useState([]);
-  let [newComment, setNewComment] = useState('');
+  let [newComment, setNewComment] = useState("");
   let [scrapStatus, setScrapStatus] = useState(Boolean);
 
+  let [opinionState, setOpinionState] = useState({
+    opinionId: "",
+    recommend: "",
+  });
+
   useEffect(() => {
-    getDetailNews();
-    getOpinion();
+    RequestDetailNews();
+    RequestOpinions();
   }, []);
 
-  const getDetailNews = () => {
+  const RequestDetailNews = () => {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
@@ -24,52 +29,74 @@ export default function RootLayout(request) {
       headers: {
         "X-AUTH-TOKEN": token,
       },
-    }).then((res) => res.json())
+    })
+      .then((res) => res.json())
       .then((data) => {
         setDetailNews(data.detailNews);
         setScrapStatus(data.detailNews.scrap);
       });
   };
 
-  const getOpinion = () => {
+  const RequestOpinions = () => {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
     }
     fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=${newsUrl}`, {
-        method: "GET",
-        headers: {
-          "X-AUTH-TOKEN": token,
-        },
-    }).then((res) => res.json())
+      method: "GET",
+      headers: {
+        "X-AUTH-TOKEN": token,
+      },
+    })
+      .then((res) => res.json())
       .then((data) => {
         setOpinionData(data.opinions);
+        data.opinions.map((opinion) => {
+          console.log(opinion);
+
+          setOpinionState((prevState) => {
+            return {
+              ...prevState,
+              opinionId: opinion.opinionId,
+              recommend: opinion.recommend,
+            };
+          });
+
+          //   setOpinionState({
+          //     ...opinionState,
+          //     opinionId: opinion.opinionId,
+          //     recommend: opinion.recommend,
+          //   });
+        });
+
+        console.log(opinionState);
       });
   };
 
-  const addComment = () => {
+  const AddComment = () => {
     if (typeof window !== "undefined") {
-        var token = window.localStorage.getItem("token");
-        var newsUrl = window.localStorage.getItem("newsUrl");
+      var token = window.localStorage.getItem("token");
+      var newsUrl = window.localStorage.getItem("newsUrl");
     }
     const opinionContent = document.getElementById("opinion_contents").value;
 
     fetch(`/api/opinions`, {
-    method: "POST",
-    headers: {
+      method: "POST",
+      headers: {
         "X-AUTH-TOKEN": token,
         "Content-Type": "application/json",
-    },
-    //전송할 데이터 json으로 변환해서 body에 넣어줌
-    body: JSON.stringify({ newsUrl, opinionContent }),
-    }).then((res) => res.json())
+      },
+      //전송할 데이터 json으로 변환해서 body에 넣어줌
+      body: JSON.stringify({ newsUrl, opinionContent }),
+    })
+      .then((res) => res.json())
       .then((data) => {
         setOpinionData([...opinions, data.opinion]);
-        setNewComment('');
-    });
+        setNewComment("");
+      });
   };
 
-  const imageLazyLoading = () => {
+  const ImageLazyLoading = () => {
     useEffect(() => {
       const imgs = document.querySelectorAll("img");
       imgs.forEach((img) => {
@@ -79,101 +106,131 @@ export default function RootLayout(request) {
       });
     });
   };
-  
-  const scrapClick = (scrap) => {
+
+  const ScrapClick = (scrap) => {
     if (typeof window !== "undefined") {
-        var token = window.localStorage.getItem("token");
-        var newsUrl = window.localStorage.getItem("newsUrl");
+      var token = window.localStorage.getItem("token");
+      var newsUrl = window.localStorage.getItem("newsUrl");
     }
 
-    fetch('/api/scrap/news', {
-    method: scrap? "POST" : "DELETE",
-    headers: {
+    fetch("/api/scrap/news", {
+      method: scrap ? "POST" : "DELETE",
+      headers: {
         "X-AUTH-TOKEN": token,
         "Content-Type": "application/json",
-    },
-    //전송할 데이터 json으로 변환해서 body에 넣어줌
-    body: JSON.stringify({ newsUrl }),
-    }).then((res) => res.json())
+      },
+      //전송할 데이터 json으로 변환해서 body에 넣어줌
+      body: JSON.stringify({ newsUrl }),
+    })
+      .then((res) => res.json())
       .then((data) => {
         setScrapStatus(scrap);
-    });
+      });
   };
 
-  const likeOpinionClick = (buttonIndex) => {
+  const LikeOpinionClick = (opinionId) => {
+    console.log(opinionState[opinionId][recommend]);
     // Define a function to handle button clicks
-    alert(`Button ${buttonIndex} likeOpinionClick!`);
+    alert(`Button ${opinionState.opinionId[opinionId]} likeOpinionClick!`);
   };
 
-  const dislikeOpinionClick = (buttonIndex) => {
+  const DislikeOpinionClick = (opinionId) => {
     // Define a function to handle button clicks
-    alert(`Button ${buttonIndex} dislikeOpinionClick!`);
+    alert(`Button ${opinionId} dislikeOpinionClick!`);
   };
 
-  const removeOpinionClick = (buttonIndex) => {
-    // Define a function to handle button clicks
-    alert(`Button ${buttonIndex} removeOpinionClick!`);
+  const RemoveOpinionClick = (opinionId) => {
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem("token");
+      var newsUrl = window.localStorage.getItem("newsUrl");
+    }
+
+    fetch(`/api/opinions`, {
+      method: "DELETE",
+      headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+      },
+      //전송할 데이터 json으로 변환해서 body에 넣어줌
+      body: JSON.stringify({ opinionId }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setOpinionData(opinions.filter((item) => item.opinionId !== opinionId));
+      });
   };
 
-  const opinionButton = (opinion) => {
-    if (opinion.modifiable){
-        // 로그인한 회원이 작성한 의견
-        return ( 
-            <table className="tableTypeBtn">
-                <colgroup>
-                    <col style={{ width: "50%" }} />
-                </colgroup>
-                <tbody>
-                    <tr>
-                        <td>
-                            <button className="btnRed wid90" key={opinion.opinionId} onClick={() => removeOpinionClick(opinion.opinionId)}>
-                                삭제
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        )
-    }else{
-        // 다른 회원의 의견
-        return (
+  const MakeOpinionButton = (opinion) => {
+    if (opinion.modifiable) {
+      // 로그인한 회원이 작성한 의견
+      return (
         <table className="tableTypeBtn">
-            <colgroup>
-                <col style={{ width: "50%" }} />
-                <col style={{ width: "50%" }} />
-            </colgroup>
-            <tbody>
-                <tr>
-                    <td>
-                        <button className="btnBlue wid90 mr10" key={opinion.opinionId} onClick={() => likeOpinionClick(opinion.opinionId)}>
-                            좋아요
-                        </button>
-                    </td>
-                    <td>
-                        <button className="btnRed wid90" key={opinion.opinionId} onClick={() => dislikeOpinionClick(opinion.opinionId)}>
-                            싫어요
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
+          <colgroup>
+            <col style={{ width: "50%" }} />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td>
+                <button
+                  className="btnRed wid90"
+                  key={opinion.opinionId}
+                  onClick={() => RemoveOpinionClick(opinion.opinionId)}
+                >
+                  삭제
+                </button>
+              </td>
+            </tr>
+          </tbody>
         </table>
-        )
+      );
+    } else {
+      // 다른 회원의 의견
+      return (
+        <table className="tableTypeBtn">
+          <colgroup>
+            <col style={{ width: "50%" }} />
+            <col style={{ width: "50%" }} />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td>
+                <button
+                  className="btnBlue wid90 mr10"
+                  key={opinion.opinionId}
+                  onClick={() => LikeOpinionClick(opinion.opinionId)}
+                >
+                  좋아요
+                </button>
+              </td>
+              <td>
+                <button
+                  className="btnRed wid90"
+                  key={opinion.opinionId}
+                  onClick={() => DislikeOpinionClick(opinion.opinionId)}
+                >
+                  싫어요
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      );
     }
   };
 
-  const scrapButton = (scrap) => {
-    if (scrap){
+  const ScrapButton = (scrap) => {
+    if (scrap) {
       return (
-        <button className="btnRed wid90" onClick={() => scrapClick(false)}>
+        <button className="btnRed wid90" onClick={() => ScrapClick(false)}>
           찜 취소하기
         </button>
-      )
-    }else{
+      );
+    } else {
       return (
-        <button className="btnBlue wid90 mr10" onClick={() => scrapClick(true)}>
+        <button className="btnBlue wid90 mr10" onClick={() => ScrapClick(true)}>
           찜하기
         </button>
-      )
+      );
     }
   };
 
@@ -206,14 +263,12 @@ export default function RootLayout(request) {
                 <a href={news.url}>{news.url}</a>
               </td>
               <th>관심</th>
-              <td>
-                {scrapButton(scrapStatus)}
-              </td>
+              <td>{ScrapButton(scrapStatus)}</td>
             </tr>
             <tr>
               <td colSpan="6" className="viewBox">
                 <div
-                  onLoad={imageLazyLoading()}
+                  onLoad={ImageLazyLoading()}
                   dangerouslySetInnerHTML={{
                     __html: `${news.contents}`,
                   }}
@@ -225,12 +280,18 @@ export default function RootLayout(request) {
         </table>
 
         <div className="floatBox mt10 mb10">
-          <textarea className="h100" id="opinion_contents" name="" value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
+          <textarea
+            className="h100"
+            id="opinion_contents"
+            name=""
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          ></textarea>
           <div className="fr">
             <button
               type="button"
               className="btnGray wid90"
-              onClick={() => addComment()}
+              onClick={() => AddComment()}
             >
               의견 등록
             </button>
@@ -271,7 +332,7 @@ export default function RootLayout(request) {
                   <td>{opinion.memberName}</td>
                   <td>{opinion.opinionContent}</td>
                   <td>{opinion.opinionCreateDate}</td>
-                  <td>{opinionButton(opinion)}</td>
+                  <td>{MakeOpinionButton(opinion)}</td>
                 </tr>
               );
             })}
