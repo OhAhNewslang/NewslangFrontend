@@ -4,17 +4,22 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function RootLayout(request) {
-  let [news, setDetailNews] = useState([]);
+  let [news, setDetailNews] = useState({});
   let [opinions, setOpinionData] = useState([]);
   let [newComment, setNewComment] = useState("");
   let [scrapStatus, setScrapStatus] = useState(Boolean);
 
-  let [opinionState, setOpinionState] = useState({});
+  let [opinionRecommendState, setOpinionRecommendState] = useState({});
+  let [newsRecommendState, setNewsRecommendState] = useState("");
 
   useEffect(() => {
     RequestDetailNews();
     RequestOpinions();
   }, []);
+
+  useEffect(() => {
+    console.log("상세 뉴스 변함")
+  }, [newsRecommendState]);
 
   const RequestDetailNews = () => {
     if (typeof window !== "undefined") {
@@ -31,6 +36,7 @@ export default function RootLayout(request) {
       .then((data) => {
         setDetailNews(data.detailNews);
         setScrapStatus(data.detailNews.scrap);
+        setNewsRecommendState(data.detailNews.recommend);
       });
   };
 
@@ -49,17 +55,13 @@ export default function RootLayout(request) {
       .then((data) => {
         setOpinionData(data.opinions);
         data.opinions.map((opinion) => {
-          console.log(opinion);
-
-          setOpinionState((prevState) => {
+          setOpinionRecommendState((prevState) => {
             return {
               ...prevState,
               [opinion.opinionId] : opinion.recommend
             };
           });
         });
-
-        console.log(opinionState);
       });
   };
 
@@ -82,14 +84,12 @@ export default function RootLayout(request) {
       .then((res) => res.json())
       .then((data) => {
         setOpinionData([...opinions, data.opinion]);
-        console.log(data.opinion)
-        setOpinionState((prevState) => {
+        setOpinionRecommendState((prevState) => {
           return {
             ...prevState,
             [data.opinion.opinionId] : data.opinion.recommend
           };
         });
-        console.log(opinionState)
         setNewComment("");
       });
   };
@@ -131,16 +131,19 @@ export default function RootLayout(request) {
     const updatedOpinions = opinions.map(opinion => {
       if (opinion.opinionId === opinionId) {
 
-        var addCnt = 0;
-        if (opinion.recommend !== 'NONE' && newRecommend === 'DISLIKE'){
-          addCnt = -1;
-        }else if (newRecommend === 'LIKE'){
-          addCnt = 1;
-        }
-
         var updatedOpinion = opinion;
+
+        if (newRecommend === 'DISLIKE'){
+          updatedOpinion.likeCount = updatedOpinion.likeCount - 1;
+        }else if (newRecommend === 'LIKE'){
+          updatedOpinion.likeCount = updatedOpinion.likeCount + 1;
+        }else if (newRecommend === 'NONE' && opinion.recommend === 'DISLIKE'){
+          updatedOpinion.likeCount = updatedOpinion.likeCount + 1;
+        }else if (newRecommend === 'NONE' && opinion.recommend === 'LIKE'){
+          updatedOpinion.likeCount = updatedOpinion.likeCount - 1;
+        }
         updatedOpinion.recommend = newRecommend;
-        updatedOpinion.likeCount = updatedOpinion.likeCount + addCnt;
+        console.log(updatedOpinion.likeCount);
 
         return { ...opinion, ...updatedOpinion };
       }
@@ -150,7 +153,7 @@ export default function RootLayout(request) {
     // Update the state with the new array
     setOpinionData(updatedOpinions);
     
-    setOpinionState((prevState) => {
+    setOpinionRecommendState((prevState) => {
       return {
         ...prevState,
         [opinionId] : newRecommend
@@ -159,13 +162,11 @@ export default function RootLayout(request) {
   };
 
   const LikeOpinionClick = (opinionId) => {
-    if (opinionState[opinionId] == 'LIKE') return;
-    console.log('LIKE');
+    var status = 'LIKE';
+    if (opinionRecommendState[opinionId] == status) status = 'NONE';
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
     }
-
-    var status = 'LIKE';
 
     fetch("/api/recommends/opinions", {
       method: "POST",
@@ -184,14 +185,12 @@ export default function RootLayout(request) {
   };
 
   const DislikeOpinionClick = (opinionId) => {
-    if (opinionState[opinionId] == 'DISLIKE') return;
-    console.log('DISLIKE');
+    var status = 'DISLIKE';
+    if (opinionRecommendState[opinionId] == status) status = 'NONE';
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
     }
     
-    var status = 'DISLIKE';
-
     fetch("/api/recommends/opinions", {
       method: "POST",
       headers: {
@@ -209,10 +208,8 @@ export default function RootLayout(request) {
   };
 
   const RemoveOpinionClick = (opinionId) => {
-    // console.log(opinionState);
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
-      var newsUrl = window.localStorage.getItem("newsUrl");
     }
 
     fetch(`/api/opinions`, {
@@ -229,8 +226,56 @@ export default function RootLayout(request) {
         setOpinionData(opinions.filter((item) => item.opinionId !== opinionId));
       });
   };
+  
+  const NewsRecommendClick = (recommend) => {
+    if (newsRecommendState == recommend) recommend = 'NONE';
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem("token");
+      var newsUrl = window.localStorage.getItem("newsUrl");
+    }
 
-  const MakeOpinionButton = (opinion) => {
+    var status = recommend;
+
+    fetch("/api/recommends/news", {
+      method: "POST",
+      headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ newsUrl, status }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setNewsRecommendState(status);
+      });
+  }
+
+  const MakeNewsRecommendButton = (recommend) => {
+    
+    var likeBtnClassName = "btnBlue wid90 mr10";
+    var disLikeBtnClassName = "btnRed wid90 mr10";
+    if (recommend == 'LIKE'){
+      disLikeBtnClassName = "btnUnselRed wid90 mr10";
+    } else if (recommend == 'DISLIKE'){
+      likeBtnClassName = "btnUnselBlue wid90 mr10";
+    } else if (recommend == 'NONE'){
+      disLikeBtnClassName = "btnUnselRed wid90 mr10";
+      likeBtnClassName = "btnUnselBlue wid90 mr10";
+    }
+
+    return (
+      <div className="fl">
+        <button type="button" className={likeBtnClassName} onClick={() => NewsRecommendClick('LIKE')}>
+        추천
+        </button>
+        <button type="button" className={disLikeBtnClassName} onClick={() => NewsRecommendClick('DISLIKE')}>
+          반대
+        </button>
+      </div>
+    )
+  }
+
+  const MakeOpinionRecommendButton = (opinion) => {
     if (opinion.modifiable) {
       // 로그인한 회원이 작성한 의견
       return (
@@ -256,10 +301,12 @@ export default function RootLayout(request) {
     } else {
       var likeBtnClassName = "btnBlue wid90";
       var disLikeBtnClassName = "btnRed wid90";
-
       if (opinion.recommend == 'LIKE'){
         disLikeBtnClassName = "btnUnselRed wid90";
       } else if (opinion.recommend == 'DISLIKE'){
+        likeBtnClassName = "btnUnselBlue wid90";
+      } else if (opinion.recommend == 'NONE'){
+        disLikeBtnClassName = "btnUnselRed wid90";
         likeBtnClassName = "btnUnselBlue wid90";
       }
 
@@ -412,19 +459,22 @@ export default function RootLayout(request) {
                   <td>{opinion.memberName}</td>
                   <td>{opinion.opinionContent}</td>
                   <td>{opinion.opinionCreateDate}</td>
-                  <td>{MakeOpinionButton(opinion)}</td>
+                  <td>{MakeOpinionRecommendButton(opinion)}</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+
         <div className="floatBox mt10">
-          <button type="button" className="btnBlue wid90 mr10">
+          {MakeNewsRecommendButton(newsRecommendState)}
+          {/* <button type="button" className="btnBlue wid90 mr10">
             추천
           </button>
           <button type="button" className="btnRed wid90">
             반대
-          </button>
+          </button> */}
+
           <div className="fr">
             <Link href="/">
               <button type="button" className="btnLight wid90">
@@ -432,7 +482,9 @@ export default function RootLayout(request) {
               </button>
             </Link>
           </div>
+
         </div>
+
       </div>
     </div>
   );
