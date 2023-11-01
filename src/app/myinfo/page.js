@@ -1,31 +1,44 @@
 "use client";
 import { SUBRESOURCE_INTEGRITY_MANIFEST } from "next/dist/shared/lib/constants";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function RootLayout({ children }) {
   if (typeof window !== "undefined") {
     var token = window.localStorage.getItem("token");
   }
-
   var [Media, setMediaList] = useState([]);
-  let [subMedia, setSubMediaList] = useState([]);
   let [Category, setCategoryList] = useState([]);
+
+  // 데이터 관리 + 리랜더링
+  // useState 는 비동기 처리때문에 데이터 즉시 변경 안됨
+  // useState 없으면 checkbox 갱신이 안됨
+  // useRef 혼합 사용
+  // 더 좋은 방법은 to do...
+  let [subMedia, setSubMediaList] = useState([]);
   let [subCategory, setSubCategoryList] = useState([]);
   let [subKeword, setSubKeywordList] = useState([]);
 
+  let currentSubsMedia = useRef([]);
+  let currentSubsCategory = useRef([]);
+
   useEffect(() => {
-    //로컬스토리지에 저장되어 있는 토큰 받아오기
-    if (typeof window !== "undefined") {
-      var token = window.localStorage.getItem("token");
-    }
-    setMediaCategory();
-    getSubscribe(token);
-    mediaSubCheck();
+    getSubscribeList();
+    getMemberSubscribe();
   }, []);
 
-  function setMediaCategory() {
-    //전체 언론사 출력
+  // useEffect(()=>
+  // {
+  //   postSubscribeMedia();
+  // },[subMedia])
+
+  // useEffect(()=>
+  // {
+  //   postSubscribeCategory();
+  // },[subCategory])
+
+  // 전체 언론사, 카테고리 요청
+  const getSubscribeList = () => {
     fetch("/api/subscribe/guest/media", {
       method: "GET",
     })
@@ -33,7 +46,6 @@ export default function RootLayout({ children }) {
       .then((data) => {
         setMediaList(data.mediaList);
       });
-    //전체 카테고리 출력
     fetch("/api/subscribe/guest/category", {
       method: "GET",
     })
@@ -42,8 +54,12 @@ export default function RootLayout({ children }) {
         setCategoryList(data.nameList);
       });
   }
-  //구독정보 가져오기
-  function getSubscribe(token) {
+
+  // 사용자 구독 정보 요청
+  const getMemberSubscribe = () => {
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem("token");
+    }
     fetch("/api/subscribe/all", {
       method: "GET",
       headers: {
@@ -53,39 +69,23 @@ export default function RootLayout({ children }) {
     })
       .then((res) => res.json())
       .then((data) => {
+        currentSubsMedia.current = data.mediaList;
+        currentSubsCategory.current = data.categoryList;
         setSubMediaList(data.mediaList);
         setSubCategoryList(data.categoryList);
         setSubKeywordList(data.keywordList);
       });
   }
 
-  //언론사 및 카테고리 구독여부 체크
-  function mediaSubCheck() {
-    for (i in Media) {
-      if (subMedia.contains(i)) document.getElementById(i).checked = true;
-      else document.getElementById(i).checked = false;
-    }
-
-    for (i in subCategory)
-      if (Media.contains(i)) document.getElementById(i).checked = true;
-      else document.getElementById(i).checked = false;
-  }
-
-  //언론사 및 카테고리 구독하기
-  function Subscribe(e) {
+  // 언론사 체크 박스 클릭
+  const onClickMediaCheckbox = (e) => {
     if (e.checked) {
-      setSubMediaList([...subMedia, e.value]);
+        currentSubsMedia.current.push(e.value);
+        setSubMediaList([...subMedia, e.value]);
     } else {
-      setSubMediaList(subMedia.filter((item) => item !== e.value));
-
-      // subMedia.filter((value) => {
-      //   if (value === e.value) {
-      //     subMedia.pop(e.value);
-      //   }
-      // });
-      // setSubMediaList(subMedia);
+        currentSubsMedia.current = currentSubsMedia.current.filter((item) => item !== e.value);
+        setSubMediaList(subMedia.filter((item) => item !== e.value));
     }
-
     fetch("/api/subscribe/media", {
       method: "POST",
       headers: {
@@ -93,15 +93,34 @@ export default function RootLayout({ children }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        nameList: subMedia,
+        nameList: currentSubsMedia.current,
       }),
     })
       .then((res) => res.json())
       .then((data) => {});
   }
 
-  function IsSubscribeMedia(value) {
-    return subMedia.includes(value);
+  // 카테고리 체크 박스 클릭
+  const onClickCategoryCheckbox = (e) => {
+    if (e.checked) {
+      currentSubsCategory.current.push(e.value);
+      setSubCategoryList([...subCategory, e.value]);
+    } else {
+      currentSubsCategory.current = currentSubsCategory.current.filter((item) => item !== e.value);
+      setSubCategoryList(subCategory.filter((item) => item !== e.value));
+    }
+    fetch("/api/subscribe/category", {
+      method: "POST",
+      headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nameList: currentSubsCategory.current,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {});
   }
 
   return (
@@ -161,12 +180,8 @@ export default function RootLayout({ children }) {
                     <input
                       type="checkbox"
                       value={media.mediaName}
-                      // id={media.mediaName}
-                      // defaultChecked={IsSubscribeMedia(media.mediaName)}
-                      checked={IsSubscribeMedia(media.mediaName)}
-                      onChange={(e) => Subscribe(e.target)}
-                      // onChange={(e) => Subscribe(e.target)}
-                      // onChange={Subscribe}
+                      checked={currentSubsMedia.current.includes(media.mediaName)}
+                      onChange={(e) => onClickMediaCheckbox(e.target)}
                     ></input>
                   </td>
                 </tr>
@@ -198,7 +213,12 @@ export default function RootLayout({ children }) {
                 <tr key={category}>
                   <td>{category}</td>
                   <td>
-                    <input type="checkbox"></input>
+                    <input
+                        type="checkbox"
+                        value={category}
+                        checked={currentSubsCategory.current.includes(category)}
+                        onChange={(e) => onClickCategoryCheckbox(e.target)}
+                      ></input>
                   </td>
                 </tr>
               );
