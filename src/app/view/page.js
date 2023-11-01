@@ -4,21 +4,24 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function RootLayout(request) {
-  let [news, setDetailNews] = useState({});
+  let [detailNews, setDetailNews] = useState({});
   let [opinions, setOpinionData] = useState([]);
   let [newComment, setNewComment] = useState("");
   let [scrapStatus, setScrapStatus] = useState(Boolean);
-
   let [opinionRecommendState, setOpinionRecommendState] = useState({});
   let [newsRecommendState, setNewsRecommendState] = useState("");
+  let [opinionOrderbyState, setOpinionOrderbyState] = useState("like");
 
   useEffect(() => {
     RequestDetailNews();
-    RequestOpinions();
   }, []);
 
   useEffect(() => {
-    console.log("상세 뉴스 변함")
+    RequestOpinions(opinionOrderbyState);
+  }, []);
+
+  useEffect(() => {
+    console.log("상세 뉴스 변함");
   }, [newsRecommendState]);
 
   const RequestDetailNews = () => {
@@ -40,25 +43,30 @@ export default function RootLayout(request) {
       });
   };
 
-  const RequestOpinions = () => {
+  const RequestOpinions = (orderbyState) => {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
     }
-    fetch(`/api/opinions/news/like?page=${1}&limit=${10}&newsUrl=${newsUrl}`, {
-      method: "GET",
-      headers: {
-        "X-AUTH-TOKEN": token,
-      },
-    })
+    fetch(
+      `/api/opinions/news/${orderbyState}?page=${1}&limit=${10}&newsUrl=${newsUrl}`,
+      {
+        method: "GET",
+        headers: {
+          "X-AUTH-TOKEN": token,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
+        // setOpinionOrderbyState(orderby);
+        setOpinionOrderbyState(orderbyState);
         setOpinionData(data.opinions);
         data.opinions.map((opinion) => {
           setOpinionRecommendState((prevState) => {
             return {
               ...prevState,
-              [opinion.opinionId] : opinion.recommend
+              [opinion.opinionId]: opinion.recommend,
             };
           });
         });
@@ -78,7 +86,6 @@ export default function RootLayout(request) {
         "X-AUTH-TOKEN": token,
         "Content-Type": "application/json",
       },
-      //전송할 데이터 json으로 변환해서 body에 넣어줌
       body: JSON.stringify({ newsUrl, opinionContent }),
     })
       .then((res) => res.json())
@@ -87,7 +94,7 @@ export default function RootLayout(request) {
         setOpinionRecommendState((prevState) => {
           return {
             ...prevState,
-            [data.opinion.opinionId] : data.opinion.recommend
+            [data.opinion.opinionId]: data.opinion.recommend,
           };
         });
         setNewComment("");
@@ -126,44 +133,45 @@ export default function RootLayout(request) {
       });
   };
 
+  function getLikeCount(srcRecommend, destRecommend, likeCount) {
+    if (destRecommend === "DISLIKE") {
+      if (srcRecommend !== "NONE") likeCount--;
+    } else if (destRecommend === "LIKE") {
+      likeCount++;
+    } else if (destRecommend === "NONE" && srcRecommend === "LIKE") {
+      likeCount--;
+    }
+    return likeCount;
+  }
+
   const updateOpinion = (opinionId, newRecommend) => {
-    // Use the map function to create a new array with the updated opinion
-    const updatedOpinions = opinions.map(opinion => {
+    const updatedOpinions = opinions.map((opinion) => {
       if (opinion.opinionId === opinionId) {
-
         var updatedOpinion = opinion;
-
-        if (newRecommend === 'DISLIKE'){
-          updatedOpinion.likeCount = updatedOpinion.likeCount - 1;
-        }else if (newRecommend === 'LIKE'){
-          updatedOpinion.likeCount = updatedOpinion.likeCount + 1;
-        }else if (newRecommend === 'NONE' && opinion.recommend === 'DISLIKE'){
-          updatedOpinion.likeCount = updatedOpinion.likeCount + 1;
-        }else if (newRecommend === 'NONE' && opinion.recommend === 'LIKE'){
-          updatedOpinion.likeCount = updatedOpinion.likeCount - 1;
-        }
+        var newCnt = getLikeCount(
+          opinion.recommend,
+          newRecommend,
+          updatedOpinion.likeCount
+        );
+        updatedOpinion.likeCount = newCnt;
         updatedOpinion.recommend = newRecommend;
-        console.log(updatedOpinion.likeCount);
-
         return { ...opinion, ...updatedOpinion };
       }
       return opinion;
     });
 
-    // Update the state with the new array
     setOpinionData(updatedOpinions);
-    
     setOpinionRecommendState((prevState) => {
       return {
         ...prevState,
-        [opinionId] : newRecommend
+        [opinionId]: newRecommend,
       };
     });
   };
 
   const LikeOpinionClick = (opinionId) => {
-    var status = 'LIKE';
-    if (opinionRecommendState[opinionId] == status) status = 'NONE';
+    var status = "LIKE";
+    if (opinionRecommendState[opinionId] == status) status = "NONE";
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
     }
@@ -178,19 +186,17 @@ export default function RootLayout(request) {
     })
       .then((res) => res.json())
       .then((data) => {
-
         updateOpinion(opinionId, status);
-
       });
   };
 
   const DislikeOpinionClick = (opinionId) => {
-    var status = 'DISLIKE';
-    if (opinionRecommendState[opinionId] == status) status = 'NONE';
+    var status = "DISLIKE";
+    if (opinionRecommendState[opinionId] == status) status = "NONE";
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
     }
-    
+
     fetch("/api/recommends/opinions", {
       method: "POST",
       headers: {
@@ -201,9 +207,7 @@ export default function RootLayout(request) {
     })
       .then((res) => res.json())
       .then((data) => {
-        
         updateOpinion(opinionId, status);
-
       });
   };
 
@@ -226,9 +230,9 @@ export default function RootLayout(request) {
         setOpinionData(opinions.filter((item) => item.opinionId !== opinionId));
       });
   };
-  
+
   const NewsRecommendClick = (recommend) => {
-    if (newsRecommendState == recommend) recommend = 'NONE';
+    if (newsRecommendState == recommend) recommend = "NONE";
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
@@ -246,38 +250,52 @@ export default function RootLayout(request) {
     })
       .then((res) => res.json())
       .then((data) => {
+        var newCnt = getLikeCount(
+          detailNews.recommend,
+          recommend,
+          detailNews.likeCount
+        );
+        detailNews.likeCount = newCnt;
+        detailNews.recommend = recommend;
+        setDetailNews(detailNews);
         setNewsRecommendState(status);
       });
-  }
+  };
 
   const MakeNewsRecommendButton = (recommend) => {
-    
     var likeBtnClassName = "btnBlue wid90 mr10";
     var disLikeBtnClassName = "btnRed wid90 mr10";
-    if (recommend == 'LIKE'){
+    if (recommend == "LIKE") {
       disLikeBtnClassName = "btnUnselRed wid90 mr10";
-    } else if (recommend == 'DISLIKE'){
+    } else if (recommend == "DISLIKE") {
       likeBtnClassName = "btnUnselBlue wid90 mr10";
-    } else if (recommend == 'NONE'){
+    } else if (recommend == "NONE") {
       disLikeBtnClassName = "btnUnselRed wid90 mr10";
       likeBtnClassName = "btnUnselBlue wid90 mr10";
     }
 
     return (
       <div className="fl">
-        <button type="button" className={likeBtnClassName} onClick={() => NewsRecommendClick('LIKE')}>
-        추천
+        <button
+          type="button"
+          className={likeBtnClassName}
+          onClick={() => NewsRecommendClick("LIKE")}
+        >
+          추천 {detailNews.likeCount}
         </button>
-        <button type="button" className={disLikeBtnClassName} onClick={() => NewsRecommendClick('DISLIKE')}>
+        <button
+          type="button"
+          className={disLikeBtnClassName}
+          onClick={() => NewsRecommendClick("DISLIKE")}
+        >
           반대
         </button>
       </div>
-    )
-  }
+    );
+  };
 
   const MakeOpinionRecommendButton = (opinion) => {
     if (opinion.modifiable) {
-      // 로그인한 회원이 작성한 의견
       return (
         <table className="tableTypeBtn">
           <colgroup>
@@ -286,9 +304,13 @@ export default function RootLayout(request) {
           <tbody>
             <tr>
               <td>
+                <button className="btnUnselBlue wid90">
+                  좋아요 {opinion.likeCount}
+                </button>
+              </td>
+              <td>
                 <button
                   className="btnRed wid90"
-                  key={opinion.opinionId}
                   onClick={() => RemoveOpinionClick(opinion.opinionId)}
                 >
                   삭제
@@ -301,16 +323,15 @@ export default function RootLayout(request) {
     } else {
       var likeBtnClassName = "btnBlue wid90";
       var disLikeBtnClassName = "btnRed wid90";
-      if (opinion.recommend == 'LIKE'){
+      if (opinion.recommend == "LIKE") {
         disLikeBtnClassName = "btnUnselRed wid90";
-      } else if (opinion.recommend == 'DISLIKE'){
+      } else if (opinion.recommend == "DISLIKE") {
         likeBtnClassName = "btnUnselBlue wid90";
-      } else if (opinion.recommend == 'NONE'){
+      } else if (opinion.recommend == "NONE") {
         disLikeBtnClassName = "btnUnselRed wid90";
         likeBtnClassName = "btnUnselBlue wid90";
       }
 
-      // 다른 회원의 의견
       return (
         <table className="tableTypeBtn">
           <colgroup>
@@ -322,17 +343,14 @@ export default function RootLayout(request) {
               <td>
                 <button
                   className={likeBtnClassName}
-                  key={opinion.opinionId}
                   onClick={() => LikeOpinionClick(opinion.opinionId)}
                 >
                   좋아요 {opinion.likeCount}
                 </button>
-
               </td>
               <td>
                 <button
                   className={disLikeBtnClassName}
-                  key={opinion.opinionId}
                   onClick={() => DislikeOpinionClick(opinion.opinionId)}
                 >
                   싫어요
@@ -343,6 +361,42 @@ export default function RootLayout(request) {
         </table>
       );
     }
+  };
+
+  const MakeOpinionOrderbyButton = () => {
+    var likeClassName = "btnLight mr5";
+    var recentClassName = "btnLight";
+
+    if (opinionOrderbyState === "like") {
+      likeClassName = "btnSelLight mr5";
+      recentClassName = "btnLight";
+    } else if (opinionOrderbyState === "recent") {
+      likeClassName = "btnLight mr5";
+      recentClassName = "btnSelLight";
+    }
+
+    return (
+      <div className="left">
+        <button
+          type="button"
+          className={likeClassName}
+          onClick={() => {
+            RequestOpinions("like");
+          }}
+        >
+          공감순
+        </button>
+        <button
+          type="button"
+          className={recentClassName}
+          onClick={() => {
+            RequestOpinions("recent");
+          }}
+        >
+          최신순
+        </button>
+      </div>
+    );
   };
 
   const ScrapButton = (scrap) => {
@@ -374,20 +428,20 @@ export default function RootLayout(request) {
           <tbody>
             <tr>
               <th>제목</th>
-              <td className="bold">{news.title}</td>
+              <td className="bold">{detailNews.title}</td>
               <th>작성일</th>
-              <td>{news.postDateTime}</td>
+              <td>{detailNews.postDateTime}</td>
             </tr>
             <tr>
               <th>작성자</th>
-              <td>{news.reporter}</td>
+              <td>{detailNews.reporter}</td>
               <th>언론사</th>
-              <td>{news.media}</td>
+              <td>{detailNews.media}</td>
             </tr>
             <tr>
               <th>기사링크</th>
               <td>
-                <a href={news.url}>{news.url}</a>
+                <a href={detailNews.url}>{detailNews.url}</a>
               </td>
               <th>관심</th>
               <td>{ScrapButton(scrapStatus)}</td>
@@ -397,10 +451,9 @@ export default function RootLayout(request) {
                 <div
                   onLoad={ImageLazyLoading()}
                   dangerouslySetInnerHTML={{
-                    __html: `${news.contents}`,
+                    __html: `${detailNews.contents}`,
                   }}
                 ></div>
-                {/* {newscontents.contents} */}
               </td>
             </tr>
           </tbody>
@@ -425,14 +478,30 @@ export default function RootLayout(request) {
           </div>
         </div>
         <div className="floatBox mt10 mb10">
-          <div className="left">
-            <button type="button" className="btnLight mr5">
+          {MakeOpinionOrderbyButton()}
+
+          {/* <div className="left">
+            <button
+              type="button"
+              className="btnLight mr5"
+              onClick={() => {
+                localStorage.setItem("opinionOrderby", "like");
+                RequestOpinions();
+              }}
+            >
               공감순
             </button>
-            <button type="button" className="btnLight">
+            <button
+              type="button"
+              className="btnLight"
+              onClick={() => {
+                localStorage.setItem("opinionOrderby", "recent");
+                RequestOpinions();
+              }}
+            >
               최신순
             </button>
-          </div>
+          </div> */}
         </div>
         <table className="tableTypeBoard">
           <colgroup>
@@ -468,13 +537,6 @@ export default function RootLayout(request) {
 
         <div className="floatBox mt10">
           {MakeNewsRecommendButton(newsRecommendState)}
-          {/* <button type="button" className="btnBlue wid90 mr10">
-            추천
-          </button>
-          <button type="button" className="btnRed wid90">
-            반대
-          </button> */}
-
           <div className="fr">
             <Link href="/">
               <button type="button" className="btnLight wid90">
@@ -482,9 +544,7 @@ export default function RootLayout(request) {
               </button>
             </Link>
           </div>
-
         </div>
-
       </div>
     </div>
   );

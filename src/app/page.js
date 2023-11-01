@@ -26,46 +26,44 @@ export default function Home() {
   //     });
   // }
 
-  const page=1; //변하는값 
-  const limit=10;
+  const page = 1; //변하는값
+  const limit = 10;
 
- // const Gotopage = 1
+  // const Gotopage = 1
 
   // if (Gotopage = "") {
   //   Gotopage = 1
   // }
 
   //pagecount = Clng(rs(0) / pagesize)
-   //namuzi = (rs(0) mod pagesize)/pagesize
+  //namuzi = (rs(0) mod pagesize)/pagesize
 
-   // if (namuzi > 0 && namuzi < 0.5) {
-   //    pagecount = pagecount + 1
-   // }
+  // if (namuzi > 0 && namuzi < 0.5) {
+  //    pagecount = pagecount + 1
+  // }
 
-    const itemsPerPage = 1; // 페이지당 아이템 수를 정의
+  const itemsPerPage = 1; // 페이지당 아이템 수를 정의
 
-    const [currentPage, setCurrentPage] = useState(1); //현재 페이지를 관리
+  const [currentPage, setCurrentPage] = useState(1); //현재 페이지를 관리
 
-    const items = Array.from({ length: 10 }, (_, i) => `Item ${i + 1}`);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    // const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
+  const items = Array.from({ length: 10 }, (_, i) => `Item ${i + 1}`);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
 
-    //페이지를 변경하도록 설정
-    const paginate = (pageNumber) => {
-      setCurrentPage(pageNumber);
-    };
+  //페이지를 변경하도록 설정
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
-    //페이지 번호 목록을 생성하여 페이지네이션 버튼을 렌더링할 때 사용
-    const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(items.length / itemsPerPage); i++) {
-      pageNumbers.push(i);
-    }
-
-      
+  //페이지 번호 목록을 생성하여 페이지네이션 버튼을 렌더링할 때 사용
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(items.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
 
   useEffect(() => {
-    getLiveData(page,limit);
+    getLiveData(page, limit);
   }, []);
 
   const getLiveData = async (page, limit) => {
@@ -184,9 +182,9 @@ export default function Home() {
 
                       <a
                         href={`/view?newsUrl=${news.url}`}
-                        onClick={() =>
-                          localStorage.setItem("newsUrl", news.url)
-                        }
+                        onClick={() => {
+                          localStorage.setItem("newsUrl", news.url);
+                        }}
                       >
                         {news.title}
                       </a>
@@ -199,37 +197,42 @@ export default function Home() {
               })}
             </tbody>
           </table>
-          </div>
+        </div>
 
-          <div class="pagingBox">
+        <div class="pagingBox">
           <ul class="paging">
             <li>
-            <a onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-              이전
-            </a>
+              <a
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                이전
+              </a>
             </li>
-            
+
             {pageNumbers.map((number) => (
               <li>
-              <a
-                key={number}
-                onClick={() => paginate(number)}
-                className={currentPage === number ? 'active' : ''}
-              >
-                {number}
-              </a>
+                <a
+                  key={number}
+                  onClick={() => paginate(number)}
+                  className={currentPage === number ? "active" : ""}
+                >
+                  {number}
+                </a>
               </li>
             ))}
 
             {/* <li><span class="active"></span></li> */}
             <li>
-              <a onClick={() => setCurrentPage(currentPage + 1)} disabled={indexOfLastItem >= items.length}>다음</a>
+              <a
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={indexOfLastItem >= items.length}
+              >
+                다음
+              </a>
             </li>
           </ul>
-        </div>    
-
-
-        
+        </div>
       </div>
     </div>
   );

@@ -221,6 +221,7 @@ button.btnFile { width:23px; height:24px; background:url(../images/icon_file.jpg
 button.btnBlue { padding:0 10px; border:1px solid #36638D; background:#36638D; color:#fff; }
 button.btnGray { padding:0 10px; border:1px solid #f2f2f2; background:#e5e5e5; color:#333; }
 button.btnLight {  padding:0 10px;border:1px solid #36638D; background:#fff; color:#36638D; }
+button.btnSelLight {  padding:0 10px;border:1px solid #36638D; background:#36638D; color:#fff; }
 button.btnLightGray {  padding:0 10px;border:1px solid #c1c1c1; background:#fff; color:#828282; }
 button.btnLink {border:none; background:#fff; color:#0000EE; }
 button.btnLinkGray {border:none; background:#fff; color:#000;  }
