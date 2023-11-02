@@ -8,13 +8,17 @@ import swal from 'sweetalert';
 
 export default function RootLayout({ children }) {
 	const router = useRouter();
-	let [Scrapmedia, setScrapData] = useState([])
+	let [scrapNewsList, setScrapNewsList] = useState([])
 
 	//스크랩 목록가져오기
 	const page = 1, limit = 10;
 	useEffect(() => {
 		getScrapData(page, limit);
 	}, []);
+
+	// useEffect(() =>{
+	// },[scrapNewsList])
+
 	function getScrapData(page, limit) {
 		if (typeof window !== "undefined") {
 			var token = window.localStorage.getItem('token');
@@ -32,8 +36,8 @@ export default function RootLayout({ children }) {
 				const msg = data.result.resultMessage;
 				switch (code) {
 					case '200':
-						console.log(data.scrapNewsList);
-						setScrapData(data.scrapNewsList);
+						// console.log(data.scrapNewsList);
+						setScrapNewsList(data.scrapNewsList);
 						//화면 새로고침
 						router.refresh();
 					case '404'://스크랩 뉴스없음
@@ -59,22 +63,33 @@ export default function RootLayout({ children }) {
 			);
 	}
 
+	const makeCancelScrapButton = (newsUrl) => {
+		return(
+			<button class="btnUnselRed" type="button" onClick={() => 
+				deleteHandler(newsUrl)
+			}>취소</button>
+		);
+	}
+
 	//댓글 삭제
-	function deleteHandler(newsUrl) {
+	const deleteHandler = (newsUrl) => {
 		//로컬스토리지에 저장되어 있는 토큰 받아오기
 		if (typeof window !== "undefined") {
 			var token = window.localStorage.getItem('token');
 		}
-		fetch(`/api/scrap/news/${newsUrl}`, {
+
+		fetch(`/api/scrap/news`, {
 			method: "DELETE",
 			headers: {
 				'X-AUTH-TOKEN': token,
-			}
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ newsUrl }),
 		})
 			.then(res => res.json())
 			.then(data => {
-				//삭제완료 모달창 수정예정
-				alert(data);
+				// alert(data.result.resultMessage + "\r\n" + newsUrl);
+				setScrapNewsList(scrapNewsList => scrapNewsList.filter((item) => item.newsUrl !== newsUrl));
 			});
 	}
 
@@ -94,10 +109,10 @@ export default function RootLayout({ children }) {
 				<table className="tableTypeBoard">
 					<colgroup>
 						<col style={{ width: '8%' }} />
-						<col style={{ width: '55%' }} />
-						<col style={{ width: '9%' }} />
-						<col style={{ width: '10%' }} />
-						<col style={{ width: '11%' }} />
+						<col style={{ width: '45%' }} />
+						<col style={{ width: '12%' }} />
+						<col style={{ width: '12%' }} />
+						<col style={{ width: '16%' }} />
 						<col style={{ width: '7%' }} />
 					</colgroup>
 					<thead>
@@ -107,22 +122,20 @@ export default function RootLayout({ children }) {
 							<th>언론사</th>
 							<th>작성자</th>
 							<th>작성일</th>
-							<th>삭제</th>
+							<th>스크랩</th>
 						</tr>
 					</thead>
 					<tbody>
-						{Scrapmedia.map((news, index) => {
+						{scrapNewsList.map((news, index) => {
 							return (
-								<div key={news.url}>
-									<tr>
-										<td>{index}+1</td>
+									<tr key={news.url}>
+										<td>{index + 1}</td>
 										<td className="tl"><a href={news.newsUrl}>{news.title}</a></td>
 										<td>{news.mediaName}</td>
 										<td>{news.reporter}</td>
 										<td>{news.postDateTime}</td>
-										<td><button type="button" onClick={deleteHandler(news.newsUrl)}>삭제</button></td>
+										<td>{makeCancelScrapButton(news.newsUrl)}</td>
 									</tr>
-								</div>
 							)
 						})}
 					</tbody>
