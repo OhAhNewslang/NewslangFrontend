@@ -7,38 +7,39 @@ export default function RootLayout({ children }) {
   if (typeof window !== "undefined") {
     var token = window.localStorage.getItem("token");
   }
-  var [Media, setMediaList] = useState([]);
-  let [Category, setCategoryList] = useState([]);
-
-  // 데이터 관리 + 리랜더링
-  // useState 는 비동기 처리때문에 데이터 즉시 변경 안됨
-  // useState 없으면 checkbox 갱신이 안됨
-  // useRef 혼합 사용
-  // 더 좋은 방법은 to do...
+  var [mediaList, setMediaList] = useState([]);
+  let [categoryList, setCategoryList] = useState([]);
   let [subMedia, setSubMediaList] = useState([]);
   let [subCategory, setSubCategoryList] = useState([]);
   let [subKeword, setSubKeywordList] = useState([]);
 
-  let currentSubsMedia = useRef([]);
-  let currentSubsCategory = useRef([]);
-
   useEffect(() => {
-    getSubscribeList();
-    getMemberSubscribe();
+    getMediaList();
+    getCategoryList();
   }, []);
 
-  // useEffect(()=>
-  // {
-  //   postSubscribeMedia();
-  // },[subMedia])
-
-  // useEffect(()=>
-  // {
-  //   postSubscribeCategory();
-  // },[subCategory])
+  useEffect(() => {
+    // 사용자 구독 정보 요청
+    const getMemberSubscribe = async () => {
+      fetch("/api/subscribe/all", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-AUTH-TOKEN": token,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setSubMediaList(data.mediaList);
+          setSubCategoryList(data.categoryList);
+          setSubKeywordList(data.keywordList);
+        });
+    };
+    getMemberSubscribe();
+  }, [token]);
 
   // 전체 언론사, 카테고리 요청
-  const getSubscribeList = () => {
+  const getMediaList = () => {
     fetch("/api/subscribe/guest/media", {
       method: "GET",
     })
@@ -46,6 +47,8 @@ export default function RootLayout({ children }) {
       .then((data) => {
         setMediaList(data.mediaList);
       });
+  };
+  const getCategoryList = () => {
     fetch("/api/subscribe/guest/category", {
       method: "GET",
     })
@@ -53,39 +56,18 @@ export default function RootLayout({ children }) {
       .then((data) => {
         setCategoryList(data.nameList);
       });
-  }
-
-  // 사용자 구독 정보 요청
-  const getMemberSubscribe = () => {
-    if (typeof window !== "undefined") {
-      var token = window.localStorage.getItem("token");
-    }
-    fetch("/api/subscribe/all", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-AUTH-TOKEN": token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        currentSubsMedia.current = data.mediaList;
-        currentSubsCategory.current = data.categoryList;
-        setSubMediaList(data.mediaList);
-        setSubCategoryList(data.categoryList);
-        setSubKeywordList(data.keywordList);
-      });
-  }
+  };
 
   // 언론사 체크 박스 클릭
   const onClickMediaCheckbox = (e) => {
+    let copy = [...subMedia];
     if (e.checked) {
-        currentSubsMedia.current.push(e.value);
-        setSubMediaList([...subMedia, e.value]);
+      copy.push(e.value);
     } else {
-        currentSubsMedia.current = currentSubsMedia.current.filter((item) => item !== e.value);
-        setSubMediaList(subMedia.filter((item) => item !== e.value));
+      copy = copy.filter((item) => item !== e.value);
     }
+    setSubMediaList(copy);
+
     fetch("/api/subscribe/media", {
       method: "POST",
       headers: {
@@ -93,22 +75,23 @@ export default function RootLayout({ children }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        nameList: currentSubsMedia.current,
+        nameList: copy,
       }),
     })
       .then((res) => res.json())
       .then((data) => {});
-  }
+  };
 
   // 카테고리 체크 박스 클릭
   const onClickCategoryCheckbox = (e) => {
+    let copy = [...subCategory];
     if (e.checked) {
-      currentSubsCategory.current.push(e.value);
-      setSubCategoryList([...subCategory, e.value]);
+      copy.push(e.value);
     } else {
-      currentSubsCategory.current = currentSubsCategory.current.filter((item) => item !== e.value);
-      setSubCategoryList(subCategory.filter((item) => item !== e.value));
+      copy = copy.filter((item) => item !== e.value);
     }
+    setSubCategoryList(copy);
+
     fetch("/api/subscribe/category", {
       method: "POST",
       headers: {
@@ -116,12 +99,12 @@ export default function RootLayout({ children }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        nameList: currentSubsCategory.current,
+        nameList: copy,
       }),
     })
       .then((res) => res.json())
       .then((data) => {});
-  }
+  };
 
   return (
     <div className="wrap">
@@ -169,7 +152,7 @@ export default function RootLayout({ children }) {
             </tr>
           </thead>
           <tbody>
-            {Media.map((media) => {
+            {mediaList.map((media) => {
               return (
                 <tr key={media.mediaName}>
                   <td>
@@ -180,7 +163,7 @@ export default function RootLayout({ children }) {
                     <input
                       type="checkbox"
                       value={media.mediaName}
-                      checked={currentSubsMedia.current.includes(media.mediaName)}
+                      checked={subMedia.includes(media.mediaName)}
                       onChange={(e) => onClickMediaCheckbox(e.target)}
                     ></input>
                   </td>
@@ -208,17 +191,17 @@ export default function RootLayout({ children }) {
             </tr>
           </thead>
           <tbody>
-            {Category.map((category) => {
+            {categoryList.map((category) => {
               return (
                 <tr key={category}>
                   <td>{category}</td>
                   <td>
                     <input
-                        type="checkbox"
-                        value={category}
-                        checked={currentSubsCategory.current.includes(category)}
-                        onChange={(e) => onClickCategoryCheckbox(e.target)}
-                      ></input>
+                      type="checkbox"
+                      value={category}
+                      checked={subCategory.includes(category)}
+                      onChange={(e) => onClickCategoryCheckbox(e.target)}
+                    ></input>
                   </td>
                 </tr>
               );
@@ -244,9 +227,9 @@ export default function RootLayout({ children }) {
             </tr>
           </thead>
           <tbody>
-            {subKeword.map((keyword) => {
+            {subKeword.map((keyword, index) => {
               return (
-                <div>
+                <div key={index}>
                   <tr>
                     <td>{keyword}</td>
                     <td>
