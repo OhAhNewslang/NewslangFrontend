@@ -26,8 +26,7 @@ export default function Home() {
   //     });
   // }
 
-  const page = 1; //변하는값
-  const limit = 10;
+  const limit = 7;
 
   // const Gotopage = 1
 
@@ -63,8 +62,8 @@ export default function Home() {
   }
 
   useEffect(() => {
-    getLiveData(page, limit);
-  }, []);
+    getLiveData(currentPage, limit);
+  }, [currentPage]);
 
   const getLiveData = async (page, limit) => {
     if (typeof window !== "undefined") {
@@ -211,7 +210,7 @@ export default function Home() {
             </li>
 
             {pageNumbers.map((number) => (
-              <li>
+              <li key={number}>
                 <a
                   key={number}
                   onClick={() => paginate(number)}
