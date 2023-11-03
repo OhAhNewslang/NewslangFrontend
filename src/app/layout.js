@@ -14,6 +14,31 @@ export default function RootLayout({ children }) {
     var token = window.localStorage.getItem('token');
   }
 
+  useEffect(() =>{
+    // 로그인 확인 로직 진행
+    // 로컬스토리지에 마지막으로 보유한 token 값이 유효한지 서버로 데이터 요청 테스트
+    // 정상 응답일 경우, 아직 토큰 만료되지 않은 로그인 상태
+    if (token !== ""){
+      fetch(`/api/members`, {
+        method: "GET",
+        headers: {
+          "X-AUTH-TOKEN": token,
+        },
+      })
+      .then((res) => {
+        if (res.ok !== true || res.status !== 200){
+            localStorage.removeItem('token');
+            token = "";
+            setLoginBtnText(loginbtnText => loginbtnText = "Login");
+            setMyPageBtnText(MyPageText => MyPageText = "Signin");
+        }else{
+          setLoginBtnText(loginbtnText => loginbtnText = "Logout");
+          setMyPageBtnText(MyPageText => MyPageText = "MyPage");
+        }
+      });
+    }
+  }, [])
+
   //로그인되어있으면 버튼Logout으로 변경
   useEffect(() => {
     if (token) {
@@ -35,7 +60,7 @@ export default function RootLayout({ children }) {
     } else { //로그인이 되어 있으면
       router.refresh();
       router.push("/");
-      localStorage.setItem('token','');
+      localStorage.removeItem('token');
     }
   }
 
