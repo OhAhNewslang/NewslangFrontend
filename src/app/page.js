@@ -9,7 +9,7 @@ export default function Home() {
   let [liveThumbnailNewsList, setLiveThumbnailNews] = useState([]);
 
   //구독뉴스가져오기
-  async function getSubData(page, limit) {
+  function getSubData(page, limit) {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem('token');
     }
@@ -21,6 +21,7 @@ export default function Home() {
     })
       .then(res => res.json())
       .then(data => {
+        console.log(data);
         setSubThumbnailNews(data.thumbnailNewsList);
       });
   }
@@ -103,41 +104,29 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>
-                  <img src="images/userImg.jpg" alt="사용자 기본 이미지" />
-                </td>
-                <td className="tl">
-                  <a href="view">
-                    [SC현장] "강동원이라는 피사체"…'천박사' 강동원표 판타지,
-                    장르가 되다(종합)
-                  </a>
-                </td>
-                <td>스포츠조선</td>
-              </tr>
-
-              {subThumbnailNewsList.map((news) => {
+              {subThumbnailNewsList.map((news, index) => {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <td>
-                      <img src={news.imagePath} alt="사용자 기본 이미지" />
+                    <a
+                        href={`/view?newsUrl=${news.url}`}
+                        onClick={() => {
+                          localStorage.setItem("newsUrl", news.url);
+                        }}
+                      >
+                      <img src={news.imagePath}/>
+                      </a>
                     </td>
                     <td className="tl">
-                      <button
-                        href={"/view"}
+                      <a
+                        href={`/view?newsUrl=${news.url}`}
                         onClick={() => {
-                          localStorage.setItem(
-                            "newsUrl",
-                            JSON.stringify(news.url)
-                          );
+                          localStorage.setItem("newsUrl", news.url);
                         }}
                       >
                         {news.title}
-                      </button>
-                      {/* <a href={`/view?newUrl=${news.url}`}>{news.title}</a> */}
-                      {/* localStorage에 저장,, */}
-                      {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
-                    </td>
+                      </a>
+                      </td>
                     <td>{news.media}</td>
                   </tr>
                 );
@@ -170,15 +159,16 @@ export default function Home() {
                 return (
                   <tr key={index}>
                     <td>
-                      <img src={news.imagePath} alt="사용자 기본 이미지" />
+                    <a
+                        href={`/view?newsUrl=${news.url}`}
+                        onClick={() => {
+                          localStorage.setItem("newsUrl", news.url);
+                        }}
+                      >
+                      <img src={news.imagePath}/>
+                      </a>
                     </td>
                     <td className="tl">
-                      {/* <Link href={`/view?newsUrl=${news.url}`}>
-                        <a onClick={() => { localStorage.setItem("newsUrl", JSON.stringify(news.url)) }}>
-                          {news.title}
-                        </a>
-                      </Link> */}
-
                       <a
                         href={`/view?newsUrl=${news.url}`}
                         onClick={() => {
@@ -187,8 +177,6 @@ export default function Home() {
                       >
                         {news.title}
                       </a>
-                      {/* localStorage에 저장,, */}
-                      {/* <Link onClick={localStorage.setItem("newsUrl", JSON.stringify(news.url))}> href={{ pathname: JSON.stringify(news.url) }} */}
                     </td>
                     <td>{news.media}</td>
                   </tr>
