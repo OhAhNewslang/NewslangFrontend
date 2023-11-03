@@ -8,23 +8,23 @@ export default function Home() {
   let [subThumbnailNewsList, setSubThumbnailNews] = useState([]);
   let [liveThumbnailNewsList, setLiveThumbnailNews] = useState([]);
 
-  // //구독뉴스가져오기
-  // getliveData(1, 10);
-  // async function getliveData(page, limit) {
-  //   if (typeof window !== "undefined") {
-  //     var token = window.localStorage.getItem('token');
-  //   }
-  //   fetch(`/api/news/subscribe/live/${page}/${limit}`, {
-  //     method: "GET",
-  //     headers: {
-  //       'X-AUTH-TOKEN': token
-  //     }
-  //   })
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       setSubThumbnailNews(data.thumbnailNewsList);
-  //     });
-  // }
+  //구독뉴스가져오기
+  getliveData(1, 10);
+  async function getliveData(page, limit) {
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem('token');
+    }
+    fetch(`/api/news/subscribe?${page}&${limit}`, {
+      method: "GET",
+      headers: {
+        'X-AUTH-TOKEN': token
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setSubThumbnailNews(data.thumbnailNewsList);
+      });
+  }
 
   const limit = 7;
 
@@ -63,6 +63,7 @@ export default function Home() {
 
   useEffect(() => {
     getLiveData(currentPage, limit);
+    getliveData(1, 10);
   }, [currentPage]);
 
   const getLiveData = async (page, limit) => {
