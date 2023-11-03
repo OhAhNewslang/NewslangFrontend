@@ -9,12 +9,11 @@ export default function Home() {
   let [liveThumbnailNewsList, setLiveThumbnailNews] = useState([]);
 
   //구독뉴스가져오기
-  getliveData(1, 10);
-  async function getliveData(page, limit) {
+  async function getSubData(page, limit) {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem('token');
     }
-    fetch(`/api/news/subscribe?${page}&${limit}`, {
+    fetch(`/api/news/subscribe?page=${page}&limit=${limit}`, {
       method: "GET",
       headers: {
         'X-AUTH-TOKEN': token
@@ -63,7 +62,7 @@ export default function Home() {
 
   useEffect(() => {
     getLiveData(currentPage, limit);
-    getliveData(1, 10);
+    getSubData(1, 10);
   }, [currentPage]);
 
   const getLiveData = async (page, limit) => {
