@@ -14,7 +14,8 @@ export default function RootLayout({ children }) {
   let [categoryList, setCategoryList] = useState([]);
   let [subMedia, setSubMediaList] = useState([]);
   let [subCategory, setSubCategoryList] = useState([]);
-  let [subKeword, setSubKeywordList] = useState([]);
+  let [subKeyword, setSubKeywordList] = useState([]);
+  let [newKeyword, setNewKeyword] = useState("");
 
   useEffect(() => {
     getMediaList();
@@ -160,6 +161,86 @@ export default function RootLayout({ children }) {
       .catch(err=>console.log(err));
   };
 
+    // 키워드 추가
+    const onClickAddKeyword = () => {
+      const opinionContent = document.getElementById("keyword_contents").value;
+      let copy = [...subKeyword];
+      if (!copy.includes(opinionContent)){
+        copy.push(opinionContent);
+        setSubKeywordList(copy);
+        fetch("/api/subscribe/keyword", {
+          method: "POST",
+          headers: {
+            "X-AUTH-TOKEN": token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nameList: copy,
+          }),
+        })
+          .then((res) => {
+            if (res.status == 200)
+            return res.json();
+          else if (res.status == 500) {
+            swal({
+              text: "로그인이 필요합니다.",
+            });
+            router.replace("/login");
+          }
+          })
+          .then((data) => {
+            setNewKeyword("");
+          })
+          .catch(err=>console.log(err));
+        }else{
+          swal({
+            text: "이미 등록된 키워드입니다.",
+          });
+        }
+    };
+    
+  const makeRemoveKeywordButton = (keyword) => {
+    return (
+      <button
+        className="btnUnselRed"
+        type="button"
+        onClick={() => removeKeyword(keyword)}
+      >
+        삭제
+      </button>
+    );
+  };
+  
+  //댓글 삭제
+  const removeKeyword = (keyword) => {
+    let copy = [...subKeyword];
+    copy = copy.filter((item) => item !== keyword);
+    setSubKeywordList(copy);
+    fetch("/api/subscribe/keyword", {
+      method: "POST",
+      headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nameList: copy,
+      }),
+    })
+      .then((res) => {
+        if (res.status == 200)
+        return res.json();
+      else if (res.status == 500) {
+        swal({
+          text: "로그인이 필요합니다.",
+        });
+        router.replace("/login");
+      }
+      })
+      .then((data) => {
+      })
+      .catch(err=>console.log(err));
+  };
+
   return (
     <div className="wrap">
       <div className="floatBox mb50">
@@ -277,17 +358,17 @@ export default function RootLayout({ children }) {
           <thead>
             <tr>
               <th>키워드</th>
-              <th>구독</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            {subKeword.map((keyword, index) => {
+            {subKeyword.map((keyword, index) => {
               return (
                 <div key={index}>
                   <tr>
                     <td>{keyword}</td>
                     <td>
-                      <input type="checkbox"></input>
+                      {makeRemoveKeywordButton(keyword)}
                     </td>
                   </tr>
                 </div>
@@ -295,14 +376,16 @@ export default function RootLayout({ children }) {
             })}
           </tbody>
         </table>
-        <div className="centerBox mt20">
-          <button type="button" className="btnGray">수정</button>
-        </div>
 
         <div className="centerBox mt20">
           <div className='mb5 tl'>키워드 추가(한개씩 추가)</div>
-          <textarea class="h10" id="" name=""></textarea>
-          <div className='mb20 tr'><button type="button" className="btnRed">추가</button></div>
+          <textarea 
+            class="h10"
+            id="keyword_contents"
+            name="" 
+            value={newKeyword}
+            onChange={(e) => setNewKeyword(e.target.value)}></textarea>
+          <div className='mb20 tr'><button type="button" className="btnRed" onClick={() => onClickAddKeyword()}>추가</button></div>
         </div>
         
       </div>

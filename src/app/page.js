@@ -54,9 +54,7 @@ export default function Home() {
   // }
 
   const itemsPerPage = 1; // 페이지당 아이템 수를 정의
-
   const [currentPage, setCurrentPage] = useState(1); //현재 페이지를 관리
-
   const items = Array.from({ length: 10 }, (_, i) => `Item ${i + 1}`);
   const indexOfLastItem = currentPage * itemsPerPage;
   // const indexOfFirstItem = indexOfLastItem - itemsPerPage;

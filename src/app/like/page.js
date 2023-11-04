@@ -152,7 +152,7 @@ export default function RootLayout({ children }) {
               <th>언론사</th>
               <th>작성자</th>
               <th>작성일</th>
-              <th>스크랩</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
