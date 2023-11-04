@@ -161,11 +161,11 @@ export default function RootLayout({ children }) {
           <h3>#언론사</h3>
         </div>
 
-        <table className="tableTypeSort center">
+        <table className="tableTypeSort scrollTable center">
           <colgroup>
-            <col style={{ width: "35%" }} />
-            <col style={{ width: "35%" }} />
-            <col style={{ width: "35%" }} />
+            <col style={{ width: '35%' }} />
+            <col style={{ width: '30%' }} />
+            <col style={{ width: '35%' }} />
           </colgroup>
           <thead>
             <tr>
@@ -195,6 +195,9 @@ export default function RootLayout({ children }) {
             })}
           </tbody>
         </table>
+        <div className="centerBox mt20 mb20">
+          <button type="button" className="btnGray">수정</button>
+        </div>
       </div>
 
       <div className="wrap3">
@@ -202,10 +205,10 @@ export default function RootLayout({ children }) {
           <h3>#주제</h3>
         </div>
 
-        <table className="tableTypeSort center">
+        <table className="tableTypeSort scrollTable center">
           <colgroup>
-            <col style={{ width: "70%" }} />
-            <col style={{ width: "30%" }} />
+            <col style={{ width: '45%' }} />
+            <col style={{ width: '55%' }} />
           </colgroup>
           <thead>
             <tr>
@@ -238,10 +241,10 @@ export default function RootLayout({ children }) {
           <h3>#키워드</h3>
         </div>
 
-        <table className="tableTypeSort center">
+        <table className="tableTypeSort scrollTable5 center">
           <colgroup>
-            <col style={{ width: "70%" }} />
-            <col style={{ width: "30%" }} />
+            <col style={{ width: '45%' }} />
+            <col style={{ width: '55%' }} />
           </colgroup>
           <thead>
             <tr>
@@ -264,6 +267,16 @@ export default function RootLayout({ children }) {
             })}
           </tbody>
         </table>
+        <div className="centerBox mt20">
+          <button type="button" className="btnGray">수정</button>
+        </div>
+
+        <div className="centerBox mt20">
+          <div className='mb5 tl'>키워드 추가(한개씩 추가)</div>
+          <textarea class="h10" id="" name=""></textarea>
+          <div className='mb20 tr'><button type="button" className="btnRed">추가</button></div>
+        </div>
+        
       </div>
     </div>
   );
