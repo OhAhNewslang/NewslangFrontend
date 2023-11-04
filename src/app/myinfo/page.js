@@ -4,24 +4,7 @@ import { useEffect, useState } from "react";
 
 export default async function RootLayout({ children }) {
 
-  let [subMedia, setmediaData] = useState([])
-  useEffect(() => {
-    //로컬스토리지에 저장되어 있는 토큰 받아오기
-    if (typeof window !== "undefined") {
-      var token = window.localStorage.getItem('token');
-    }
-    //구독언론사 api호출
-    fetch('/api/member/subscribe', {
-      method: 'GET',
-      headers: {
-        'X-AUTH-TOKEN': token
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-        setmediaData(data)
-      });
-  }, [])
+
 
   return (
 
@@ -42,39 +25,64 @@ export default async function RootLayout({ children }) {
           <h3>#언론사</h3>
         </div>
 
-        <table className="tableTypeSort center">
+        <table className="tableTypeSort scrollTable center">
           <colgroup>
             <col style={{ width: '35%' }} />
-            <col style={{ width: '35%' }} />
+            <col style={{ width: '30%' }} />
             <col style={{ width: '35%' }} />
           </colgroup>
           <thead>
             <tr>
               <th>사진</th>
               <th>언론사</th>
-              <th>삭제</th>
+              <th>구독</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
               <td>중앙일보</td>
-              <td> <button type="button" className="btnRed">삭제</button></td>
+              <td> <input type='checkbox'></input></td>
             </tr>
-            {subMedia.map((news) => {
-              return (
-                <div>
-                  <tr>
-                    <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
-                    <td>{news.medialist}</td>
-                    <td> <input type='checkbox'></input></td>
-                  </tr>
-                </div>
-              )
-            })}
+            <tr>
+              <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
+              <td>중앙일보</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
+              <td>중앙일보</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
+              <td>중앙일보</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
+              <td>중앙일보</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
+              <td>중앙일보</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
+              <td>중앙일보</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td><img src="images/userImg.jpg" alt="사용자 기본 이미지" /></td>
+              <td>중앙일보</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            
           </tbody>
         </table>
-        <div className="centerBox mt20">
+        <div className="centerBox mt20 mb20">
           <button type="button" className="btnGray">수정</button>
         </div>
       </div>
@@ -85,15 +93,15 @@ export default async function RootLayout({ children }) {
           <h3>#주제</h3>
         </div>
 
-        <table className="tableTypeSort center">
+        <table className="tableTypeSort scrollTable center">
           <colgroup>
-            <col style={{ width: '70%' }} />
-            <col style={{ width: '30%' }} />
+            <col style={{ width: '45%' }} />
+            <col style={{ width: '55%' }} />
           </colgroup>
           <thead>
             <tr>
               <th>주제</th>
-              <th>삭제</th>
+              <th>구독</th>
             </tr>
           </thead>
           <tbody>
@@ -105,16 +113,30 @@ export default async function RootLayout({ children }) {
               <td>정치</td>
               <td> <input type='checkbox'></input></td>
             </tr>
-            {subMedia.map((category) => {
-              return (
-                <div>
-                  <tr>
-                    <td>{category.categoryList}</td>
-                    <td> <input type='checkbox'></input></td>
-                  </tr>
-                </div>
-              )
-            })}
+            <tr>
+              <td>정치</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td>정치</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td>정치</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td>정치</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td>정치</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td>정치</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
           </tbody>
         </table>
         <div className="centerBox mt20">
@@ -127,15 +149,15 @@ export default async function RootLayout({ children }) {
           <h3>#키워드</h3>
         </div>
 
-        <table className="tableTypeSort center">
+        <table className="tableTypeSort scrollTable5 center">
           <colgroup>
-            <col style={{ width: '70%' }} />
-            <col style={{ width: '30%' }} />
+            <col style={{ width: '45%' }} />
+            <col style={{ width: '55%' }} />
           </colgroup>
           <thead>
             <tr>
               <th>키워드</th>
-              <th>삭제</th>
+              <th>구독</th>
             </tr>
           </thead>
           <tbody>
@@ -147,21 +169,37 @@ export default async function RootLayout({ children }) {
               <td>날씨</td>
               <td> <input type='checkbox'></input></td>
             </tr>
-            {subMedia.map((keyword) => {
-              return (
-                <div>
-                  <tr>
-                    <td>{keyword.keywordList}</td>
-                    <td> <input type='checkbox'></input></td>
-                  </tr>
-                </div>
-              )
-            })}
+            <tr>
+              <td>날씨</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td>날씨</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td>날씨</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td>날씨</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
+            <tr>
+              <td>날씨</td>
+              <td> <input type='checkbox'></input></td>
+            </tr>
           </tbody>
         </table>
 
         <div className="centerBox mt20">
           <button type="button" className="btnGray">수정</button>
+        </div>
+
+        <div className="centerBox mt20">
+          <div className='mb5 tl'>키워드 추가(한개씩 추가)</div>
+          <textarea class="h10" id="" name=""></textarea>
+          <div className='mb20 tr'><button type="button" className="btnRed">추가</button></div>
         </div>
       </div>
 
