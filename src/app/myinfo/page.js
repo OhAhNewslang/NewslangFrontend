@@ -195,9 +195,6 @@ export default function RootLayout({ children }) {
             })}
           </tbody>
         </table>
-        <div className="centerBox mt20 mb20">
-          <button type="button" className="btnGray">수정</button>
-        </div>
       </div>
 
       <div className="wrap3">
