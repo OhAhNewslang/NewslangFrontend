@@ -22,63 +22,74 @@ export default function RootLayout({ children }) {
   }, []);
 
   useEffect(() => {
-    // 사용자 구독 정보 요청
-    const getMemberSubscribe = async () => {
-      fetch("/api/subscribe/all", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "X-AUTH-TOKEN": token,
-        },
-      }).then((res)=>{
-        try{
-          const data = res.json();
-          res.status(200).json(data);
-          setSubMediaList(data.mediaList);
-          setSubCategoryList(data.categoryList);
-          setSubKeywordList(data.keywordList);
-        }catch(err){
-          if(res.status == 500){
-            swal({
-              text: "다시 로그인이 필요합니다.",
-            });
-          router.push("/login");
-          }
-        }
-      })
-      //  .then((data) => {
-      //     setSubMediaList(data.mediaList);
-      //     setSubCategoryList(data.categoryList);
-      //     setSubKeywordList(data.keywordList);
-      //   });
-        // .then((res) => res.json())
-        // .then((data) => {
-        //   setSubMediaList(data.mediaList);
-        //   setSubCategoryList(data.categoryList);
-        //   setSubKeywordList(data.keywordList);
-        // });
-    };
     getMemberSubscribe();
   }, [token]);
+
+  // 사용자 구독 정보 요청
+  function getMemberSubscribe(){
+    fetch("/api/subscribe/all", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-AUTH-TOKEN": token,
+      },
+    })
+    .then((res) => {
+      if (res.status == 200)
+        return res.json();
+      else if (res.status == 500) {
+        swal({
+          text: "로그인이 필요합니다.",
+        });
+        router.replace("/login");
+      }
+    })
+     .then((data) => {
+        setSubMediaList(data.mediaList);
+        setSubCategoryList(data.categoryList);
+        setSubKeywordList(data.keywordList);
+      })
+      .catch(err=>console.log(err))
+  };
 
   // 전체 언론사, 카테고리 요청
   const getMediaList = () => {
     fetch("/api/subscribe/guest/media", {
       method: "GET",
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status == 200)
+        return res.json();
+      else if (res.status == 500) {
+        swal({
+          text: "로그인이 필요합니다.",
+        });
+        router.replace("/login");
+      }
+      })
       .then((data) => {
         setMediaList(data.mediaList);
-      });
+      })
+      .catch(err=>console.log(err))
   };
   const getCategoryList = () => {
     fetch("/api/subscribe/guest/category", {
       method: "GET",
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status == 200)
+        return res.json();
+      else if (res.status == 500) {
+        swal({
+          text: "로그인이 필요합니다.",
+        });
+        router.replace("/login");
+      }
+      })
       .then((data) => {
         setCategoryList(data.nameList);
-      });
+      })
+      .catch(err=>console.log(err));
   };
 
   // 언론사 체크 박스 클릭
@@ -101,8 +112,18 @@ export default function RootLayout({ children }) {
         nameList: copy,
       }),
     })
-      .then((res) => res.json())
-      .then((data) => {});
+      .then((res) => {
+        if (res.status == 200)
+        return res.json();
+      else if (res.status == 500) {
+        swal({
+          text: "로그인이 필요합니다.",
+        });
+        router.replace("/login");
+      }
+      })
+      .then((data) => {})
+      .catch(err=>console.log(err));
   };
 
   // 카테고리 체크 박스 클릭
@@ -125,8 +146,18 @@ export default function RootLayout({ children }) {
         nameList: copy,
       }),
     })
-      .then((res) => res.json())
-      .then((data) => {});
+      .then((res) => {
+        if (res.status == 200)
+        return res.json();
+      else if (res.status == 500) {
+        swal({
+          text: "로그인이 필요합니다.",
+        });
+        router.replace("/login");
+      }
+      })
+      .then((data) => {})
+      .catch(err=>console.log(err));
   };
 
   return (

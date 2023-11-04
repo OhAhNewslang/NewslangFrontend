@@ -201,7 +201,7 @@ export default function RootLayout({ children }) {
                   <td>{comments.opinionCreateDate}</td>
                   <td>
                     <button
-                      className="btnUnselRed"
+                      className="btnRed wid90"
                       type="button"
                       onClick={() => deleteHandler(comments.opinionId)}
                     >

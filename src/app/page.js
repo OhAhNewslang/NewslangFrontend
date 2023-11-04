@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { headers } from "../../next.config";
 import { useEffect, useState } from "react";
+import swal from "sweetalert";
 
 export default function Home() {
   const router = useRouter();
@@ -15,29 +16,26 @@ export default function Home() {
 
   //구독뉴스가져오기
   function getSubData(page, limit) {
-    // fetch(`/api/news/subscribe?page=${page}&limit=${limit}`, {
-    //   method: "GET",
-    //   headers: {
-    //     'X-AUTH-TOKEN': token
-    //   }
-    // });
-    // if(res.status == 200){
-    //   const data = res => res.json();
-    //   setSubThumbnailNews(data.thumbnailNewsList);
-    // }else{
-    //   router.refresh();  
-    // }
     fetch(`/api/news/subscribe?page=${page}&limit=${limit}`, {
       method: "GET",
       headers: {
         'X-AUTH-TOKEN': token
       }
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.status == 200)
+        return res.json();
+      else if (res.status == 500) {
+        swal({
+          text: "로그인 시간이 만료되었습니다.",
+        });
+      }
+      })
       .then(data => {
         console.log(data);
         setSubThumbnailNews(data.thumbnailNewsList);
-      });
+      })
+      .catch(err=>console.log(err))
   }
 
   const limit = 7;

@@ -29,7 +29,16 @@ export default function RootLayout({ children }) {
         "X-AUTH-TOKEN": token,
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status == 200)
+          return res.json();
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
       .then((data) => {
         const code = data.result.resultCode;
         const msg = data.result.resultMessage;
@@ -59,7 +68,8 @@ export default function RootLayout({ children }) {
             });
             break;
         }
-      });
+      })
+      .catch(err => console.log(err));
   }
 
   const makeCancelScrapButton = (newsUrl) => {

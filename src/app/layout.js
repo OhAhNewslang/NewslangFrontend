@@ -58,9 +58,9 @@ export default function RootLayout({ children }) {
       router.refresh();
       router.push("/login");
     } else { //로그인이 되어 있으면
-      router.refresh();
       router.push("/");
       localStorage.removeItem('token');
+      window.location.reload();
     }
   }
 

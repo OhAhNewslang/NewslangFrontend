@@ -8,26 +8,35 @@ import swal from 'sweetalert';
 
 
 export default function RootLayout({ children }) {
-
     const router = useRouter();
+    if (typeof window !== "undefined") {
+        var token = window.localStorage.getItem('token');
+    }
 
     //회원정보 확인 api호출
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            var token = window.localStorage.getItem('token');
-        }
         fetch("/api/members", {
             method: "GET",
             headers: {
                 'X-AUTH-TOKEN': token,
             }
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status == 200)
+                return res.json();
+              else if (res.status == 500) {
+                swal({
+                  text: "로그인이 필요합니다.",
+                });
+                router.replace("/login");
+              }
+            })
             .then(data => {
                 setId(data.loginId);
                 setEmail(data.email);
                 setName(data.name);
-            });
+            })
+            .catch(err=>console.log(err));
     }, [])
 
     //비밀번호 일치하면 수정가능
@@ -78,7 +87,16 @@ export default function RootLayout({ children }) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ name, email }),
-        }).then(res => res.json())
+        }).then(res => {
+            if (res.status == 200)
+                return res.json();
+              else if (res.status == 500) {
+                swal({
+                  text: "로그인이 필요합니다.",
+                });
+                router.replace("/login");
+              }
+        })
             .then(data => {
                 const code = data.resultCode;
                 const resultmsg = data.resultMessage;
@@ -95,7 +113,8 @@ export default function RootLayout({ children }) {
                 setId(data.loginId);
                 setEmail(data.email);
                 setName(data.name);
-            });
+            })
+            .catch(err=>console.log(err));;
     }
     //탈퇴api
     function handleDeleteClick(password) {
@@ -109,7 +128,16 @@ export default function RootLayout({ children }) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ password }),
-        }).then(res => res.json())
+        }).then(res => {
+            if (res.status == 200)
+            return res.json();
+          else if (res.status == 500) {
+            swal({
+              text: "로그인이 필요합니다.",
+            });
+            router.replace("/login");
+          }
+        })
             .then(data => {
                 const code = data.resultCode;
                 const resultmsg = data.resultMessage;
@@ -135,7 +163,8 @@ export default function RootLayout({ children }) {
                         router.refresh();
                         break;
                 }
-            });
+            })
+            .catch(err=>console.log(err));;
     }
 
 
