@@ -1,12 +1,16 @@
 "use client";
 import Link from "next/link";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 // import { headers } from '../../../next.config';
 // import { data } from 'autoprefixer';
 import swal from "sweetalert";
 
 export default function RootLayout({ children }) {
+  const router = useRouter();
+  if (typeof window !== "undefined") {
+    var token = window.localStorage.getItem("token");
+  }
   //최신순 공감순 거르기
   let [Comments, setCommentsData] = useState([]);
   let [orderby, seturl] = useState("like");
@@ -15,23 +19,43 @@ export default function RootLayout({ children }) {
   const page = 1,
     limit = 10;
   useEffect(() => {
-    const getCommentsData = async (page, limit) => {
-      if (typeof window !== "undefined") {
-        var token = window.localStorage.getItem("token");
-      }
-      fetch(`/api/opinions/members/${orderby}?page=${page}&limit=${limit}`, {
-        method: "GET",
-        headers: {
-          "X-AUTH-TOKEN": token,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setCommentsData(data.opinions);
-        });
-    };
     getCommentsData(page, limit);
   }, [orderby]);
+
+  // const getCommentsData = async (page, limit) => {
+  //   fetch(`/api/opinions/members/${orderby}?page=${page}&limit=${limit}`, {
+  //     method: "GET",
+  //     headers: {
+  //       "X-AUTH-TOKEN": token,
+  //     },
+  //   })
+  //   .then((res) => res.json())
+  //   .then((data) => {
+  //     setCommentsData(data.opinions);
+  //   });
+  // }
+  const getCommentsData = async (page, limit) => {
+    fetch(`/api/opinions/members/${orderby}?page=${page}&limit=${limit}`, {
+      method: "GET",
+      headers: {
+        "X-AUTH-TOKEN": token,
+      },
+    })
+      .then((res) => {
+        if (res.status == 200)
+          return res.json();
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
+      .then((data) => {
+        setCommentsData(data.opinions);
+      })
+      .catch(err=>console.log(err))
+  }
 
   //의견 삭제
   const deleteHandler = (opinionId) => {

@@ -5,14 +5,28 @@ import { headers } from "../../next.config";
 import { useEffect, useState } from "react";
 
 export default function Home() {
+  const router = useRouter();
   let [subThumbnailNewsList, setSubThumbnailNews] = useState([]);
   let [liveThumbnailNewsList, setLiveThumbnailNews] = useState([]);
 
+  if (typeof window !== "undefined") {
+    var token = window.localStorage.getItem('token');
+  }
+
   //구독뉴스가져오기
   function getSubData(page, limit) {
-    if (typeof window !== "undefined") {
-      var token = window.localStorage.getItem('token');
-    }
+    // fetch(`/api/news/subscribe?page=${page}&limit=${limit}`, {
+    //   method: "GET",
+    //   headers: {
+    //     'X-AUTH-TOKEN': token
+    //   }
+    // });
+    // if(res.status == 200){
+    //   const data = res => res.json();
+    //   setSubThumbnailNews(data.thumbnailNewsList);
+    // }else{
+    //   router.refresh();  
+    // }
     fetch(`/api/news/subscribe?page=${page}&limit=${limit}`, {
       method: "GET",
       headers: {
@@ -67,9 +81,6 @@ export default function Home() {
   }, [currentPage]);
 
   const getLiveData = async (page, limit) => {
-    if (typeof window !== "undefined") {
-      var token = window.localStorage.getItem("token");
-    }
     fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {
       method: "GET",
       headers: {

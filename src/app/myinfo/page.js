@@ -2,8 +2,11 @@
 import { SUBRESOURCE_INTEGRITY_MANIFEST } from "next/dist/shared/lib/constants";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import swal from "sweetalert";
 
 export default function RootLayout({ children }) {
+  const router = useRouter();
   if (typeof window !== "undefined") {
     var token = window.localStorage.getItem("token");
   }
@@ -27,13 +30,33 @@ export default function RootLayout({ children }) {
           "Content-Type": "application/json",
           "X-AUTH-TOKEN": token,
         },
-      })
-        .then((res) => res.json())
-        .then((data) => {
+      }).then((res)=>{
+        try{
+          const data = res.json();
+          res.status(200).json(data);
           setSubMediaList(data.mediaList);
           setSubCategoryList(data.categoryList);
           setSubKeywordList(data.keywordList);
-        });
+        }catch(err){
+          if(res.status == 500){
+            swal({
+              text: "다시 로그인이 필요합니다.",
+            });
+          router.push("/login");
+          }
+        }
+      })
+      //  .then((data) => {
+      //     setSubMediaList(data.mediaList);
+      //     setSubCategoryList(data.categoryList);
+      //     setSubKeywordList(data.keywordList);
+      //   });
+        // .then((res) => res.json())
+        // .then((data) => {
+        //   setSubMediaList(data.mediaList);
+        //   setSubCategoryList(data.categoryList);
+        //   setSubKeywordList(data.keywordList);
+        // });
     };
     getMemberSubscribe();
   }, [token]);

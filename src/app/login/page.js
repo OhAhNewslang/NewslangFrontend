@@ -37,6 +37,7 @@ export default function RootLayout({ children }) {
 							router.push("/");
 							//화면 새로고침
 							router.refresh();
+							break;
 						case '202'://비밀번호틀림
 							setLoginmsgData(loginmsg);
 							router.refresh();
