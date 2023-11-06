@@ -14,51 +14,12 @@ export default function Home() {
     var token = window.localStorage.getItem('token');
   }
 
-  //구독뉴스가져오기
-  function getSubData(page, limit) {
-    fetch(`/api/news/subscribe?page=${page}&limit=${limit}`, {
-      method: "GET",
-      headers: {
-        'X-AUTH-TOKEN': token
-      }
-    })
-      .then(res => {
-        if (res.status == 200)
-        return res.json();
-      else if (res.status == 500) {
-        swal({
-          text: "로그인 시간이 만료되었습니다.",
-        });
-      }
-      })
-      .then(data => {
-        console.log(data);
-        setSubThumbnailNews(data.thumbnailNewsList);
-      })
-      .catch(err=>console.log(err))
-  }
-
+  //메인뉴스 페이징
   const limit = 7;
-
-  // const Gotopage = 1
-
-  // if (Gotopage = "") {
-  //   Gotopage = 1
-  // }
-
-  //pagecount = Clng(rs(0) / pagesize)
-  //namuzi = (rs(0) mod pagesize)/pagesize
-
-  // if (namuzi > 0 && namuzi < 0.5) {
-  //    pagecount = pagecount + 1
-  // }
-
   const itemsPerPage = 1; // 페이지당 아이템 수를 정의
   const [currentPage, setCurrentPage] = useState(1); //현재 페이지를 관리
   const items = Array.from({ length: 10 }, (_, i) => `Item ${i + 1}`);
   const indexOfLastItem = currentPage * itemsPerPage;
-  // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  // const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
 
   //페이지를 변경하도록 설정
   const paginate = (pageNumber) => {
@@ -71,10 +32,53 @@ export default function Home() {
     pageNumbers.push(i);
   }
 
+  //구독뉴스 페이징
+  const [subcurrentPage, setSubCurrentPage] = useState(1); //현재 페이지를 관리
+  const subitems = Array.from({ length: 10 }, (_, i) => `Item ${i + 1}`);
+  const subindexOfLastItem = subcurrentPage * itemsPerPage;
+
+  //페이지를 변경하도록 설정
+  const subpaginate = (subpageNumber) => {
+    setSubCurrentPage(subpageNumber);
+  };
+
+  //페이지 번호 목록을 생성하여 페이지네이션 버튼을 렌더링할 때 사용
+  const subpageNumbers = [];
+  for (let i = 1; i <= Math.ceil(items.length / itemsPerPage); i++) {
+    subpageNumbers.push(i);
+  }
+
   useEffect(() => {
     getLiveData(currentPage, limit);
-    getSubData(1, 10);
-  }, [currentPage]);
+    getSubData(subcurrentPage, limit);
+  }, [currentPage,subcurrentPage]);
+
+
+  //구독뉴스가져오기
+  function getSubData(page, limit) {
+    fetch(`/api/news/subscribe?page=${page}&limit=${limit}`, {
+      method: "GET",
+      headers: {
+        'X-AUTH-TOKEN': token
+      }
+    })
+      .then(res => {
+        return res.json();
+      //   if (res.status == 200)
+      //   return res.json();
+      // else if (res.status == 500) {
+      //   swal({
+      //     text: "로그인 시간이 만료되었습니다.",
+      //   });
+      // }
+      })
+      .then(data => {
+        console.log(data);
+        setSubThumbnailNews(data.thumbnailNewsList);
+      })
+      .catch(err=>console.log(err))
+  }
+
 
   const getLiveData = async (page, limit) => {
     fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {
@@ -141,6 +145,41 @@ export default function Home() {
             </tbody>
           </table>
         </div>
+        <div class="pagingBox">
+          <ul class="paging">
+            <li>
+              <a
+                onClick={() => setSubCurrentPage(subcurrentPage - 1)}
+                disabled={subcurrentPage === 1}
+              >
+                이전
+              </a>
+            </li>
+
+            {subpageNumbers.map((number) => (
+              <li key={number}>
+                <a
+                  key={number}
+                  onClick={() => subpaginate(number)}
+                  className={subcurrentPage === number ? "active" : ""}
+                >
+                  {number}
+                </a>
+              </li>
+            ))}
+
+            {/* <li><span class="active"></span></li> */}
+            <li>
+              <a
+                onClick={() => setSubCurrentPage(subcurrentPage + 1)}
+                disabled={subindexOfLastItem >= subitems.length}
+              >
+                다음
+              </a>
+            </li>
+          </ul>
+        </div>
+
       </div>
 
       <div className="wrap2">
@@ -227,6 +266,7 @@ export default function Home() {
             </li>
           </ul>
         </div>
+
       </div>
     </div>
   );
