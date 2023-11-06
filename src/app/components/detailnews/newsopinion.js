@@ -1,8 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import CalculateLikeCount from "@/app/utils/likecount";
+import { useRouter } from "next/navigation";
+import swal from "sweetalert";
 
 export default function NewsOpinion() {
+  const router = useRouter();
   let [opinions, setOpinionData] = useState([]);
   let [newComment, setNewComment] = useState("");
   let [opinionRecommendState, setOpinionRecommendState] = useState({});
@@ -27,7 +30,18 @@ export default function NewsOpinion() {
         },
       }
     )
-      .then((res) => res.json())
+      .then(res => {
+        return res.json();
+        // if(res.status ==200){
+        //   return res.json();
+        // }
+        // else if(res.status ==500){
+        //   swal({
+        //     text: "로그인이 필요합니다.",
+        //   });
+        //   router.replace("/login");
+        // }
+      })
       .then((data) => {
         // setOpinionOrderbyState(orderby);
         setOpinionOrderbyState(orderbyState);
@@ -40,7 +54,8 @@ export default function NewsOpinion() {
             };
           });
         });
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   const AddComment = () => {
@@ -58,7 +73,17 @@ export default function NewsOpinion() {
       },
       body: JSON.stringify({ newsUrl, opinionContent }),
     })
-      .then((res) => res.json())
+      .then(res => {
+        if (res.status == 200) {
+          return res.json();
+        }
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
       .then((data) => {
         setOpinionData([...opinions, data.opinion]);
         setOpinionRecommendState((prevState) => {
@@ -68,7 +93,8 @@ export default function NewsOpinion() {
           };
         });
         setNewComment("");
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   const updateOpinion = (opinionId, newRecommend) => {
@@ -111,10 +137,21 @@ export default function NewsOpinion() {
       },
       body: JSON.stringify({ opinionId, status }),
     })
-      .then((res) => res.json())
+      .then(res => {
+        if (res.status == 200) {
+          return res.json();
+        }
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
       .then((data) => {
         updateOpinion(opinionId, status);
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   const DislikeOpinionClick = (opinionId) => {
@@ -123,7 +160,6 @@ export default function NewsOpinion() {
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
     }
-
     fetch("/api/recommends/opinions", {
       method: "POST",
       headers: {
@@ -132,10 +168,21 @@ export default function NewsOpinion() {
       },
       body: JSON.stringify({ opinionId, status }),
     })
-      .then((res) => res.json())
+      .then(res => {
+        if (res.status == 200) {
+          return res.json();
+        }
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
       .then((data) => {
         updateOpinion(opinionId, status);
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   const RemoveOpinionClick = (opinionId) => {
@@ -152,10 +199,21 @@ export default function NewsOpinion() {
       //전송할 데이터 json으로 변환해서 body에 넣어줌
       body: JSON.stringify({ opinionId }),
     })
-      .then((res) => res.json())
+      .then(res => {
+        if (res.status == 200) {
+          return res.json();
+        }
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
       .then((data) => {
         setOpinionData(opinions.filter((item) => item.opinionId !== opinionId));
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   const MakeOpinionRecommendButton = (opinion) => {

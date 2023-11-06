@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import CalculateLikeCount from "@/app/utils/likecount";
+import { useRouter } from "next/navigation";
 
 export default function NewsContents() {
+  const router = useRouter();
   let [detailNews, setDetailNews] = useState({});
   let [scrapStatus, setScrapStatus] = useState(Boolean);
   let [newsRecommendState, setNewsRecommendState] = useState("");
@@ -24,12 +26,23 @@ export default function NewsContents() {
         "X-AUTH-TOKEN": token,
       },
     })
-      .then((res) => res.json())
+      .then(res => {
+        if (res.status == 200) {
+          return res.json();
+        }
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
       .then((data) => {
         setDetailNews(data.detailNews);
         setScrapStatus(data.detailNews.scrap);
         setNewsRecommendState(data.detailNews.recommend);
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   const ImageLazyLoading = () => {
@@ -74,10 +87,21 @@ export default function NewsContents() {
       //전송할 데이터 json으로 변환해서 body에 넣어줌
       body: JSON.stringify({ newsUrl }),
     })
-      .then((res) => res.json())
+      .then(res => {
+        if (res.status == 200) {
+          return res.json();
+        }
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
       .then((data) => {
         setScrapStatus(scrap);
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   const MakeNewsRecommendButton = (recommend) => {
@@ -129,7 +153,17 @@ export default function NewsContents() {
       },
       body: JSON.stringify({ newsUrl, status }),
     })
-      .then((res) => res.json())
+      .then(res => {
+        if (res.status == 200) {
+          return res.json();
+        }
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
       .then((data) => {
         var newCnt = CalculateLikeCount(
           detailNews.recommend,
@@ -140,7 +174,8 @@ export default function NewsContents() {
         detailNews.recommend = recommend;
         setDetailNews(detailNews);
         setNewsRecommendState(status);
-      });
+      })
+      .catch(err => console.log(err));
   };
 
   return (

@@ -9,6 +9,7 @@ export default function Home() {
   const router = useRouter();
   let [subThumbnailNewsList, setSubThumbnailNews] = useState([]);
   let [liveThumbnailNewsList, setLiveThumbnailNews] = useState([]);
+  let [LoginBox, setLoginBox] = useState("");
 
   if (typeof window !== "undefined") {
     var token = window.localStorage.getItem('token');
@@ -63,14 +64,14 @@ export default function Home() {
       }
     })
       .then(res => {
-        return res.json();
-      //   if (res.status == 200)
-      //   return res.json();
-      // else if (res.status == 500) {
-      //   swal({
-      //     text: "로그인 시간이 만료되었습니다.",
-      //   });
-      // }
+        if (res.status == 200){
+          setLoginBox("none");
+          return res.json();
+        }
+      else if (res.status == 500) {
+        router.refresh();
+        setLoginBox("");
+      }
       })
       .then(data => {
         console.log(data);
@@ -114,11 +115,21 @@ export default function Home() {
                 <th>언론사</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody style={{width:"450px",height:"535px"}}>
+
+            <tr className="noLoginBox" style={{display:LoginBox}}>
+              <td className="noLoginChild">
+              로그인 후 이용해주세요.<br/>
+              <Link href="/login">
+              <button type="button" className="btnBlue mr5">로그인하러 가기</button>
+              </Link>
+              </td>
+            </tr>
+
               {subThumbnailNewsList.map((news, index) => {
                 return (
                   <tr key={index}>
-                    <td>
+                    <td style={{height:"76px"}}>
                     <a
                         href={`/view?newsUrl=${news.url}`}
                         onClick={() => {
@@ -200,11 +211,11 @@ export default function Home() {
                 <th>언론사</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody style={{width:"450px",height:"535px"}}>
               {liveThumbnailNewsList.map((news, index) => {
                 return (
                   <tr key={index}>
-                    <td>
+                    <td style={{height:"76px"}}>
                     <a
                         href={`/view?newsUrl=${news.url}`}
                         onClick={() => {
