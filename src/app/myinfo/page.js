@@ -364,14 +364,12 @@ export default function RootLayout({ children }) {
           <tbody>
             {subKeyword.map((keyword, index) => {
               return (
-                <div key={index}>
-                  <tr>
-                    <td>{keyword}</td>
-                    <td>
-                      {makeRemoveKeywordButton(keyword)}
-                    </td>
-                  </tr>
-                </div>
+                <tr key={index}>
+                  <td>{keyword}</td>
+                  <td>
+                    {makeRemoveKeywordButton(keyword)}
+                  </td>
+                </tr>
               );
             })}
           </tbody>
@@ -380,7 +378,7 @@ export default function RootLayout({ children }) {
         <div className="centerBox mt20">
           <div className='mb5 tl'>키워드 추가(한개씩 추가)</div>
           <textarea 
-            class="h10"
+            className="h10"
             id="keyword_contents"
             name="" 
             value={newKeyword}

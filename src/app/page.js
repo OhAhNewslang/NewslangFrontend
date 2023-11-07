@@ -74,7 +74,6 @@ export default function Home() {
       }
       })
       .then(data => {
-        console.log(data);
         setSubThumbnailNews(data.thumbnailNewsList);
       })
       .catch(err=>console.log(err))
@@ -156,8 +155,8 @@ export default function Home() {
             </tbody>
           </table>
         </div>
-        <div class="pagingBox">
-          <ul class="paging">
+        <div className="pagingBox">
+          <ul className="paging">
             <li>
               <a
                 onClick={() => setSubCurrentPage(subcurrentPage - 1)}
@@ -243,8 +242,8 @@ export default function Home() {
           </table>
         </div>
 
-        <div class="pagingBox">
-          <ul class="paging">
+        <div className="pagingBox">
+          <ul className="paging">
             <li>
               <a
                 onClick={() => setCurrentPage(currentPage - 1)}
