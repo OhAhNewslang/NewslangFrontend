@@ -7,27 +7,29 @@ import swal from "sweetalert";
 export default function NewsOpinion() {
   const router = useRouter();
   let [opinions, setOpinionData] = useState([]);
+  let [opinionStatus, setOpinionStatus] = useState({});
   let [newComment, setNewComment] = useState("");
   let [opinionRecommendState, setOpinionRecommendState] = useState({});
   let [opinionOrderbyState, setOpinionOrderbyState] = useState("like");
 
   useEffect(() => {
     RequestOpinions(opinionOrderbyState);
+    RequestOpinionStatus();
   }, []);
 
   const RequestOpinions = (orderbyState) => {
     if (typeof window !== "undefined") {
-      var token = window.localStorage.getItem("token");
+      // var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
     }
 
     fetch(
-      `/api/opinions/news/${orderbyState}?page=${1}&limit=${10}&newsUrl=${newsUrl}`,
+      `/api/opinions/guest/news/${orderbyState}?page=${1}&limit=${10}&newsUrl=${newsUrl}`,
       {
         method: "GET",
-        headers: {
-          "X-AUTH-TOKEN": token,
-        },
+        // headers: {
+        //   "X-AUTH-TOKEN": token,
+        // },
       }
     )
       .then((res) => {
@@ -44,16 +46,55 @@ export default function NewsOpinion() {
       })
       .then((data) => {
         // setOpinionOrderbyState(orderby);
+        // data.opinions.map((opinion) => {
+        //   setOpinionRecommendState((prevState) => {
+        //     return {
+        //       ...prevState,
+        //       [opinion.opinionId]: {
+        //         recommend : opinion.recommend,
+        //         modifiable : opinion.modifiable,
+        //       }
+        //     };
+        //   });
+        // });
         setOpinionOrderbyState(orderbyState);
         setOpinionData(data.opinions);
-        data.opinions.map((opinion) => {
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const RequestOpinionStatus = () => {
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem("token");
+      var newsUrl = window.localStorage.getItem("newsUrl");
+    }
+
+    fetch(
+      `/api/opinions/news/status?newsUrl=${newsUrl}`,
+      {
+        method: "GET",
+        headers: {
+          "X-AUTH-TOKEN": token,
+        },
+      }
+    )
+      .then((res) => { 
+        if(res.status === 200){ return res.json();}
+       })
+      .then((data) => {
+        // console.log(data);
+        data.memberOpinionStatusList.map((status) => {
           setOpinionRecommendState((prevState) => {
             return {
               ...prevState,
-              [opinion.opinionId]: opinion.recommend,
+              [status.opinionId]: {
+                recommend : status.recommend,
+                modifiable : status.modifiable,
+              },
             };
           });
         });
+        setOpinionStatus(data.memberOpinionStatusList);
       })
       .catch((err) => console.log(err));
   };
@@ -64,6 +105,12 @@ export default function NewsOpinion() {
       var newsUrl = window.localStorage.getItem("newsUrl");
     }
     const opinionContent = document.getElementById("opinion_contents").value;
+    if (opinionContent.trim() === ""){
+      swal({
+        text: "의견 내용을 입력해주세요.",
+      });
+      return;
+    }
 
     fetch(`/api/opinions`, {
       method: "POST",
@@ -84,11 +131,15 @@ export default function NewsOpinion() {
         }
       })
       .then((data) => {
+        // console.log(data);
         setOpinionData([...opinions, data.opinion]);
         setOpinionRecommendState((prevState) => {
           return {
             ...prevState,
-            [data.opinion.opinionId]: data.opinion.recommend,
+            [data.opinion.opinionId]: {
+              recommend : data.opinion.recommend,
+              modifiable : true,
+            }
           };
         });
         setNewComment("");
@@ -96,34 +147,16 @@ export default function NewsOpinion() {
       .catch((err) => console.log(err));
   };
 
-  const updateOpinion = (opinionId, newRecommend) => {
-    const updatedOpinions = opinions.map((opinion) => {
-      if (opinion.opinionId === opinionId) {
-        var updatedOpinion = opinion;
-        var newCnt = CalculateLikeCount(
-          opinion.recommend,
-          newRecommend,
-          updatedOpinion.likeCount
-        );
-        updatedOpinion.likeCount = newCnt;
-        updatedOpinion.recommend = newRecommend;
-        return { ...opinion, ...updatedOpinion };
-      }
-      return opinion;
-    });
-
-    setOpinionData(updatedOpinions);
-    setOpinionRecommendState((prevState) => {
-      return {
-        ...prevState,
-        [opinionId]: newRecommend,
-      };
-    });
-  };
-
   const LikeOpinionClick = (opinionId) => {
+    if (typeof opinionRecommendState[opinionId] === "undefined") {
+      swal({
+        text: "로그인이 필요합니다.",
+      });
+      router.replace("/login");
+      return;
+    }
     var status = "LIKE";
-    if (opinionRecommendState[opinionId] == status) status = "NONE";
+    if (opinionRecommendState[opinionId].recommend == status) status = "NONE";
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
     }
@@ -153,8 +186,15 @@ export default function NewsOpinion() {
   };
 
   const DislikeOpinionClick = (opinionId) => {
+    if (typeof opinionRecommendState[opinionId] === "undefined") {
+      swal({
+        text: "로그인이 필요합니다.",
+      });
+      router.replace("/login");
+      return;
+    }
     var status = "DISLIKE";
-    if (opinionRecommendState[opinionId] == status) status = "NONE";
+    if (opinionRecommendState[opinionId].recommend == status) status = "NONE";
     if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
     }
@@ -180,6 +220,42 @@ export default function NewsOpinion() {
         updateOpinion(opinionId, status);
       })
       .catch((err) => console.log(err));
+  };
+
+  const updateOpinion = (opinionId, newRecommend, modifiable) => {
+    const updatedOpinions = opinions.map((opinion) => {
+      if (opinion.opinionId === opinionId) {
+        var updatedOpinion = opinion;
+        // console.log(opinionStatus);
+        const updatedOpinionStatus = opinionStatus.map((status) => {
+          if (status.opinionId === opinionId){
+            var updatedStatus = status;
+            var newCnt = CalculateLikeCount(
+              status.recommend,
+              newRecommend,
+              updatedOpinion.likeCount
+            );
+            updatedStatus.recommend = newRecommend;
+            updatedOpinion.likeCount = newCnt;
+            return {...status, updatedStatus};
+          }
+          return status;
+        });
+        setOpinionStatus(updatedOpinionStatus);
+        return { ...opinion, ...updatedOpinion };
+      }
+      return opinion;
+    });
+    setOpinionData(updatedOpinions);
+    setOpinionRecommendState((prevState) => {
+      return {
+        ...prevState,
+        [opinionId]: {
+          recommend : newRecommend,
+          modifiable : modifiable,
+        }
+      };
+    });
   };
 
   const RemoveOpinionClick = (opinionId) => {
@@ -208,12 +284,19 @@ export default function NewsOpinion() {
       })
       .then((data) => {
         setOpinionData(opinions.filter((item) => item.opinionId !== opinionId));
+        setOpinionStatus(opinionStatus.filter((item => item.opinionId !== opinionId)))
       })
       .catch((err) => console.log(err));
   };
 
   const MakeOpinionRecommendButton = (opinion) => {
-    if (opinion.modifiable) {
+    var modifiable = false;
+    var recommend = "NONE";
+    if (typeof opinionRecommendState[opinion.opinionId] !== "undefined") {
+      modifiable = opinionRecommendState[opinion.opinionId].modifiable;
+      recommend = opinionRecommendState[opinion.opinionId].recommend;
+    }
+    if (modifiable) {
       return (
         <table className="tableTypeBtn">
           <colgroup>
@@ -241,11 +324,11 @@ export default function NewsOpinion() {
     } else {
       var likeBtnClassName = "btnBlue wid90";
       var disLikeBtnClassName = "btnRed wid90";
-      if (opinion.recommend == "LIKE") {
+      if (recommend == "LIKE") {
         disLikeBtnClassName = "btnUnselRed wid90";
-      } else if (opinion.recommend == "DISLIKE") {
+      } else if (recommend == "DISLIKE") {
         likeBtnClassName = "btnUnselBlue wid90";
-      } else if (opinion.recommend == "NONE" || opinion.recommend == "") {
+      } else if (recommend == "NONE" || recommend == "") {
         disLikeBtnClassName = "btnUnselRed wid90";
         likeBtnClassName = "btnUnselBlue wid90";
       }
