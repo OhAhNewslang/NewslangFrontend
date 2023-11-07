@@ -30,7 +30,7 @@ export default function NewsOpinion() {
         },
       }
     )
-      .then(res => {
+      .then((res) => {
         return res.json();
         // if(res.status ==200){
         //   return res.json();
@@ -55,7 +55,7 @@ export default function NewsOpinion() {
           });
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const AddComment = () => {
@@ -73,11 +73,10 @@ export default function NewsOpinion() {
       },
       body: JSON.stringify({ newsUrl, opinionContent }),
     })
-      .then(res => {
+      .then((res) => {
         if (res.status == 200) {
           return res.json();
-        }
-        else if (res.status == 500) {
+        } else if (res.status == 500) {
           swal({
             text: "로그인이 필요합니다.",
           });
@@ -94,7 +93,7 @@ export default function NewsOpinion() {
         });
         setNewComment("");
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const updateOpinion = (opinionId, newRecommend) => {
@@ -137,11 +136,10 @@ export default function NewsOpinion() {
       },
       body: JSON.stringify({ opinionId, status }),
     })
-      .then(res => {
+      .then((res) => {
         if (res.status == 200) {
           return res.json();
-        }
-        else if (res.status == 500) {
+        } else if (res.status == 500) {
           swal({
             text: "로그인이 필요합니다.",
           });
@@ -151,7 +149,7 @@ export default function NewsOpinion() {
       .then((data) => {
         updateOpinion(opinionId, status);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const DislikeOpinionClick = (opinionId) => {
@@ -168,11 +166,10 @@ export default function NewsOpinion() {
       },
       body: JSON.stringify({ opinionId, status }),
     })
-      .then(res => {
+      .then((res) => {
         if (res.status == 200) {
           return res.json();
-        }
-        else if (res.status == 500) {
+        } else if (res.status == 500) {
           swal({
             text: "로그인이 필요합니다.",
           });
@@ -182,7 +179,7 @@ export default function NewsOpinion() {
       .then((data) => {
         updateOpinion(opinionId, status);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const RemoveOpinionClick = (opinionId) => {
@@ -199,11 +196,10 @@ export default function NewsOpinion() {
       //전송할 데이터 json으로 변환해서 body에 넣어줌
       body: JSON.stringify({ opinionId }),
     })
-      .then(res => {
+      .then((res) => {
         if (res.status == 200) {
           return res.json();
-        }
-        else if (res.status == 500) {
+        } else if (res.status == 500) {
           swal({
             text: "로그인이 필요합니다.",
           });
@@ -213,7 +209,7 @@ export default function NewsOpinion() {
       .then((data) => {
         setOpinionData(opinions.filter((item) => item.opinionId !== opinionId));
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const MakeOpinionRecommendButton = (opinion) => {
@@ -249,7 +245,7 @@ export default function NewsOpinion() {
         disLikeBtnClassName = "btnUnselRed wid90";
       } else if (opinion.recommend == "DISLIKE") {
         likeBtnClassName = "btnUnselBlue wid90";
-      } else if (opinion.recommend == "NONE") {
+      } else if (opinion.recommend == "NONE" || opinion.recommend == "") {
         disLikeBtnClassName = "btnUnselRed wid90";
         likeBtnClassName = "btnUnselBlue wid90";
       }

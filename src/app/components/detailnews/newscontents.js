@@ -6,43 +6,49 @@ import { useRouter } from "next/navigation";
 export default function NewsContents() {
   const router = useRouter();
   let [detailNews, setDetailNews] = useState({});
+  let [newsStatus, setNewsStatus] = useState({});
   let [scrapStatus, setScrapStatus] = useState(Boolean);
   let [newsRecommendState, setNewsRecommendState] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       RequestDetailNews();
+      RequestNewsStatus();
     }
   }, []);
 
   const RequestDetailNews = () => {
     if (typeof window !== "undefined") {
+      var newsUrl = window.localStorage.getItem("newsUrl");
+    }
+    fetch(`/api/news/guest/detail?newsUrl=${newsUrl}`, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setDetailNews(data.detailNews);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const RequestNewsStatus = () => {
+    if (typeof window !== "undefined") {
       var token = window.localStorage.getItem("token");
       var newsUrl = window.localStorage.getItem("newsUrl");
     }
-    fetch(`/api/news/detail?newsUrl=${newsUrl}`, {
+    fetch(`/api/news/status?newsUrl=${newsUrl}`, {
       method: "GET",
       headers: {
         "X-AUTH-TOKEN": token,
       },
     })
-      .then(res => {
-        if (res.status == 200) {
-          return res.json();
-        }
-        else if (res.status == 500) {
-          swal({
-            text: "로그인이 필요합니다.",
-          });
-          router.replace("/login");
-        }
-      })
+      .then((res) => res.json())
       .then((data) => {
-        setDetailNews(data.detailNews);
-        setScrapStatus(data.detailNews.scrap);
-        setNewsRecommendState(data.detailNews.recommend);
+        setScrapStatus(data.memberNewsStatus.scrap);
+        setNewsRecommendState(data.memberNewsStatus.recommend);
+        setNewsStatus(data.memberNewsStatus);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const ImageLazyLoading = () => {
@@ -87,21 +93,17 @@ export default function NewsContents() {
       //전송할 데이터 json으로 변환해서 body에 넣어줌
       body: JSON.stringify({ newsUrl }),
     })
-      .then(res => {
+      .then((res) => {
         if (res.status == 200) {
-          return res.json();
-        }
-        else if (res.status == 500) {
+          setScrapStatus(scrap);
+        } else if (res.status == 500) {
           swal({
             text: "로그인이 필요합니다.",
           });
           router.replace("/login");
         }
       })
-      .then((data) => {
-        setScrapStatus(scrap);
-      })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const MakeNewsRecommendButton = (recommend) => {
@@ -111,7 +113,7 @@ export default function NewsContents() {
       disLikeBtnClassName = "btnUnselRed wid90 mr10";
     } else if (recommend == "DISLIKE") {
       likeBtnClassName = "btnUnselBlue wid90 mr10";
-    } else if (recommend == "NONE") {
+    } else if (recommend == "NONE" || recommend == "") {
       disLikeBtnClassName = "btnUnselRed wid90 mr10";
       likeBtnClassName = "btnUnselBlue wid90 mr10";
     }
@@ -153,29 +155,26 @@ export default function NewsContents() {
       },
       body: JSON.stringify({ newsUrl, status }),
     })
-      .then(res => {
+      .then((res) => {
         if (res.status == 200) {
-          return res.json();
-        }
-        else if (res.status == 500) {
+          var newCnt = CalculateLikeCount(
+            newsStatus.recommend,
+            recommend,
+            detailNews.likeCount
+          );
+          detailNews.likeCount = newCnt;
+          newsStatus.recommend = recommend;
+          setDetailNews(detailNews);
+          setNewsRecommendState(status);
+        } else if (res.status == 500) {
           swal({
             text: "로그인이 필요합니다.",
           });
           router.replace("/login");
         }
       })
-      .then((data) => {
-        var newCnt = CalculateLikeCount(
-          detailNews.recommend,
-          recommend,
-          detailNews.likeCount
-        );
-        detailNews.likeCount = newCnt;
-        detailNews.recommend = recommend;
-        setDetailNews(detailNews);
-        setNewsRecommendState(status);
-      })
-      .catch(err => console.log(err));
+      .then((data) => {})
+      .catch((err) => console.log(err));
   };
 
   return (
