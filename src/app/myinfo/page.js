@@ -17,6 +17,10 @@ export default function RootLayout({ children }) {
   let [subKeyword, setSubKeywordList] = useState([]);
   let [newKeyword, setNewKeyword] = useState("");
 
+  let [subMediaStatus, setSubMediaStatus] = useState("SELECT");
+  let [subCategoryStatus, setSubCategoryStatus] = useState("SELECT");
+  let [subKeywordStatus, setSubKeywordStatus] = useState("SSELECT");
+
   useEffect(() => {
     getMediaList();
     getCategoryList();
@@ -27,7 +31,7 @@ export default function RootLayout({ children }) {
   }, [token]);
 
   // 사용자 구독 정보 요청
-  function getMemberSubscribe(){
+  function getMemberSubscribe() {
     fetch("/api/subscribe/all", {
       method: "GET",
       headers: {
@@ -35,23 +39,26 @@ export default function RootLayout({ children }) {
         "X-AUTH-TOKEN": token,
       },
     })
-    .then((res) => {
-      if (res.status == 200)
-        return res.json();
-      else if (res.status == 500) {
-        swal({
-          text: "로그인이 필요합니다.",
-        });
-        router.replace("/login");
-      }
-    })
-     .then((data) => {
+      .then((res) => {
+        if (res.status == 200) return res.json();
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
+      })
+      .then((data) => {
+        console.log(data);
         setSubMediaList(data.mediaList);
         setSubCategoryList(data.categoryList);
         setSubKeywordList(data.keywordList);
+        setSubMediaStatus(data.mediaSubscribeStatus);
+        setSubCategoryStatus(data.categorySubscribeStatus);
+        setSubKeywordStatus(data.keywordSubscribeStatus);
       })
-      .catch(err=>console.log(err))
-  };
+      .catch((err) => console.log(err));
+  }
 
   // 전체 언론사, 카테고리 요청
   const getMediaList = () => {
@@ -59,38 +66,36 @@ export default function RootLayout({ children }) {
       method: "GET",
     })
       .then((res) => {
-        if (res.status == 200)
-        return res.json();
-      else if (res.status == 500) {
-        swal({
-          text: "로그인이 필요합니다.",
-        });
-        router.replace("/login");
-      }
+        if (res.status == 200) return res.json();
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
       })
       .then((data) => {
         setMediaList(data.mediaList);
       })
-      .catch(err=>console.log(err))
+      .catch((err) => console.log(err));
   };
   const getCategoryList = () => {
     fetch("/api/subscribe/guest/category", {
       method: "GET",
     })
       .then((res) => {
-        if (res.status == 200)
-        return res.json();
-      else if (res.status == 500) {
-        swal({
-          text: "로그인이 필요합니다.",
-        });
-        router.replace("/login");
-      }
+        if (res.status == 200) return res.json();
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
       })
       .then((data) => {
         setCategoryList(data.nameList);
       })
-      .catch(err=>console.log(err));
+      .catch((err) => console.log(err));
   };
 
   // 언론사 체크 박스 클릭
@@ -114,17 +119,16 @@ export default function RootLayout({ children }) {
       }),
     })
       .then((res) => {
-        if (res.status == 200)
-        return res.json();
-      else if (res.status == 500) {
-        swal({
-          text: "로그인이 필요합니다.",
-        });
-        router.replace("/login");
-      }
+        if (res.status == 200) return res.json();
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
       })
       .then((data) => {})
-      .catch(err=>console.log(err));
+      .catch((err) => console.log(err));
   };
 
   // 카테고리 체크 박스 클릭
@@ -148,57 +152,55 @@ export default function RootLayout({ children }) {
       }),
     })
       .then((res) => {
-        if (res.status == 200)
-        return res.json();
-      else if (res.status == 500) {
-        swal({
-          text: "로그인이 필요합니다.",
-        });
-        router.replace("/login");
-      }
+        if (res.status == 200) return res.json();
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
       })
       .then((data) => {})
-      .catch(err=>console.log(err));
+      .catch((err) => console.log(err));
   };
 
-    // 키워드 추가
-    const onClickAddKeyword = () => {
-      const opinionContent = document.getElementById("keyword_contents").value;
-      let copy = [...subKeyword];
-      if (!copy.includes(opinionContent)){
-        copy.push(opinionContent);
-        setSubKeywordList(copy);
-        fetch("/api/subscribe/keyword", {
-          method: "POST",
-          headers: {
-            "X-AUTH-TOKEN": token,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nameList: copy,
-          }),
-        })
-          .then((res) => {
-            if (res.status == 200)
-            return res.json();
+  // 키워드 추가
+  const onClickAddKeyword = () => {
+    const opinionContent = document.getElementById("keyword_contents").value;
+    let copy = [...subKeyword];
+    if (!copy.includes(opinionContent)) {
+      copy.push(opinionContent);
+      setSubKeywordList(copy);
+      fetch("/api/subscribe/keyword", {
+        method: "POST",
+        headers: {
+          "X-AUTH-TOKEN": token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nameList: copy,
+        }),
+      })
+        .then((res) => {
+          if (res.status == 200) return res.json();
           else if (res.status == 500) {
             swal({
               text: "로그인이 필요합니다.",
             });
             router.replace("/login");
           }
-          })
-          .then((data) => {
-            setNewKeyword("");
-          })
-          .catch(err=>console.log(err));
-        }else{
-          swal({
-            text: "이미 등록된 키워드입니다.",
-          });
-        }
-    };
-    
+        })
+        .then((data) => {
+          setNewKeyword("");
+        })
+        .catch((err) => console.log(err));
+    } else {
+      swal({
+        text: "이미 등록된 키워드입니다.",
+      });
+    }
+  };
+
   const makeRemoveKeywordButton = (keyword) => {
     return (
       <button
@@ -210,7 +212,7 @@ export default function RootLayout({ children }) {
       </button>
     );
   };
-  
+
   //댓글 삭제
   const removeKeyword = (keyword) => {
     let copy = [...subKeyword];
@@ -227,18 +229,44 @@ export default function RootLayout({ children }) {
       }),
     })
       .then((res) => {
-        if (res.status == 200)
-        return res.json();
-      else if (res.status == 500) {
-        swal({
-          text: "로그인이 필요합니다.",
-        });
-        router.replace("/login");
-      }
+        if (res.status == 200) return res.json();
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
       })
-      .then((data) => {
+      .then((data) => {})
+      .catch((err) => console.log(err));
+  };
+
+  // 구독 상태 체크박스 클릭
+  const onClickSubscribeStatusCheckbox = (target, e) => {
+    var status = e.checked ? "ALL" : "SELECT";
+    setSubMediaStatus(status);
+
+    fetch(`/api/subscribe/${target}/Status`, {
+      method: "POST",
+      headers: {
+        "X-AUTH-TOKEN": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status: status,
+      }),
+    })
+      .then((res) => {
+        if (res.status == 200) return res.json();
+        else if (res.status == 500) {
+          swal({
+            text: "로그인이 필요합니다.",
+          });
+          router.replace("/login");
+        }
       })
-      .catch(err=>console.log(err));
+      .then((data) => {})
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -270,14 +298,43 @@ export default function RootLayout({ children }) {
 
       <div className="wrap3">
         <div className="contentTitleBox">
-          <h3>#언론사</h3>
+          {/* { to do list finder - ui 스타일링 필요 } */}
+          <table className="tableTypeMain">
+            <colgroup>
+              <col style={{ width: "*" }}></col>
+              <col style={{ width: "20" }}></col>
+              <col style={{ width: "15" }}></col>
+            </colgroup>
+            <tbody>
+              <tr>
+                <td>
+                  <h3>#언론사</h3>
+                </td>
+                <td>
+                  <label>전체 선택</label>
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={() => {
+                      console.log(subMediaStatus);
+                      return subMediaStatus === "ALL";
+                    }}
+                    onChange={(e) => {
+                      return onClickSubscribeStatusCheckbox("media", e.target);
+                    }}
+                  ></input>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <table className="tableTypeSort scrollTable center">
           <colgroup>
-            <col style={{ width: '35%' }} />
-            <col style={{ width: '30%' }} />
-            <col style={{ width: '35%' }} />
+            <col style={{ width: "35%" }} />
+            <col style={{ width: "30%" }} />
+            <col style={{ width: "35%" }} />
           </colgroup>
           <thead>
             <tr>
@@ -311,13 +368,33 @@ export default function RootLayout({ children }) {
 
       <div className="wrap3">
         <div className="contentTitleBox">
-          <h3>#주제</h3>
+          {/* { to do list finder - ui 스타일링 필요 } */}
+          <table className="tableTypeMain">
+            <colgroup>
+              <col style={{ width: "*" }}></col>
+              <col style={{ width: "20" }}></col>
+              <col style={{ width: "15" }}></col>
+            </colgroup>
+            <tbody>
+              <tr>
+                <td>
+                  <h3>#주제</h3>
+                </td>
+                <td>
+                  <label>전체 선택</label>
+                </td>
+                <td>
+                  <input type="checkbox"></input>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <table className="tableTypeSort scrollTable center">
           <colgroup>
-            <col style={{ width: '45%' }} />
-            <col style={{ width: '55%' }} />
+            <col style={{ width: "45%" }} />
+            <col style={{ width: "55%" }} />
           </colgroup>
           <thead>
             <tr>
@@ -347,13 +424,33 @@ export default function RootLayout({ children }) {
 
       <div className="wrap3">
         <div className="contentTitleBox">
-          <h3>#키워드</h3>
+          {/* { to do list finder - ui 스타일링 필요 } */}
+          <table className="tableTypeMain">
+            <colgroup>
+              <col style={{ width: "*" }}></col>
+              <col style={{ width: "20" }}></col>
+              <col style={{ width: "15" }}></col>
+            </colgroup>
+            <tbody>
+              <tr>
+                <td>
+                  <h3>#키워드</h3>
+                </td>
+                <td>
+                  <label>필터링</label>
+                </td>
+                <td>
+                  <input type="checkbox"></input>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <table className="tableTypeSort scrollTable5 center">
           <colgroup>
-            <col style={{ width: '45%' }} />
-            <col style={{ width: '55%' }} />
+            <col style={{ width: "45%" }} />
+            <col style={{ width: "55%" }} />
           </colgroup>
           <thead>
             <tr>
@@ -366,9 +463,7 @@ export default function RootLayout({ children }) {
               return (
                 <tr key={index}>
                   <td>{keyword}</td>
-                  <td>
-                    {makeRemoveKeywordButton(keyword)}
-                  </td>
+                  <td>{makeRemoveKeywordButton(keyword)}</td>
                 </tr>
               );
             })}
@@ -376,16 +471,24 @@ export default function RootLayout({ children }) {
         </table>
 
         <div className="centerBox mt20">
-          <div className='mb5 tl'>키워드 추가(한개씩 추가)</div>
-          <textarea 
+          <div className="mb5 tl">키워드 추가(한개씩 추가)</div>
+          <textarea
             className="h10"
             id="keyword_contents"
-            name="" 
+            name=""
             value={newKeyword}
-            onChange={(e) => setNewKeyword(e.target.value)}></textarea>
-          <div className='mb20 tr'><button type="button" className="btnRed" onClick={() => onClickAddKeyword()}>추가</button></div>
+            onChange={(e) => setNewKeyword(e.target.value)}
+          ></textarea>
+          <div className="mb20 tr">
+            <button
+              type="button"
+              className="btnRed"
+              onClick={() => onClickAddKeyword()}
+            >
+              추가
+            </button>
+          </div>
         </div>
-        
       </div>
     </div>
   );
