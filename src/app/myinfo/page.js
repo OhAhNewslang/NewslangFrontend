@@ -17,6 +17,8 @@ export default function RootLayout({ children }) {
   let [subKeyword, setSubKeywordList] = useState([]);
   let [newKeyword, setNewKeyword] = useState("");
 
+  let [keywordNews, setKeywordNews] = useState([]);
+
   let [subMediaStatus, setSubMediaStatus] = useState("SELECT");
   let [subCategoryStatus, setSubCategoryStatus] = useState("SELECT");
   let [subKeywordStatus, setSubKeywordStatus] = useState("SSELECT");
@@ -98,6 +100,49 @@ export default function RootLayout({ children }) {
       .catch((err) => console.log(err));
   };
 
+  const keywordHandleKeyDown = (event) => {
+    // if (event.key === "Enter" && event.ctrlKey === true) {
+    //   console.log("Enter");
+    // }
+
+    const keyword = document.getElementById("keyword_contents").value;
+    if (event.key === "Backspace") {
+      if (keyword.trim() === "") {
+        setKeywordNews([]);
+        return;
+      }
+    }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (keyword.trim() === "") {
+        setKeywordNews([]);
+        return;
+      }
+      fetch(`/api/news/keyword?page=${1}&limit=${5}&keyword=${keyword}`, {
+        method: "GET",
+        headers: {
+          "X-AUTH-TOKEN": token,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // console.log(data);
+          if (
+            data.thumbnailNewsList !== "undefined" &&
+            data.thumbnailNewsList.length > 0
+          ) {
+            setKeywordNews(data.thumbnailNewsList);
+          } else {
+            setKeywordNews([]);
+            swal({
+              text: keyword + "(으)로 조회되는 뉴스가 없습니다.",
+            });
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   // 언론사 체크 박스 클릭
   const onClickMediaCheckbox = (e) => {
     let copy = [...subMedia];
@@ -166,10 +211,10 @@ export default function RootLayout({ children }) {
 
   // 키워드 추가
   const onClickAddKeyword = () => {
-    const opinionContent = document.getElementById("keyword_contents").value;
+    const keyword = document.getElementById("keyword_contents").value;
     let copy = [...subKeyword];
-    if (!copy.includes(opinionContent)) {
-      copy.push(opinionContent);
+    if (!copy.includes(keyword)) {
+      copy.push(keyword);
       setSubKeywordList(copy);
       fetch("/api/subscribe/keyword", {
         method: "POST",
@@ -480,13 +525,17 @@ export default function RootLayout({ children }) {
         </table>
 
         <div className="centerBox mt20">
-          <div className="mb5 tl">키워드 추가(한개씩 추가)</div>
+          <div className="mb5 tl">키워드 추가 (미리보기 : Enter)</div>
           <textarea
             className="h10"
             id="keyword_contents"
             name=""
             value={newKeyword}
-            onChange={(e) => setNewKeyword(e.target.value)}
+            onChange={(e) => {
+              setNewKeyword(e.target.value);
+            }}
+            // onKeyDown={(e) => getKeywordNews(e.target, 1, 5, e.target.value)}
+            onKeyDown={keywordHandleKeyDown}
           ></textarea>
           <div className="mb20 tr">
             <button
@@ -498,6 +547,31 @@ export default function RootLayout({ children }) {
             </button>
           </div>
         </div>
+        <div className="centerBox mt20"></div>
+        <table>
+          <colgroup>
+            <col style={{ width: "20%" }} />
+            <col style={{ width: "80%" }} />
+          </colgroup>
+          {/* <thead>
+            <tr>
+              <th>주제</th>
+              <th>구독</th>
+            </tr>
+          </thead> */}
+          <tbody>
+            {keywordNews.map((news, index) => {
+              return (
+                <tr key={index}>
+                  <td>
+                    <img src={news.imagePath} />
+                  </td>
+                  <td>{news.title}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
