@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
         }
       })
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         setSubMediaList(data.mediaList);
         setSubCategoryList(data.categoryList);
         setSubKeywordList(data.keywordList);
@@ -242,19 +242,13 @@ export default function RootLayout({ children }) {
   };
 
   // 구독 상태 체크박스 클릭
-  const onClickSubscribeStatusCheckbox = (target, e) => {
-    var status = e.checked ? "ALL" : "SELECT";
-    setSubMediaStatus(status);
-
-    fetch(`/api/subscribe/${target}/Status`, {
+  const onClickSubscribeCheckbox = (target, status) => {
+    fetch(`/api/subscribe/${target}/status?status=${status}`, {
       method: "POST",
       headers: {
         "X-AUTH-TOKEN": token,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        status: status,
-      }),
     })
       .then((res) => {
         if (res.status == 200) return res.json();
@@ -311,17 +305,16 @@ export default function RootLayout({ children }) {
                   <h3>#언론사</h3>
                 </td>
                 <td>
-                  <label>전체 선택</label>
+                  <label>전체 구독</label>
                 </td>
                 <td>
                   <input
                     type="checkbox"
-                    checked={() => {
-                      console.log(subMediaStatus);
-                      return subMediaStatus === "ALL";
-                    }}
+                    checked={subMediaStatus === "ALL"}
                     onChange={(e) => {
-                      return onClickSubscribeStatusCheckbox("media", e.target);
+                      var status = e.target.checked ? "ALL" : "SELECT";
+                      setSubMediaStatus(status);
+                      onClickSubscribeCheckbox("media", status);
                     }}
                   ></input>
                 </td>
@@ -381,10 +374,18 @@ export default function RootLayout({ children }) {
                   <h3>#주제</h3>
                 </td>
                 <td>
-                  <label>전체 선택</label>
+                  <label>전체 구독</label>
                 </td>
                 <td>
-                  <input type="checkbox"></input>
+                  <input
+                    type="checkbox"
+                    checked={subCategoryStatus === "ALL"}
+                    onChange={(e) => {
+                      var status = e.target.checked ? "ALL" : "SELECT";
+                      setSubCategoryStatus(status);
+                      onClickSubscribeCheckbox("category", status);
+                    }}
+                  ></input>
                 </td>
               </tr>
             </tbody>
@@ -437,10 +438,18 @@ export default function RootLayout({ children }) {
                   <h3>#키워드</h3>
                 </td>
                 <td>
-                  <label>필터링</label>
+                  <label>비활성화</label>
                 </td>
                 <td>
-                  <input type="checkbox"></input>
+                  <input
+                    type="checkbox"
+                    checked={subKeywordStatus === "ALL"}
+                    onChange={(e) => {
+                      var status = e.target.checked ? "ALL" : "SELECT";
+                      setSubKeywordStatus(status);
+                      onClickSubscribeCheckbox("keyword", status);
+                    }}
+                  ></input>
                 </td>
               </tr>
             </tbody>

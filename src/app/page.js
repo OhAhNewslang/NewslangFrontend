@@ -12,7 +12,7 @@ export default function Home() {
   let [LoginBox, setLoginBox] = useState("");
 
   if (typeof window !== "undefined") {
-    var token = window.localStorage.getItem('token');
+    var token = window.localStorage.getItem("token");
   }
 
   //메인뉴스 페이징
@@ -51,34 +51,39 @@ export default function Home() {
 
   useEffect(() => {
     getLiveData(currentPage, limit);
-    getSubData(subcurrentPage, limit);
-  }, [currentPage,subcurrentPage]);
+  }, [currentPage]);
 
+  useEffect(() => {
+    getSubData(subcurrentPage, limit);
+  }, [subcurrentPage]);
 
   //구독뉴스가져오기
   function getSubData(page, limit) {
     fetch(`/api/news/subscribe?page=${page}&limit=${limit}`, {
       method: "GET",
       headers: {
-        'X-AUTH-TOKEN': token
-      }
+        "X-AUTH-TOKEN": token,
+      },
     })
-      .then(res => {
-        if (res.status == 200){
+      .then((res) => {
+        if (res.status == 200) {
           setLoginBox("none");
           return res.json();
+        } else if (res.status == 500) {
+          router.refresh();
+          setLoginBox("");
         }
-      else if (res.status == 500) {
-        router.refresh();
-        setLoginBox("");
-      }
       })
-      .then(data => {
-        setSubThumbnailNews(data.thumbnailNewsList);
+      .then((data) => {
+        if (
+          data.thumbnailNewsList !== "undefined" &&
+          data.thumbnailNewsList.length > 0
+        ) {
+          setSubThumbnailNews(data.thumbnailNewsList);
+        }
       })
-      .catch(err=>console.log(err))
+      .catch((err) => console.log(err));
   }
-
 
   const getLiveData = async (page, limit) => {
     fetch(`/api/news/guest/live?page=${page}&limit=${limit}`, {
@@ -89,7 +94,12 @@ export default function Home() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setLiveThumbnailNews(data.thumbnailNewsList);
+        if (
+          data.thumbnailNewsList !== "undefined" &&
+          data.thumbnailNewsList.length > 0
+        ) {
+          setLiveThumbnailNews(data.thumbnailNewsList);
+        }
       });
   };
 
@@ -114,28 +124,30 @@ export default function Home() {
                 <th>언론사</th>
               </tr>
             </thead>
-            <tbody style={{width:"450px",height:"535px"}}>
-
-            <tr className="noLoginBox" style={{display:LoginBox}}>
-              <td className="noLoginChild">
-              로그인 후 이용해주세요.<br/>
-              <Link href="/login">
-              <button type="button" className="btnBlue mr5">로그인하러 가기</button>
-              </Link>
-              </td>
-            </tr>
+            <tbody style={{ width: "450px", height: "535px" }}>
+              <tr className="noLoginBox" style={{ display: LoginBox }}>
+                <td className="noLoginChild">
+                  로그인 후 이용해주세요.
+                  <br />
+                  <Link href="/login">
+                    <button type="button" className="btnBlue mr5">
+                      로그인하러 가기
+                    </button>
+                  </Link>
+                </td>
+              </tr>
 
               {subThumbnailNewsList.map((news, index) => {
                 return (
                   <tr key={index}>
-                    <td style={{height:"76px"}}>
-                    <a
+                    <td style={{ height: "76px" }}>
+                      <a
                         href={`/view?newsUrl=${news.url}`}
                         onClick={() => {
                           localStorage.setItem("newsUrl", news.url);
                         }}
                       >
-                      <img src={news.imagePath}/>
+                        <img src={news.imagePath} />
                       </a>
                     </td>
                     <td className="tl">
@@ -147,7 +159,7 @@ export default function Home() {
                       >
                         {news.title}
                       </a>
-                      </td>
+                    </td>
                     <td>{news.media}</td>
                   </tr>
                 );
@@ -189,7 +201,6 @@ export default function Home() {
             </li>
           </ul>
         </div>
-
       </div>
 
       <div className="wrap2">
@@ -210,18 +221,18 @@ export default function Home() {
                 <th>언론사</th>
               </tr>
             </thead>
-            <tbody style={{width:"450px",height:"535px"}}>
+            <tbody style={{ width: "450px", height: "535px" }}>
               {liveThumbnailNewsList.map((news, index) => {
                 return (
                   <tr key={index}>
-                    <td style={{height:"76px"}}>
-                    <a
+                    <td style={{ height: "76px" }}>
+                      <a
                         href={`/view?newsUrl=${news.url}`}
                         onClick={() => {
                           localStorage.setItem("newsUrl", news.url);
                         }}
                       >
-                      <img src={news.imagePath}/>
+                        <img src={news.imagePath} />
                       </a>
                     </td>
                     <td className="tl">
@@ -276,7 +287,6 @@ export default function Home() {
             </li>
           </ul>
         </div>
-
       </div>
     </div>
   );
