@@ -9,12 +9,17 @@ export default function NewsContents() {
   let [newsStatus, setNewsStatus] = useState({});
   let [scrapStatus, setScrapStatus] = useState(Boolean);
   let [newsRecommendState, setNewsRecommendState] = useState("");
+  let [summaryNews, setSummaryNews] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       RequestDetailNews();
       RequestNewsStatus();
     }
+  }, []);
+
+  useEffect(() => {
+    RequestSummarizeNews();
   }, []);
 
   const RequestDetailNews = () => {
@@ -27,6 +32,26 @@ export default function NewsContents() {
       .then((res) => res.json())
       .then((data) => {
         setDetailNews(data.detailNews);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const RequestSummarizeNews = () => {
+    if (typeof window !== "undefined") {
+      var token = window.localStorage.getItem("token");
+      var newsUrl = window.localStorage.getItem("newsUrl");
+    }
+    fetch(`/api/chat/news/summarize?newUrl=${newsUrl}`, {
+      // fetch(`/api/chat/news/summarize`, {
+      method: "GET",
+      headers: {
+        "X-AUTH-TOKEN": token,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setSummaryNews(data.answer);
       })
       .catch((err) => console.log(err));
   };
