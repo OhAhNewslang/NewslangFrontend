@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Script from 'next/script';
 import './globals.css'
 
 export default function RootLayout({ children }) {
@@ -77,8 +78,8 @@ export default function RootLayout({ children }) {
   return (
     <html>
       <head>
-        <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
-        <script type="text/javascript" src="js/common.js"></script>
+        <Script src={"js/jquery-3.2.1.min.js"}></Script>
+        <Script src={"js/common.js"}></Script>
       </head>
       <body>
 

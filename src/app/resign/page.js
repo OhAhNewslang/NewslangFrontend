@@ -5,8 +5,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import swal from 'sweetalert';
 
-
-
 export default function RootLayout({ children }) {
     const router = useRouter();
     if (typeof window !== "undefined") {
