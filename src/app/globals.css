@@ -31,6 +31,8 @@ html, body { width:100%; height:100%; padding:0px; margin:0px; position:relative
 body { word-break:break-all; }
 html, body,div,p,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,table,thead,tbody,tfoot,tr,th,td,form,fieldset,legend,input,textarea,a,button,strong,select,input,header,footer,article,nav { margin:0; padding:0; }
 
+
+
 body,input,textarea,select,button,table { font-family:"NanumGothic", NotoSans, sans-serif; font-size:12px; color:#333; font-weight:200; line-height:1.2; }
 img,fieldset,iframe { border:0; -webkit-tap-highlight-color:rgba(0,0,0,0) }
 img,input,label,button { vertical-align:middle; outline:none; }
@@ -257,6 +259,7 @@ button.btnUnselRed { padding:0 10px;border:1px solid #c3c6c9; background:#fff; c
 .wrap.commonInfo { width:700px; }
 .smallExpense { position:relative; }
 .wrapper { position:relative; width:100%; height:100%; }
+.summarize { white-space: pre-wrap;}
 
 /*main1*/
 .main1 { width:1280px; margin:13px auto 0;  }
@@ -503,6 +506,7 @@ table tr.subSum2 td:nth-child(3) { font-weight:600; text-align:center; }
 .tableTypeBoard2 td a { color:#333; text-decoration:underline; }
 .tableTypeBoard2 td a:hover { text-decoration:underline; }
 .tableTypeBoard2 td.viewBox { height:500px; padding:20px 50px; overflow-y:auto; line-height:1.5; vertical-align:top;}
+.tableTypeBoard2 td.viewBox2 { height:auto; padding:20px 50px; overflow-y:auto; line-height:1.5; vertical-align:top;}
 .tableTypeBtn { border:none; border-bottom: none;}
 .tableTypeBtn td { border:none;}
 .email tr { height:50px; }

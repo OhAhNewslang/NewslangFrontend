@@ -9,7 +9,7 @@ export default function NewsContents() {
   let [newsStatus, setNewsStatus] = useState({});
   let [scrapStatus, setScrapStatus] = useState(Boolean);
   let [newsRecommendState, setNewsRecommendState] = useState("");
-  let [summaryNews, setSummaryNews] = useState("");
+  let [summaryNews, setSummaryNews] = useState("본문을 요약하고 있습니다.");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -48,12 +48,19 @@ export default function NewsContents() {
         "X-AUTH-TOKEN": token,
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else if (res.status == 500) {
+          setSummaryNews("로그인이 필요한 서비스입니다.");
+        }
+      })
       .then((data) => {
-        console.log(data);
         setSummaryNews(data.answer);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log("ERR : " + err)
+      });
   };
 
   const RequestNewsStatus = () => {
@@ -244,9 +251,20 @@ export default function NewsContents() {
             <div
               onLoad={ImageLazyLoading()}
               dangerouslySetInnerHTML={{
-                __html: `${detailNews.contents}`,
+                __html: `${detailNews.article}`,
               }}
             ></div>
+          </td>
+        </tr>
+        <tr>
+          <td colSpan="4" className="viewBox2">
+            <h3>
+              본문 요약 및 정리
+            </h3>
+            <br></br>
+            <div className="summarize">
+              {summaryNews}
+            </div>
           </td>
         </tr>
       </tbody>

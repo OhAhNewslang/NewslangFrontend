@@ -33,8 +33,13 @@ export default function RootLayout({ children }) {
                 setId(data.loginId);
                 setEmail(data.email);
                 setName(data.name);
+                setRole(data.role);
             })
             .catch(err=>console.log(err));
+    }, [])
+
+    useEffect(() => {
+        getApiKeys();
     }, [])
 
     //비밀번호 일치하면 수정가능
@@ -59,6 +64,9 @@ export default function RootLayout({ children }) {
     const [fetchName, setName] = useState("");
     const [fetchEmail, setEmail] = useState("");
     const [fetchId, setId] = useState("");
+    const [role, setRole] = useState("");
+    const [gptApiKey, setGptApiKey] = useState("");
+    const [translationKey, setTranslationKey] = useState("");
     const onPwdChange = (e) => {
         setPwd(e.target.value);
     };
@@ -71,7 +79,47 @@ export default function RootLayout({ children }) {
     const onIdChange = (e) => {
         setId(e.target.value);
     };
+    const onGptApiKey = (e) => {
+        setGptApiKey(e.target.value);
+    };
+    const onTranslationKey = (e) => {
+        setTranslationKey(e.target.value);
+    };
     
+    const getApiKeys = () => {
+        if (typeof window !== "undefined") {
+            var token = window.localStorage.getItem('token');
+        }
+        fetch(`/api/chat/admin/gpt/k`, {
+            method: "GET",
+            headers: {
+                'X-AUTH-TOKEN': token,
+            }
+        }).then((res) => res.json())
+        .then((data) => {
+            // console.log(data);
+            setGptApiKey(data.apiKeys.apiKey);
+            setTranslationKey(data.apiKeys.translationKey);
+        })
+        .catch(err=>console.log(err));
+    }
+    
+    const updateApiKeys = (apiKey, translationKey) => {
+        if (typeof window !== "undefined") {
+            var token = window.localStorage.getItem('token');
+        }
+        fetch(`/api/chat/admin/gpt/k`, {
+            method: "POST",
+            headers: {
+                'X-AUTH-TOKEN': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ apiKey, translationKey }),
+        }).then((res) => res.json())
+        .then((data) => {
+        })
+        .catch(err=>console.log(err));
+    }
 
     //수정api
     function handleUpdateClick(name, email) {
@@ -113,7 +161,12 @@ export default function RootLayout({ children }) {
                 setName(data.name);
             })
             .catch(err=>console.log(err));;
+
+        if (role === "ROLE_ADMIN"){
+            updateApiKeys(gptApiKey, translationKey);
+        }
     }
+
     //탈퇴api
     function handleDeleteClick(password) {
         if (typeof window !== "undefined") {
@@ -162,10 +215,26 @@ export default function RootLayout({ children }) {
                         break;
                 }
             })
-            .catch(err=>console.log(err));;
+            .catch(err=>console.log(err));
     }
 
-
+    const genRowApiKeys = (r, aKey, tKey) => {
+        if (r === "ROLE_ADMIN") {
+            return (
+                <><tr>
+                    <th>GPT Api Key</th>
+                    <td colSpan="3">
+                        <input type="password" className="wid200" name="email" value={aKey} onChange={onGptApiKey} />
+                    </td>
+                </tr><tr>
+                        <th>Translation Key</th>
+                        <td colSpan="3">
+                            <input type="password" className="wid200" name="email" value={tKey} onChange={onTranslationKey} />
+                        </td>
+                    </tr></>
+            );
+        }
+    };
 
     return (
         <div className="wrap wid560">
@@ -234,10 +303,7 @@ export default function RootLayout({ children }) {
                                 </p>
                             </td>
                         </tr>
-
-
-
-
+                        {genRowApiKeys(role, gptApiKey, translationKey)}
                     </tbody>
                 </table>
                 <div>
