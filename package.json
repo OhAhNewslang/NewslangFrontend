@@ -1,5 +1,5 @@
 {
-  "name": "next",
+  "name": "newslanfrontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -20,5 +20,10 @@
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.7.32",
     "tailwindcss": "3.3.3"
-  }
+  },
+  "description": "Hello",
+  "main": "next.config.js",
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC"
 }
