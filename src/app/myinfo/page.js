@@ -41,25 +41,25 @@ export default function RootLayout({ children }) {
         "X-AUTH-TOKEN": token,
       },
     })
-      .then((res) => {
-        if (res.status == 200) return res.json();
-        else if (res.status == 500) {
-          swal({
-            text: "로그인이 필요합니다.",
-          });
-          router.replace("/login");
-        }
-      })
-      .then((data) => {
-        // console.log(data);
-        setSubMediaList(data.mediaList);
-        setSubCategoryList(data.categoryList);
-        setSubKeywordList(data.keywordList);
-        setSubMediaStatus(data.mediaSubscribeStatus);
-        setSubCategoryStatus(data.categorySubscribeStatus);
-        setSubKeywordStatus(data.keywordSubscribeStatus);
-      })
-      .catch((err) => console.log(err));
+        .then((res) => {
+          if (res.status == 200) return res.json();
+          else if (res.status == 500) {
+            swal({
+              text: "로그인이 필요합니다.",
+            });
+            router.replace("/login");
+          }
+        })
+        .then((data) => {
+          // console.log(data);
+          setSubMediaList(data.mediaList);
+          setSubCategoryList(data.categoryList);
+          setSubKeywordList(data.keywordList);
+          setSubMediaStatus(data.mediaSubscribeStatus);
+          setSubCategoryStatus(data.categorySubscribeStatus);
+          setSubKeywordStatus(data.keywordSubscribeStatus);
+        })
+        .catch((err) => console.log(err));
   }
 
   // 전체 언론사, 카테고리 요청
@@ -67,37 +67,37 @@ export default function RootLayout({ children }) {
     fetch("/api/subscribe/guest/media", {
       method: "GET",
     })
-      .then((res) => {
-        if (res.status == 200) return res.json();
-        else if (res.status == 500) {
-          swal({
-            text: "로그인이 필요합니다.",
-          });
-          router.replace("/login");
-        }
-      })
-      .then((data) => {
-        setMediaList(data.mediaList);
-      })
-      .catch((err) => console.log(err));
+        .then((res) => {
+          if (res.status == 200) return res.json();
+          else if (res.status == 500) {
+            swal({
+              text: "로그인이 필요합니다.",
+            });
+            router.replace("/login");
+          }
+        })
+        .then((data) => {
+          setMediaList(data.mediaList);
+        })
+        .catch((err) => console.log(err));
   };
   const getCategoryList = () => {
     fetch("/api/subscribe/guest/category", {
       method: "GET",
     })
-      .then((res) => {
-        if (res.status == 200) return res.json();
-        else if (res.status == 500) {
-          swal({
-            text: "로그인이 필요합니다.",
-          });
-          router.replace("/login");
-        }
-      })
-      .then((data) => {
-        setCategoryList(data.nameList);
-      })
-      .catch((err) => console.log(err));
+        .then((res) => {
+          if (res.status == 200) return res.json();
+          else if (res.status == 500) {
+            swal({
+              text: "로그인이 필요합니다.",
+            });
+            router.replace("/login");
+          }
+        })
+        .then((data) => {
+          setCategoryList(data.nameList);
+        })
+        .catch((err) => console.log(err));
   };
 
   const keywordHandleKeyDown = (event) => {
@@ -124,22 +124,22 @@ export default function RootLayout({ children }) {
           "X-AUTH-TOKEN": token,
         },
       })
-        .then((res) => res.json())
-        .then((data) => {
-          // console.log(data);
-          if (
-            data.thumbnailNewsList !== "undefined" &&
-            data.thumbnailNewsList.length > 0
-          ) {
-            setKeywordNews(data.thumbnailNewsList);
-          } else {
-            setKeywordNews([]);
-            swal({
-              text: keyword + "(으)로 조회되는 뉴스가 없습니다.",
-            });
-          }
-        })
-        .catch((err) => console.log(err));
+          .then((res) => res.json())
+          .then((data) => {
+            // console.log(data);
+            if (
+                data.thumbnailNewsList !== "undefined" &&
+                data.thumbnailNewsList.length > 0
+            ) {
+              setKeywordNews(data.thumbnailNewsList);
+            } else {
+              setKeywordNews([]);
+              swal({
+                text: keyword + "(으)로 조회되는 뉴스가 없습니다.",
+              });
+            }
+          })
+          .catch((err) => console.log(err));
     }
   };
 
@@ -163,17 +163,17 @@ export default function RootLayout({ children }) {
         nameList: copy,
       }),
     })
-      .then((res) => {
-        if (res.status == 200) return res.json();
-        else if (res.status == 500) {
-          swal({
-            text: "로그인이 필요합니다.",
-          });
-          router.replace("/login");
-        }
-      })
-      .then((data) => {})
-      .catch((err) => console.log(err));
+        .then((res) => {
+          if (res.status == 200) return res.json();
+          else if (res.status == 500) {
+            swal({
+              text: "로그인이 필요합니다.",
+            });
+            router.replace("/login");
+          }
+        })
+        .then((data) => {})
+        .catch((err) => console.log(err));
   };
 
   // 카테고리 체크 박스 클릭
@@ -196,17 +196,17 @@ export default function RootLayout({ children }) {
         nameList: copy,
       }),
     })
-      .then((res) => {
-        if (res.status == 200) return res.json();
-        else if (res.status == 500) {
-          swal({
-            text: "로그인이 필요합니다.",
-          });
-          router.replace("/login");
-        }
-      })
-      .then((data) => {})
-      .catch((err) => console.log(err));
+        .then((res) => {
+          if (res.status == 200) return res.json();
+          else if (res.status == 500) {
+            swal({
+              text: "로그인이 필요합니다.",
+            });
+            router.replace("/login");
+          }
+        })
+        .then((data) => {})
+        .catch((err) => console.log(err));
   };
 
   // 키워드 추가
@@ -226,19 +226,19 @@ export default function RootLayout({ children }) {
           nameList: copy,
         }),
       })
-        .then((res) => {
-          if (res.status == 200) return res.json();
-          else if (res.status == 500) {
-            swal({
-              text: "로그인이 필요합니다.",
-            });
-            router.replace("/login");
-          }
-        })
-        .then((data) => {
-          setNewKeyword("");
-        })
-        .catch((err) => console.log(err));
+          .then((res) => {
+            if (res.status == 200) return res.json();
+            else if (res.status == 500) {
+              swal({
+                text: "로그인이 필요합니다.",
+              });
+              router.replace("/login");
+            }
+          })
+          .then((data) => {
+            setNewKeyword("");
+          })
+          .catch((err) => console.log(err));
     } else {
       swal({
         text: "이미 등록된 키워드입니다.",
@@ -248,13 +248,13 @@ export default function RootLayout({ children }) {
 
   const makeRemoveKeywordButton = (keyword) => {
     return (
-      <button
-        className="btnUnselRed"
-        type="button"
-        onClick={() => removeKeyword(keyword)}
-      >
-        삭제
-      </button>
+        <button
+            className="btnUnselRed"
+            type="button"
+            onClick={() => removeKeyword(keyword)}
+        >
+          삭제
+        </button>
     );
   };
 
@@ -273,17 +273,17 @@ export default function RootLayout({ children }) {
         nameList: copy,
       }),
     })
-      .then((res) => {
-        if (res.status == 200) return res.json();
-        else if (res.status == 500) {
-          swal({
-            text: "로그인이 필요합니다.",
-          });
-          router.replace("/login");
-        }
-      })
-      .then((data) => {})
-      .catch((err) => console.log(err));
+        .then((res) => {
+          if (res.status == 200) return res.json();
+          else if (res.status == 500) {
+            swal({
+              text: "로그인이 필요합니다.",
+            });
+            router.replace("/login");
+          }
+        })
+        .then((data) => {})
+        .catch((err) => console.log(err));
   };
 
   // 구독 상태 체크박스 클릭
@@ -295,65 +295,52 @@ export default function RootLayout({ children }) {
         "Content-Type": "application/json",
       },
     })
-      .then((res) => {
-        if (res.status == 200) return res.json();
-        else if (res.status == 500) {
-          swal({
-            text: "로그인이 필요합니다.",
-          });
-          router.replace("/login");
-        }
-      })
-      .then((data) => {})
-      .catch((err) => console.log(err));
+        .then((res) => {
+          if (res.status == 200) return res.json();
+          else if (res.status == 500) {
+            swal({
+              text: "로그인이 필요합니다.",
+            });
+            router.replace("/login");
+          }
+        })
+        .then((data) => {})
+        .catch((err) => console.log(err));
   };
 
   return (
-    <div className="wrap">
-      <div className="floatBox mb50">
-        <div className="fr">
-          <Link href="/resign">
-            <button type="button" className="btnLight mr5">
-              내프로필
-            </button>
-          </Link>
-          <Link href="/myinfo">
-            <button type="button" className="btnLight mr5">
-              구독관리
-            </button>
-          </Link>
-          <Link href="/like">
-            <button type="button" className="btnLight mr5">
-              찜한기사
-            </button>
-          </Link>
-          <Link href="/comment">
-            <button type="button" className="btnLight mr5">
-              댓글관리
-            </button>
-          </Link>
+      <div className="wrap">
+        <div className="floatBox mb50">
+          <div className="fr">
+            <Link href="/resign">
+              <button type="button" className="btnLight mr5">
+                내프로필
+              </button>
+            </Link>
+            <Link href="/myinfo">
+              <button type="button" className="btnLight mr5">
+                구독관리
+              </button>
+            </Link>
+            <Link href="/like">
+              <button type="button" className="btnLight mr5">
+                찜한기사
+              </button>
+            </Link>
+            <Link href="/comment">
+              <button type="button" className="btnLight mr5">
+                댓글관리
+              </button>
+            </Link>
+          </div>
         </div>
-      </div>
 
-      <div className="wrap3">
-        <div className="contentTitleBox">
-          {/* { to do list finder - ui 스타일링 필요 } */}
-          <table className="tableTypeMain">
-            <colgroup>
-              <col style={{ width: "*" }}></col>
-              <col style={{ width: "20" }}></col>
-              <col style={{ width: "15" }}></col>
-            </colgroup>
-            <tbody>
-              <tr>
-                <td>
-                  <h3>#언론사</h3>
-                </td>
-                <td>
-                  <label>전체 구독</label>
-                </td>
-                <td>
-                  <input
+        <div className="wrap3">
+          <div className="contentTitleBox">
+            <h3>#언론사</h3>
+            <div className='tr'>
+              <label>
+                <input
                     type="checkbox"
                     checked={subMediaStatus === "ALL"}
                     onChange={(e) => {
@@ -361,68 +348,54 @@ export default function RootLayout({ children }) {
                       setSubMediaStatus(status);
                       onClickSubscribeCheckbox("media", status);
                     }}
-                  ></input>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                />
+                <span>전체구독</span>
+              </label>
+            </div>
+          </div>
 
-        <table className="tableTypeSort scrollTable center">
-          <colgroup>
-            <col style={{ width: "35%" }} />
-            <col style={{ width: "30%" }} />
-            <col style={{ width: "35%" }} />
-          </colgroup>
-          <thead>
+          <table className="tableTypeSort scrollTable center">
+            <colgroup>
+              <col style={{ width: "35%" }} />
+              <col style={{ width: "30%" }} />
+              <col style={{ width: "35%" }} />
+            </colgroup>
+            <thead>
             <tr>
               <th>사진</th>
               <th>언론사</th>
               <th>구독</th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             {mediaList.map((media) => {
               return (
-                <tr key={media.mediaName}>
-                  <td>
-                    <img src={media.imagePath} />
-                  </td>
-                  <td>{media.mediaName}</td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      value={media.mediaName}
-                      checked={subMedia.includes(media.mediaName)}
-                      onChange={(e) => onClickMediaCheckbox(e.target)}
-                    ></input>
-                  </td>
-                </tr>
+                  <tr key={media.mediaName}>
+                    <td>
+                      <img src={media.imagePath} />
+                    </td>
+                    <td>{media.mediaName}</td>
+                    <td>
+                      <input
+                          type="checkbox"
+                          value={media.mediaName}
+                          checked={subMedia.includes(media.mediaName)}
+                          onChange={(e) => onClickMediaCheckbox(e.target)}
+                      ></input>
+                    </td>
+                  </tr>
               );
             })}
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
 
-      <div className="wrap3">
-        <div className="contentTitleBox">
-          {/* { to do list finder - ui 스타일링 필요 } */}
-          <table className="tableTypeMain">
-            <colgroup>
-              <col style={{ width: "*" }}></col>
-              <col style={{ width: "20" }}></col>
-              <col style={{ width: "15" }}></col>
-            </colgroup>
-            <tbody>
-              <tr>
-                <td>
-                  <h3>#주제</h3>
-                </td>
-                <td>
-                  <label>전체 구독</label>
-                </td>
-                <td>
-                  <input
+        <div className="wrap3">
+          <div className="contentTitleBox">
+            <h3>#주제</h3>
+            <div className='tr'>
+              <label>
+                <input
                     type="checkbox"
                     checked={subCategoryStatus === "ALL"}
                     onChange={(e) => {
@@ -430,63 +403,49 @@ export default function RootLayout({ children }) {
                       setSubCategoryStatus(status);
                       onClickSubscribeCheckbox("category", status);
                     }}
-                  ></input>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                />
+                <span>전체구독</span>
+              </label>
+            </div>
+          </div>
 
-        <table className="tableTypeSort scrollTable center">
-          <colgroup>
-            <col style={{ width: "45%" }} />
-            <col style={{ width: "55%" }} />
-          </colgroup>
-          <thead>
+          <table className="tableTypeSort scrollTable center">
+            <colgroup>
+              <col style={{ width: "45%" }} />
+              <col style={{ width: "55%" }} />
+            </colgroup>
+            <thead>
             <tr>
               <th>주제</th>
               <th>구독</th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             {categoryList.map((category) => {
               return (
-                <tr key={category}>
-                  <td>{category}</td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      value={category}
-                      checked={subCategory.includes(category)}
-                      onChange={(e) => onClickCategoryCheckbox(e.target)}
-                    ></input>
-                  </td>
-                </tr>
+                  <tr key={category}>
+                    <td>{category}</td>
+                    <td>
+                      <input
+                          type="checkbox"
+                          value={category}
+                          checked={subCategory.includes(category)}
+                          onChange={(e) => onClickCategoryCheckbox(e.target)}
+                      ></input>
+                    </td>
+                  </tr>
               );
             })}
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
 
-      <div className="wrap3">
-        <div className="contentTitleBox">
-          {/* { to do list finder - ui 스타일링 필요 } */}
-          <table className="tableTypeMain">
-            <colgroup>
-              <col style={{ width: "*" }}></col>
-              <col style={{ width: "20" }}></col>
-              <col style={{ width: "15" }}></col>
-            </colgroup>
-            <tbody>
-              <tr>
-                <td>
-                  <h3>#키워드</h3>
-                </td>
-                <td>
-                  <label>비활성화</label>
-                </td>
-                <td>
-                  <input
+        <div className="wrap3">
+          <div className="contentTitleBox">
+            <h3>#키워드</h3>
+            <div className='tr'>
+              <label>
+                <input
                     type="checkbox"
                     checked={subKeywordStatus === "ALL"}
                     onChange={(e) => {
@@ -494,85 +453,84 @@ export default function RootLayout({ children }) {
                       setSubKeywordStatus(status);
                       onClickSubscribeCheckbox("keyword", status);
                     }}
-                  ></input>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                />
+                <span>비활성화</span>
+              </label>
+            </div>
+          </div>
 
-        <table className="tableTypeSort scrollTable5 center">
-          <colgroup>
-            <col style={{ width: "45%" }} />
-            <col style={{ width: "55%" }} />
-          </colgroup>
-          <thead>
+          <table className="tableTypeSort scrollTable5 center">
+            <colgroup>
+              <col style={{ width: "45%" }} />
+              <col style={{ width: "55%" }} />
+            </colgroup>
+            <thead>
             <tr>
               <th>키워드</th>
               <th></th>
             </tr>
-          </thead>
-          <tbody>
+            </thead>
+            <tbody>
             {subKeyword.map((keyword, index) => {
               return (
-                <tr key={index}>
-                  <td>{keyword}</td>
-                  <td>{makeRemoveKeywordButton(keyword)}</td>
-                </tr>
+                  <tr key={index}>
+                    <td>{keyword}</td>
+                    <td>{makeRemoveKeywordButton(keyword)}</td>
+                  </tr>
               );
             })}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
 
-        <div className="centerBox mt20">
-          <div className="mb5 tl">키워드 추가 (미리보기 : Enter)</div>
-          <textarea
-            className="h10"
-            id="keyword_contents"
-            name=""
-            value={newKeyword}
-            onChange={(e) => {
-              setNewKeyword(e.target.value);
-            }}
-            // onKeyDown={(e) => getKeywordNews(e.target, 1, 5, e.target.value)}
-            onKeyDown={keywordHandleKeyDown}
-          ></textarea>
-          <div className="mb20 tr">
-            <button
-              type="button"
-              className="btnRed"
-              onClick={() => onClickAddKeyword()}
-            >
-              추가
-            </button>
+          <div className="centerBox mt20">
+            <div className="mb5 tl">키워드 추가 (미리보기 : Enter)</div>
+            <textarea
+                className="h10"
+                id="keyword_contents"
+                name=""
+                value={newKeyword}
+                onChange={(e) => {
+                  setNewKeyword(e.target.value);
+                }}
+                // onKeyDown={(e) => getKeywordNews(e.target, 1, 5, e.target.value)}
+                onKeyDown={keywordHandleKeyDown}
+            ></textarea>
+            <div className="mb20 tr">
+              <button
+                  type="button"
+                  className="btnRed"
+                  onClick={() => onClickAddKeyword()}
+              >
+                추가
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="centerBox mt20"></div>
-        <table>
-          <colgroup>
-            <col style={{ width: "20%" }} />
-            <col style={{ width: "80%" }} />
-          </colgroup>
-          {/* <thead>
+          <div className="centerBox mt20"></div>
+          <table>
+            <colgroup>
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "80%" }} />
+            </colgroup>
+            {/* <thead>
             <tr>
               <th>주제</th>
               <th>구독</th>
             </tr>
           </thead> */}
-          <tbody>
+            <tbody>
             {keywordNews.map((news, index) => {
               return (
-                <tr key={index}>
-                  <td>
-                    <img src={news.imagePath} />
-                  </td>
-                  <td>{news.title}</td>
-                </tr>
+                  <tr key={index}>
+                    <td>
+                      <img src={news.imagePath} />
+                    </td>
+                    <td>{news.title}</td>
+                  </tr>
               );
             })}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
   );
 }
