@@ -22,7 +22,13 @@ export default async function RootLayout({ children }) {
 
       <div className="wrap3">
         <div className="contentTitleBox">
-          <h3>#언론사</h3>
+         <h3>#언론사</h3>
+         <div className='tr'>
+         <label>
+            <input type="checkbox" id="" name="" value="" />
+            <span>전체구독</span>
+        </label>
+        </div>
         </div>
 
         <table className="tableTypeSort scrollTable center">
@@ -90,7 +96,13 @@ export default async function RootLayout({ children }) {
 
       <div className="wrap3">
         <div className="contentTitleBox">
-          <h3>#주제</h3>
+         <h3>#주제</h3>
+         <div className='tr'>
+         <label>
+            <input type="checkbox" id="" name="" value="" />
+            <span>전체구독</span>
+        </label>
+        </div>
         </div>
 
         <table className="tableTypeSort scrollTable center">
@@ -146,7 +158,13 @@ export default async function RootLayout({ children }) {
 
       <div className="wrap3">
         <div className="contentTitleBox">
-          <h3>#키워드</h3>
+         <h3>#키워드</h3>
+         <div className='tr'>
+         <label>
+            <input type="checkbox" id="" name="" value="" />
+            <span>비활성화</span>
+        </label>
+        </div>
         </div>
 
         <table className="tableTypeSort scrollTable5 center">
