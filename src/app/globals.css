@@ -561,7 +561,7 @@ table tr.subSum2 td:nth-child(3) { font-weight:600; text-align:center; }
 .withInput select { width:auto; }
 
 /*boardTitle*/
-.contentTitleBox {padding-bottom:5px; margin-bottom:20px;}
+.contentTitleBox {width:300px; padding-bottom:5px; margin-bottom:20px;}
 .contentTitleBox h3 { font-size:27px; font-weight:400; color:#383838;}
 .contentTitleBox h4 { font-size:20px; font-weight:400; color:#383838;}
 
@@ -936,7 +936,7 @@ table tr.subSum2 td:nth-child(3) { font-weight:600; text-align:center; }
 .noLoginBox{
   width: 450px;
   height: 535px;
-  border: solid 1px;
+  /* border: solid 1px; */
   position: relative;
 }
 .noLoginChild{
