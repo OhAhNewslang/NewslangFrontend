@@ -226,6 +226,7 @@ button.btnLightGray {  padding:0 10px;border:1px solid #c1c1c1; background:#fff;
 button.btnLink {border:none; background:#fff; color:#0000EE; }
 button.btnLinkGray {border:none; background:#fff; color:#000;  }
 button.btnRed { padding:0 10px;border:1px solid #ff2e2e1a; background:#ff2e2e4b; color:#282828; }
+/* button.btnRed { padding:0 10px;border:1px solid #ecd9e0; background:#ecd9e0; color:#282828; } */
 button.btnOrange { padding:0 10px;border:1px solid #faf0b5; background:#faf0b5; color:#333; }
 button.btnUnselBlue { padding:0 10px; border:1px solid #c3c6c9; background:#fff; color:#36638D; }
 button.btnUnselRed { padding:0 10px;border:1px solid #c3c6c9; background:#fff; color:#282828; }
@@ -257,6 +258,7 @@ button.btnUnselRed { padding:0 10px;border:1px solid #c3c6c9; background:#fff; c
 .wrap.commonInfo { width:700px; }
 .smallExpense { position:relative; }
 .wrapper { position:relative; width:100%; height:100%; }
+.summarize { white-space: pre-wrap;}
 
 /*main1*/
 .main1 { width:1280px; margin:13px auto 0;  }
@@ -503,6 +505,7 @@ table tr.subSum2 td:nth-child(3) { font-weight:600; text-align:center; }
 .tableTypeBoard2 td a { color:#333; text-decoration:underline; }
 .tableTypeBoard2 td a:hover { text-decoration:underline; }
 .tableTypeBoard2 td.viewBox { height:500px; padding:20px 50px; overflow-y:auto; line-height:1.5; vertical-align:top;}
+.tableTypeBoard2 td.viewBox2 { height:auto; padding:20px 50px; overflow-y:auto; line-height:1.5; vertical-align:top;}
 .tableTypeBtn { border:none; border-bottom: none;}
 .tableTypeBtn td { border:none;}
 .email tr { height:50px; }
